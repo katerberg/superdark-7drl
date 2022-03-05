@@ -12,7 +12,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.cursors = this.scene.input.keyboard.createCursorKeys();
     this.angle = 0;
     this.depth = 1;
-    const scale = 1.0;
+    const scale = 0.25;
     this.setDisplaySize(216 * scale, 253 * scale);
     const xOrigin = 0.45;
     const yOrigin = 0.47;
