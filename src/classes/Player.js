@@ -12,7 +12,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.cursors = this.scene.input.keyboard.createCursorKeys();
     this.angle = 0;
     this.depth = 1;
-    const scale = 0.5;
+    const scale = 0.25;
     this.setOrigin(0.5).setDisplaySize(216 * scale, 253 * scale);
     scene.physics.world.enable(this);
     this.body.setCollideWorldBounds();
