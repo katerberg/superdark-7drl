@@ -6,13 +6,13 @@ Game using Phaser
 
 Run the following to build the files for the UI project in `./src`. This will watch the development files and automatically rebuild when needed.
 
-```
+```sh
 npm start
 ```
 
 To actually build the ui package, which creates a `public` folder that houses the files that can then be statically hosted:
 
-```
+```sh
 npm build
 ```
 
