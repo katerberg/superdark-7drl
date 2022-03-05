@@ -12,6 +12,8 @@
     "start": "webpack-dev-server --config ./webpack.config.js --mode development"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.13.0",
     "eslint": "^8.10.0",
     "eslint-config-airbnb-typescript": "^16.1.0",
     "eslint-config-prettier": "^8.5.0",
@@ -22,6 +24,7 @@
     "html-webpack-plugin": "^5.5.0",
     "phaser": "^3.55.2",
     "prettier": "^2.5.1",
+    "regenerator-runtime": "^0.13.9",
     "sass-loader": "^12.6.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.2.7",

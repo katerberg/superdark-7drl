@@ -1,4 +1,3 @@
-
 export const GAME = {
   width: 1388,
   height: 900,

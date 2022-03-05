@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime';
 import * as Phaser from 'phaser';
 import {GAME} from './constants';
-import {LoadingScene } from './scenes';
+import {LoadingScene} from './scenes';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
