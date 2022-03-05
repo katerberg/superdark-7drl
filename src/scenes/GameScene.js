@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
 import {Player} from '../classes/Player';
+import {Wall} from '../classes/Wall';
 import {PLAY_AREA, SCENES} from '../constants';
 
 export class GameScene extends Phaser.Scene {
@@ -21,12 +22,17 @@ export class GameScene extends Phaser.Scene {
     this.physics.world.setBounds(PLAY_AREA.xOffset, PLAY_AREA.yOffset, PLAY_AREA.width, PLAY_AREA.height);
 
     this.addPlayer();
+    this.addWalls();
   }
 
   update() {
     if (this.player) {
       this.player.update();
     }
+  }
+
+  addWalls() {
+    this.walls = [new Wall({scene: this, x: 300, y: 300})];
   }
 
   addPlayer() {
