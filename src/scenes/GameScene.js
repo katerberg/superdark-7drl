@@ -6,6 +6,9 @@ import {Wall} from '../classes/Wall';
 import {PLAY_AREA, SCENES} from '../constants';
 
 export class GameScene extends Phaser.Scene {
+  player;
+  walls;
+
   constructor() {
     super({
       key: SCENES.game,
@@ -21,8 +24,20 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#FFFFFF');
     this.physics.world.setBounds(PLAY_AREA.xOffset, PLAY_AREA.yOffset, PLAY_AREA.width, PLAY_AREA.height);
 
+    const immovableOptions = {
+      createCallback: (p) => {
+        if (p?.body instanceof Phaser.Physics.Arcade.Body) {
+          p.body.setImmovable(true);
+        }
+      },
+    };
+
+    this.walls = this.physics.add.group(immovableOptions);
+
     this.addPlayer();
     this.addWalls();
+
+    this.physics.add.collider(this.player, this.walls);
   }
 
   update() {
@@ -32,7 +47,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   addWalls() {
-    this.walls = [new Wall({scene: this, x: 300, y: 300})];
+    this.walls.add(new Wall({scene: this, x: 300, y: 300}));
   }
 
   addPlayer() {
