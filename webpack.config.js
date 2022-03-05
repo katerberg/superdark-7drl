@@ -1,7 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = () => ({
-  entry: './src/index.ts',
+  entry: './src/index.js',
   plugins: [
     new HtmlWebpackPlugin({
       hash: true,
@@ -18,9 +18,9 @@ module.exports = () => ({
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
+        test: /\.(js)$/,
         exclude: /node_modules/,
+        use: ['babel-loader'],
       },
       {
         test: /\.scss$/,
@@ -41,7 +41,7 @@ module.exports = () => ({
     ],
   },
   resolve: {
-    extensions: ['*', '.tsx', '.ts', '.js'],
+    extensions: ['*', '.js'],
     alias: {
       assets: `${__dirname}/src/assets`,
     },

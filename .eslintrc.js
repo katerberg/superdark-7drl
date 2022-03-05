@@ -1,34 +1,16 @@
 module.exports = {
   env: {
     node: true,
-    es6: true,
+    es2022: true,
   },
-  parser: '@typescript-eslint/parser',
+  parser: '@babel/eslint-parser',
   parserOptions: {
-    project: 'tsconfig.json',
-    ecmaVersion: 2018,
     sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-      modules: true,
-    },
+    allowImportExportEverywhere: true,
   },
-  plugins: ['@typescript-eslint', 'prettier', 'import'],
-  extends: [
-    'eslint:recommended',
-    'airbnb-typescript/base',
-    'prettier',
-    'plugin:prettier/recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
+  plugins: ['prettier', 'import'],
+  extends: ['eslint:recommended', 'prettier', 'plugin:prettier/recommended'],
   rules: {
-    '@typescript-eslint/no-use-before-define': 'error',
-    '@typescript-eslint/no-unused-vars': 'error',
-    '@typescript-eslint/no-unused-expressions': 'error',
-    '@typescript-eslint/no-var-requires': 'error',
-    '@typescript-eslint/no-explicit-any': 'error',
-    '@typescript-eslint/explicit-function-return-type': 'error',
-    '@typescript-eslint/ban-ts-comment': 'error',
     'global-require': 'error',
     'import/no-default-export': 'error',
     'import/no-extraneous-dependencies': ['error', {devDependencies: true}],
@@ -161,5 +143,8 @@ module.exports = {
     'rest-spread-spacing': 'error',
     'template-curly-spacing': 'error',
     'yield-star-spacing': 'error',
+  },
+  globals: {
+    window: true,
   },
 };

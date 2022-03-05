@@ -9,7 +9,7 @@ export class LoadingScene extends Phaser.Scene {
     });
   }
 
-  update(): void {
+  update() {
     this.cameras.main.setBackgroundColor('#FFFFFF');
     if (isDebug()) {
       // this.scene.start(SCENES.cards);

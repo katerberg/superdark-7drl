@@ -3,7 +3,7 @@ import * as Phaser from 'phaser';
 import {GAME} from './constants';
 import {LoadingScene} from './scenes';
 
-const config: Phaser.Types.Core.GameConfig = {
+const config = {
   type: Phaser.AUTO,
   parent: 'phaser-example', // I don't know why this was in the tutorial
   width: GAME.width,
