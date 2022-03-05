@@ -1,9 +1,11 @@
 import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
+import ladderImage from '../assets/ladder.png';
+import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
 import {Wall} from '../classes/Wall';
-import {PLAY_AREA, SCENES} from '../constants';
+import {COLORS, PLAY_AREA, SCENES} from '../constants';
 
 export class GameScene extends Phaser.Scene {
   player;
@@ -18,10 +20,11 @@ export class GameScene extends Phaser.Scene {
   preload() {
     this.load.spritesheet('character', characterMove, {frameWidth: 253, frameHeight: 216});
     this.load.spritesheet('characterLegsWalk', characterLegsWalk, {frameWidth: 172, frameHeight: 124});
+    this.load.image('exit', ladderImage);
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#FFFFFF');
+    this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
     this.physics.world.setBounds(PLAY_AREA.xOffset, PLAY_AREA.yOffset, PLAY_AREA.width, PLAY_AREA.height);
 
     const immovableOptions = {
@@ -36,6 +39,7 @@ export class GameScene extends Phaser.Scene {
 
     this.addPlayer();
     this.addWalls();
+    this.addExit();
 
     this.physics.add.collider(this.player, this.walls);
   }
@@ -48,6 +52,10 @@ export class GameScene extends Phaser.Scene {
 
   addWalls() {
     this.walls.add(new Wall({scene: this, x: 300, y: 300}));
+  }
+
+  addExit() {
+    this.exit = new Exit({scene: this, x: 400, y: 100});
   }
 
   addPlayer() {

@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {SCENES} from '../constants';
+import {COLORS, SCENES} from '../constants';
 // import {isDebug} from '../utils/environments';
 
 export class LoadingScene extends Phaser.Scene {
@@ -10,7 +10,7 @@ export class LoadingScene extends Phaser.Scene {
   }
 
   update() {
-    this.cameras.main.setBackgroundColor('#FFFFFF');
+    this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
     // if (isDebug()) {
     this.scene.start(SCENES.game);
     //   // this.scene.start(SCENES.hud);

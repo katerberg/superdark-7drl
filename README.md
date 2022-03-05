@@ -21,3 +21,4 @@ npm build
 ## Credits
 
 - Riley Gombart for [Survival](https://opengameart.org/content/animated-top-down-survivor-player) assets
+- Jordan Irwin (AntumDeluge) for [Ladder](https://opengameart.org/content/rope-ladder)

@@ -1,3 +1,5 @@
+export {COLORS} from './colors';
+
 export const GAME = {
   width: 1200,
   height: 800,
@@ -8,20 +10,6 @@ export const PLAY_AREA = {
   height: 800,
   xOffset: 0,
   yOffset: 0,
-};
-
-export const SPEED = {
-  player: 150,
-  bot: 100,
-  arrow: 200,
-  laser: 250,
-  bullet: 400,
-};
-
-export const DAMAGE = {
-  arrow: 1,
-  laser: 5,
-  bullet: 2,
 };
 
 export const RULES = {
