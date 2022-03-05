@@ -53,8 +53,8 @@ export class GameScene extends Phaser.Scene {
   addPlayer() {
     this.player = new Player({
       scene: this,
-      x: 0,
-      y: 0,
+      x: 50,
+      y: 50,
       key: 'character',
     });
     this.player.play('walk');
