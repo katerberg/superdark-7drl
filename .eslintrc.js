@@ -103,7 +103,7 @@ module.exports = {
     'no-lonely-if': 'error',
     'no-mixed-spaces-and-tabs': 'error',
     'no-multiple-empty-lines': 'error',
-    'no-nested-ternary': 'error',
+    'no-nested-ternary': 'off',
     'no-new-object': 'error',
     'no-plusplus': 'off',
     'no-restricted-syntax': 'error',

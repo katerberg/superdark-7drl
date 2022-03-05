@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
 import {Player} from '../classes/Player';
-import {PLAY_AREA, SCENES, GAME} from '../constants';
+import {PLAY_AREA, SCENES} from '../constants';
 
 export class GameScene extends Phaser.Scene {
   constructor() {
@@ -37,12 +37,5 @@ export class GameScene extends Phaser.Scene {
       key: 'character',
     });
     this.player.play('walk');
-    this.add
-      .text(GAME.width / 2, GAME.height / 2, 'foo', {
-        align: 'center',
-        fontSize: '32px',
-        color: 'tomato',
-      })
-      .setOrigin(0.5, 0.5);
   }
 }
