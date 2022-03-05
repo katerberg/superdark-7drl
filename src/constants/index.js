@@ -1,12 +1,12 @@
 export const GAME = {
-  width: 1388,
-  height: 900,
+  width: 1200,
+  height: 800,
 };
 
 export const PLAY_AREA = {
-  width: 1088,
-  height: 640,
-  xOffset: 150,
+  width: 1200,
+  height: 800,
+  xOffset: 0,
   yOffset: 0,
 };
 
@@ -49,15 +49,5 @@ export const PLAYER = {
 
 export const SCENES = {
   game: 'GameScene',
-  hud: 'HudScene',
   loading: 'LoadingScene',
-  menu: 'MenuScene',
-  cards: 'CardsScene',
-  deckbuild: 'DeckbuildScene',
-};
-
-export const SYMBOLS = {
-  energy: '⚛',
-  moon: '☾',
-  infinite: '∞',
 };

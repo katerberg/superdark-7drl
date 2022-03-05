@@ -19,3 +19,5 @@ npm build
 ## Known Issues
 
 ## Credits
+
+- Riley Gombart for [Survival](https://opengameart.org/content/animated-top-down-survivor-player) assets

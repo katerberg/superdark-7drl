@@ -75,7 +75,7 @@ module.exports = {
     'no-useless-escape': 'error',
     'no-useless-return': 'error',
     'no-void': 'error',
-    'no-warning-comments': 'error',
+    'no-warning-comments': 'off',
     'no-with': 'error',
     radix: 'error',
     'wrap-iife': ['error', 'inside'],

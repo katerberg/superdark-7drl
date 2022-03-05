@@ -47,8 +47,8 @@ module.exports = () => ({
     },
   },
   devServer: {
-    'static': {
-      directory: './public'
-    }
+    static: {
+      directory: './public',
+    },
   },
 });
