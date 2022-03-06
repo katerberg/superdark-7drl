@@ -12,7 +12,6 @@ export class Player extends Phaser.GameObjects.Sprite {
 
     this.cursors = this.scene.input.keyboard.createCursorKeys();
     this.angle = angle || 0;
-    console.log('angle', angle);
     this.depth = 1;
     this.setDisplaySize(PLAYER.HEIGHT * PLAYER.SCALE, PLAYER.WIDTH * PLAYER.SCALE);
     const xOrigin = 0.45;
