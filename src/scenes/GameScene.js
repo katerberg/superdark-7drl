@@ -52,6 +52,10 @@ export class GameScene extends Phaser.Scene {
     this.addWalls();
     this.addExits();
 
+    //temp moved here to figure out shadow decay
+    // this.clearShadows();
+    // this.drawShadows();
+
     this.add
       .text(0, GAME.height, `Level ${window.gameState.currentLevel}`, {
         fontSize: '36px',
@@ -129,6 +133,9 @@ export class GameScene extends Phaser.Scene {
 
   clearShadows() {
     this.shadows.forEach((shadow) => {
+      // if (shadow.alpha === 0) {
+      //   shadow.destroy();
+      // }
       shadow.destroy();
     });
     this.shadows = [];
@@ -169,6 +176,12 @@ export class GameScene extends Phaser.Scene {
         graphics.closePath();
         graphics.fillPath();
 
+        // this.tweens.add({
+        //   targets: graphics,
+        //   alpha: 0,
+        //   duration: 100,
+        // });
+
         this.shadows.push(graphics);
       }
     });
@@ -199,6 +212,12 @@ export class GameScene extends Phaser.Scene {
 
     graphics.closePath();
     graphics.fillPath();
+
+    // this.tweens.add({
+    //   targets: graphics,
+    //   alpha: 0,
+    //   duration: 100,
+    // });
 
     this.shadows.push(graphics);
   }
