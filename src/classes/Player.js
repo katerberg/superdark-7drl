@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import {DEPTH, PLAYER} from '../constants';
 import {isDebug} from '../utils/environments';
+import {createFloatingText} from '../utils/visuals';
 import {PlayerLegs} from './PlayerLegs';
 
 export class Player extends Phaser.GameObjects.Sprite {
@@ -32,6 +33,10 @@ export class Player extends Phaser.GameObjects.Sprite {
     });
     this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, player: this});
     this.legs.play('walk');
+  }
+
+  handleHit(projectile) {
+    createFloatingText(this.scene, this.x, this.y, 'ouch', 'red');
   }
 
   handleMovement() {

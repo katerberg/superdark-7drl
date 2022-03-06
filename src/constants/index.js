@@ -1,5 +1,6 @@
 export {COLORS} from './colors';
 export {EVENTS} from './events';
+export {DEPTH} from './depth';
 
 export const GAME = {
   width: 1200,
@@ -32,14 +33,6 @@ export const ENEMY = {
   SCALE: 0.25,
   LEGS_WIDTH: 172,
   LEGS_HEIGHT: 124,
-};
-
-export const DEPTH = {
-  DEFAULT: 0,
-  ENEMY: 1,
-  PLAYER: 2,
-  SHADOWS: 3,
-  HUD: 4,
 };
 
 export const GAME_STATUS = {

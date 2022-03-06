@@ -6,5 +6,6 @@ export class Wall extends Phaser.GameObjects.Rectangle {
 
     scene.physics.world.enable(this);
     scene.add.existing(this);
+    // this.setAngle(90);
   }
 }

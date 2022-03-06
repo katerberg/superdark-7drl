@@ -31,7 +31,6 @@ export class HudScene extends Phaser.Scene {
   }
 
   handleLevelChange() {
-    console.log('changing text');
     this.levelText.setText(`Level ${window.gameState.currentLevel}`);
   }
 

@@ -2,13 +2,14 @@ import * as Phaser from 'phaser';
 import {DEPTH, ENEMY} from '../constants';
 import {createFloatingText} from '../utils/visuals';
 import {PlayerLegs} from './PlayerLegs';
+import {Projectile} from './Projectile';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
-  lastShot = 0;
+  lastShot = 2000;
   shotDelay = 1000;
   constructor({scene, x, y, key}) {
     super(scene, x, y, key);
-    this.angle = 0;
+    this.angle = 180;
     this.depth = DEPTH.ENEMY;
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
@@ -35,7 +36,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   update(time) {
     if (time > this.lastShot + this.shotDelay) {
       this.lastShot = time;
+      this.scene.addProjectile(new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle}));
       createFloatingText(this.scene, this.x, this.y, 'boom');
     }
+    this.setAngle(this.angle + 0.25);
   }
 }

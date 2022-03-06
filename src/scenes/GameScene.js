@@ -26,6 +26,7 @@ const immovableOptions = {
 export class GameScene extends Phaser.Scene {
   player;
   enemies;
+  projectiles;
   walls;
   shadows;
   exits;
@@ -66,6 +67,7 @@ export class GameScene extends Phaser.Scene {
     this.walls = this.physics.add.group(immovableOptions);
     this.shadows = [];
     this.enemies = this.physics.add.group(immovableOptions);
+    this.projectiles = this.physics.add.group(immovableOptions);
 
     this.addPlayer(startingInfo);
     this.addEnemy();
@@ -79,6 +81,8 @@ export class GameScene extends Phaser.Scene {
     // this.drawShadows();
 
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
+    // TODO: Figure out how to get the collision box to match angle
+    this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
     this.physics.add.collider(this.player, this.walls);
     this.physics.add.collider(this.player, this.enemies);
     this.physics.add.collider(this.enemies, this.walls);
@@ -142,6 +146,10 @@ export class GameScene extends Phaser.Scene {
     const enemy = new Enemy({scene: this, x: 200, y: 200, key: 'enemy-rifle-move'});
     enemy.play('walk');
     this.enemies.add(enemy);
+  }
+
+  addProjectile(projectile) {
+    this.projectiles.add(projectile);
   }
 
   addPlayer(startingInfo) {
