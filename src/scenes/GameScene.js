@@ -1,7 +1,8 @@
 import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
-import ladderImage from '../assets/ladder.png';
+import exitDownImage from '../assets/exit-down.png';
+import exitUpImage from '../assets/exit-up.png';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
 import {Exit} from '../classes/Exit';
@@ -34,7 +35,8 @@ export class GameScene extends Phaser.Scene {
       frameWidth: PLAYER.LEGS_WIDTH,
       frameHeight: PLAYER.LEGS_HEIGHT,
     });
-    this.load.image('exit', ladderImage);
+    this.load.image('exit-up', exitUpImage);
+    this.load.image('exit-down', exitDownImage);
     this.load.image('winSwitch', winSwitchImage);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.levelKey = this.input.keyboard.addKey(KeyCodes.L);
@@ -118,6 +120,7 @@ export class GameScene extends Phaser.Scene {
           y: exit.y,
           start: exit.start,
           end: exit.end,
+          direction: exit.direction,
         }),
       );
     });

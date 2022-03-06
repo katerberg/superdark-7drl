@@ -21,6 +21,7 @@ export function createLevelExits(level) {
       y,
       start,
       end: level,
+      direction: 'up',
     });
   }
   if (level !== LEVELS.MAX_LEVEL) {
@@ -40,6 +41,7 @@ export function createLevelExits(level) {
       y,
       start: level,
       end,
+      direction: 'down',
     });
   }
 }

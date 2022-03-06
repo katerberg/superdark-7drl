@@ -4,8 +4,9 @@ export class Exit extends Phaser.GameObjects.Image {
   start;
   end;
 
-  constructor({scene, x, y, start, end}) {
-    super(scene, x, y, 'exit');
+  constructor({scene, x, y, start, end, direction}) {
+    const exitSprite = direction === 'up' ? 'exit-up' : 'exit-down';
+    super(scene, x, y, exitSprite);
 
     scene.physics.world.enable(this);
     scene.add.existing(this);
