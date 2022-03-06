@@ -12,8 +12,12 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.cursors = this.scene.input.keyboard.createCursorKeys();
     this.angle = 0;
     this.depth = 1;
-    const scale = 0.5;
-    this.setOrigin(0.5).setDisplaySize(216 * scale, 253 * scale);
+    const scale = 0.25;
+    this.setDisplaySize(216 * scale, 253 * scale);
+    const xOrigin = 0.45;
+    const yOrigin = 0.47;
+    this.setDisplayOrigin(xOrigin, yOrigin);
+    this.setOrigin(xOrigin, yOrigin);
     scene.physics.world.enable(this);
     this.body.setCollideWorldBounds();
     scene.add.existing(this);
@@ -24,17 +28,13 @@ export class Player extends Phaser.GameObjects.Sprite {
       frames: this.anims.generateFrameNumbers('character', {start: 0, end: 19}),
       repeat: -1,
     });
-    this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, scale});
+    this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, scale, player: this});
     this.legs.play('walk');
-    // this.angle = 45;
-    //  .world.bringToTop(activeCard);
   }
 
   handleMovement() {
     const {up, down, left, right} = this.cursors;
 
-    // const {KeyCodes} = Phaser.Input.Keyboard;
-    // this.scene.input.keyboard.addKey(KeyCodes.P);
     if (up?.isDown || down?.isDown || left?.isDown || right?.isDown) {
       const moveSpeed = 150;
       const angleSpeed = 5;
@@ -47,9 +47,10 @@ export class Player extends Phaser.GameObjects.Sprite {
         speedMagnitude * Math.sin(misc.toRadians(this.angle)),
       );
     } else {
-      this.legs.body.setVelocity(0);
       this.body.setVelocity(0);
     }
+    this.legs.setAngle(this.angle);
+    this.legs.moveTo(this.body.x, this.body.y);
   }
 
   handleInput() {
