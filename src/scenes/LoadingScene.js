@@ -5,20 +5,19 @@ import {COLORS, SCENES} from '../constants';
 export class LoadingScene extends Phaser.Scene {
   constructor() {
     super({
-      key: SCENES.loading,
+      key: SCENES.LOADING,
     });
   }
 
   update() {
     this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
     // if (isDebug()) {
-    this.scene.start(SCENES.game);
-    //   // this.scene.start(SCENES.hud);
-    //   // this.scene.start(SCENES.game);
-    //   // this.scene.bringToTop(SCENES.hud);
-    //   // this.scene.bringToTop(SCENES.cards);
+    this.scene.start(SCENES.GAME);
+    //   // this.scene.start(SCENES.HUD);
+    //   // this.scene.start(SCENES.GAME);
+    //   // this.scene.bringToTop(SCENES.HUD);
     // } else {
-    //   // this.scene.start(SCENES.menu);
+    //   // this.scene.start(SCENES.MENU);
     // }
   }
 }

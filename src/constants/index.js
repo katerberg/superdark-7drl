@@ -37,6 +37,7 @@ export const GAME_STATUS = {
 };
 
 export const SCENES = {
-  game: 'GameScene',
-  loading: 'LoadingScene',
+  HUD: 'HudScene',
+  GAME: 'GameScene',
+  LOADING: 'LoadingScene',
 };

@@ -25,7 +25,7 @@ export class GameScene extends Phaser.Scene {
 
   constructor() {
     super({
-      key: SCENES.game,
+      key: SCENES.GAME,
     });
   }
 
@@ -79,7 +79,7 @@ export class GameScene extends Phaser.Scene {
     if (this.useKey.isDown) {
       if (window.gameState.gameEnded) {
         window.resetGame();
-        this.scene.start(SCENES.loading);
+        this.scene.start(SCENES.LOADING);
       }
     }
     if (isDebug()) {
@@ -92,7 +92,7 @@ export class GameScene extends Phaser.Scene {
 
   changeLevel(level) {
     window.gameState.currentLevel = level;
-    this.scene.start(SCENES.game, {
+    this.scene.start(SCENES.GAME, {
       startingPosition: {
         x: this.player.body.x + PLAYER.WIDTH * PLAYER.SCALE,
         y: this.player.body.y + PLAYER.WIDTH * PLAYER.SCALE,
