@@ -17,6 +17,14 @@ export const LEVELS = {
   MAX_LEVEL: 10,
 };
 
+export const PLAYER = {
+  WIDTH: 253,
+  HEIGHT: 216,
+  SCALE: 0.25,
+  LEGS_WIDTH: 172,
+  LEGS_HEIGHT: 124,
+};
+
 export const SCENES = {
   game: 'GameScene',
   loading: 'LoadingScene',

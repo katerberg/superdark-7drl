@@ -5,7 +5,7 @@ import ladderImage from '../assets/ladder.png';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
 import {Wall} from '../classes/Wall';
-import {COLORS, GAME, PLAY_AREA, SCENES} from '../constants';
+import {COLORS, GAME, PLAYER, PLAY_AREA, SCENES} from '../constants';
 import {addLevelExits} from '../utils/setup';
 
 export class GameScene extends Phaser.Scene {
@@ -21,12 +21,15 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet('character', characterMove, {frameWidth: 253, frameHeight: 216});
-    this.load.spritesheet('characterLegsWalk', characterLegsWalk, {frameWidth: 172, frameHeight: 124});
+    this.load.spritesheet('character', characterMove, {frameWidth: PLAYER.WIDTH, frameHeight: PLAYER.HEIGHT});
+    this.load.spritesheet('characterLegsWalk', characterLegsWalk, {
+      frameWidth: PLAYER.LEGS_WIDTH,
+      frameHeight: PLAYER.LEGS_HEIGHT,
+    });
     this.load.image('exit', ladderImage);
   }
 
-  create() {
+  create(startingInfo) {
     this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
     this.physics.world.setBounds(PLAY_AREA.xOffset, PLAY_AREA.yOffset, PLAY_AREA.width, PLAY_AREA.height);
 
@@ -41,7 +44,7 @@ export class GameScene extends Phaser.Scene {
     this.walls = this.physics.add.group(immovableOptions);
     this.shadows = [];
 
-    this.addPlayer();
+    this.addPlayer(startingInfo);
     this.addWalls();
     this.addExits();
 
@@ -68,7 +71,13 @@ export class GameScene extends Phaser.Scene {
     const goingUp = window.gameState.currentLevel === exit.end;
     window.gameState.currentLevel = goingUp ? exit.start : exit.end;
 
-    this.scene.start(SCENES.game);
+    this.scene.start(SCENES.game, {
+      startingPosition: {
+        x: this.player.body.x + PLAYER.WIDTH * PLAYER.SCALE,
+        y: this.player.body.y + PLAYER.WIDTH * PLAYER.SCALE,
+      },
+      angle: this.player.angle,
+    });
   }
 
   addWalls() {
@@ -92,12 +101,13 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  addPlayer() {
+  addPlayer(startingInfo) {
     this.player = new Player({
       scene: this,
-      x: 100,
-      y: 100,
+      x: startingInfo?.startingPosition?.x || 100,
+      y: startingInfo?.startingPosition?.y || 100,
       key: 'character',
+      angle: startingInfo?.angle,
     });
     this.player.play('walk');
   }
