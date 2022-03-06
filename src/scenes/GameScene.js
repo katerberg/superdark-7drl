@@ -121,31 +121,33 @@ export class GameScene extends Phaser.Scene {
     const dirtyMultiplier = 10000;
 
     this.walls.children.entries.forEach((wall) => {
-      const w1 = {x: wall.pathData[0] + wall.x - wall.width / 2, y: wall.pathData[1] + wall.y - wall.height / 2};
-      const m1 = getNormalized({x: w1.x - p.x, y: w1.y - p.y});
-      console.log('first', w1);
-      const b1 = getBoundsIntersection(w1, m1);
-      console.log('bound1', b1);
+      for (let i = 0; i < wall.pathData.length - 2; i += 2) {
+        const w1 = {
+          x: wall.pathData[i] + wall.x - wall.width / 2,
+          y: wall.pathData[i + 1] + wall.y - wall.height / 2,
+        };
+        const m1 = getNormalized({x: w1.x - p.x, y: w1.y - p.y});
 
-      const w2 = {x: wall.pathData[6] + wall.x - wall.width / 2, y: wall.pathData[7] + wall.y - wall.height / 2};
-      const m2 = getNormalized({x: w2.x - p.x, y: w2.y - p.y});
-      console.log('second', w2);
-      const b2 = getBoundsIntersection(w2, m2);
-      console.log('bound2', b2);
+        const w2 = {
+          x: wall.pathData[i + 2] + wall.x - wall.width / 2,
+          y: wall.pathData[i + 3] + wall.y - wall.height / 2,
+        };
+        const m2 = getNormalized({x: w2.x - p.x, y: w2.y - p.y});
 
-      const graphics = this.add.graphics();
-      graphics.fillStyle(0x999999);
-      graphics.beginPath();
+        const graphics = this.add.graphics();
+        graphics.fillStyle(0x999999);
+        graphics.beginPath();
 
-      graphics.moveTo(w1.x, w1.y);
-      graphics.lineTo(w1.x + dirtyMultiplier * m1.x, w1.y + dirtyMultiplier * m1.y);
-      graphics.lineTo(w2.x + dirtyMultiplier * m2.x, w2.y + dirtyMultiplier * m2.y);
-      graphics.lineTo(w2.x, w2.y);
+        graphics.moveTo(w1.x, w1.y);
+        graphics.lineTo(w1.x + dirtyMultiplier * m1.x, w1.y + dirtyMultiplier * m1.y);
+        graphics.lineTo(w2.x + dirtyMultiplier * m2.x, w2.y + dirtyMultiplier * m2.y);
+        graphics.lineTo(w2.x, w2.y);
 
-      graphics.closePath();
-      graphics.fillPath();
+        graphics.closePath();
+        graphics.fillPath();
 
-      this.shadows.push(graphics);
+        this.shadows.push(graphics);
+      }
     });
   }
 }
@@ -153,45 +155,4 @@ export class GameScene extends Phaser.Scene {
 function getNormalized(vector) {
   const magnitude = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2));
   return {x: vector.x / magnitude, y: vector.y / magnitude};
-}
-
-function getBoundsIntersection(pos, dir) {
-  const w = GAME.width;
-  const h = GAME.height;
-  let t, bX, bY;
-
-  // check bounds 0: (0,0) to (w,0)
-  bY = 0;
-  t = (bY - pos.y) / dir.y;
-  bX = pos.x + dir.x * t;
-  if (t >= 0 && bX >= 0 && bX <= w) {
-    return {boundNum: 0, x: bX, y: bY};
-  }
-
-  // bounds 1: (w,0) to (w,h)
-  bX = w;
-  t = (bX - pos.x) / dir.x;
-  bY = pos.y + dir.y * t;
-  if (t >= 0 && bY >= 0 && bY <= h) {
-    return {boundNum: 1, x: bX, y: bY};
-  }
-
-  // bounds 2: (w,h) to (0,h)
-  bY = h;
-  t = (bY - pos.y) / dir.y;
-  bX = pos.x + dir.x * t;
-  if (t >= 0 && bX >= 0 && bX <= w) {
-    return {boundNum: 2, x: bX, y: bY};
-  }
-
-  // bounds 3: (0,h) to (0,0)
-  bX = 0;
-  t = (bX - pos.x) / dir.x;
-  bY = pos.y + dir.y * t;
-  if (t >= 0 && bY >= 0 && bY <= h) {
-    return {boundNum: 3, x: bX, y: bY};
-  }
-
-  //uh oh
-  return {boundNum: -1, x: -1, y: -1};
 }
