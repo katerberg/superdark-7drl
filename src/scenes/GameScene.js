@@ -5,7 +5,8 @@ import ladderImage from '../assets/ladder.png';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
 import {Wall} from '../classes/Wall';
-import {COLORS, GAME, PLAYER, PLAY_AREA, SCENES} from '../constants';
+import {COLORS, GAME, LEVELS, PLAYER, PLAY_AREA, SCENES} from '../constants';
+import {isDebug} from '../utils/environments';
 import {addLevelExits} from '../utils/setup';
 
 export class GameScene extends Phaser.Scene {
@@ -13,6 +14,7 @@ export class GameScene extends Phaser.Scene {
   walls;
   shadows;
   exits;
+  levelKey;
 
   constructor() {
     super({
@@ -27,6 +29,8 @@ export class GameScene extends Phaser.Scene {
       frameHeight: PLAYER.LEGS_HEIGHT,
     });
     this.load.image('exit', ladderImage);
+    const {KeyCodes} = Phaser.Input.Keyboard;
+    this.levelKey = this.input.keyboard.addKey(KeyCodes.L);
   }
 
   create(startingInfo) {
@@ -57,18 +61,17 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.walls);
   }
 
-  update() {
-    if (this.player) {
-      this.player.update();
+  handleInput() {
+    if (isDebug()) {
+      if (this.levelKey.isDown) {
+        const {currentLevel} = window.gameState;
+        this.changeLevel(currentLevel === LEVELS.MAX_LEVEL ? currentLevel - 1 : currentLevel + 1);
+      }
     }
-    this.clearShadows();
-    this.drawShadows();
   }
 
-  handlePlayerExit(exit) {
-    const goingUp = window.gameState.currentLevel === exit.end;
-    window.gameState.currentLevel = goingUp ? exit.start : exit.end;
-
+  changeLevel(level) {
+    window.gameState.currentLevel = level;
     this.scene.start(SCENES.game, {
       startingPosition: {
         x: this.player.body.x + PLAYER.WIDTH * PLAYER.SCALE,
@@ -76,6 +79,12 @@ export class GameScene extends Phaser.Scene {
       },
       angle: this.player.angle,
     });
+  }
+
+  handlePlayerExit(exit) {
+    const goingUp = window.gameState.currentLevel === exit.end;
+
+    this.changeLevel(goingUp ? exit.start : exit.end);
   }
 
   addWalls() {
@@ -108,6 +117,14 @@ export class GameScene extends Phaser.Scene {
       angle: startingInfo?.angle,
     });
     this.player.play('walk');
+  }
+
+  update() {
+    if (this.player) {
+      this.player.update();
+    }
+    this.clearShadows();
+    this.drawShadows();
   }
 
   clearShadows() {
