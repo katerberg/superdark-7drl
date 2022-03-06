@@ -20,6 +20,9 @@ const config = {
 
 window.gameState = {
   currentLevel: 1,
+  winSwitch: {
+    //x,y
+  },
   levels: {
     // 1: {
     //   walls: [{x1, x2, y1, y2}]

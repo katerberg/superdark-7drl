@@ -1,6 +1,6 @@
 import {LEVELS, GAME} from '../constants';
 
-export function addLevelExits(level) {
+export function createLevelExits(level) {
   if (window.gameState.levels[level].exits.length) {
     return;
   }
@@ -42,4 +42,15 @@ export function addLevelExits(level) {
       end,
     });
   }
+}
+
+export function createWinSwitch() {
+  if (window.gameState.winSwitch.x) {
+    return;
+  }
+  const x = Math.floor(Math.random() * GAME.width);
+  const y = Math.floor(Math.random() * GAME.height);
+
+  window.gameState.winSwitch.x = x;
+  window.gameState.winSwitch.y = y;
 }
