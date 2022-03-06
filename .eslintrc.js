@@ -25,7 +25,7 @@ module.exports = {
     ],
     'import/prefer-default-export': 'off',
     'no-await-in-loop': 'error',
-    'no-console': 'error',
+    'no-console': 'off',
     'no-extra-parens': 'error',
     'no-shadow': 'error',
     'no-template-curly-in-string': 'error',

@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime';
 import * as Phaser from 'phaser';
-import {GAME} from './constants';
+import {GAME, LEVELS} from './constants';
 import {GameScene, LoadingScene} from './scenes';
 
 const config = {
@@ -17,6 +17,22 @@ const config = {
   },
   scene: [LoadingScene, GameScene],
 };
+
+window.gameState = {
+  currentLevel: 1,
+  levels: {
+    // 1: {
+    //   walls: [{x1, x2, y1, y2}]
+    //   blockingThings: [{x, y}]
+    //   enemies: [{x, y, type, hp}]
+    //   items: [{x, y, type}]
+    //   exits: [{x, y, start, end}]
+    // },
+  },
+};
+for (let i = LEVELS.MIN_LEVEL; i <= LEVELS.MAX_LEVEL; i++) {
+  window.gameState.levels[i] = {exits: []};
+}
 
 export class Game extends Phaser.Game {}
 

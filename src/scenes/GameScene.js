@@ -5,12 +5,14 @@ import ladderImage from '../assets/ladder.png';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
 import {Wall} from '../classes/Wall';
-import {COLORS, PLAY_AREA, SCENES, GAME} from '../constants';
+import {COLORS, GAME, PLAY_AREA, SCENES} from '../constants';
+import {addLevelExits} from '../utils/setup';
 
 export class GameScene extends Phaser.Scene {
   player;
   walls;
   shadows;
+  exits;
 
   constructor() {
     super({
@@ -41,8 +43,14 @@ export class GameScene extends Phaser.Scene {
 
     this.addPlayer();
     this.addWalls();
-    this.addExit();
+    this.addExits();
 
+    this.add
+      .text(0, GAME.height, `Level ${window.gameState.currentLevel}`, {
+        fontSize: '36px',
+      })
+      .setOrigin(0, 1);
+    this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
     this.physics.add.collider(this.player, this.walls);
   }
 
@@ -56,13 +64,32 @@ export class GameScene extends Phaser.Scene {
     this.drawShadows();
   }
 
+  handlePlayerExit(exit) {
+    const goingUp = window.gameState.currentLevel === exit.end;
+    window.gameState.currentLevel = goingUp ? exit.start : exit.end;
+
+    this.scene.start(SCENES.game);
+  }
+
   addWalls() {
     this.walls.add(new Wall({scene: this, x: 300, y: 300}));
     this.walls.add(new Wall({scene: this, x: 500, y: 500}));
   }
 
-  addExit() {
-    this.exit = new Exit({scene: this, x: 400, y: 100});
+  addExits() {
+    this.exits = this.physics.add.group();
+    addLevelExits(window.gameState.currentLevel);
+    window.gameState.levels[window.gameState.currentLevel].exits.forEach((exit) => {
+      this.exits.add(
+        new Exit({
+          scene: this,
+          x: exit.x,
+          y: exit.y,
+          start: exit.start,
+          end: exit.end,
+        }),
+      );
+    });
   }
 
   addPlayer() {
@@ -93,9 +120,7 @@ export class GameScene extends Phaser.Scene {
     const p = {x: this.player.x, y: this.player.y};
     const dirtyMultiplier = 10000;
 
-    console.log('player', p);
     this.walls.children.entries.forEach((wall) => {
-      console.log('wall', wall);
       const w1 = {x: wall.pathData[0] + wall.x - wall.width / 2, y: wall.pathData[1] + wall.y - wall.height / 2};
       const m1 = getNormalized({x: w1.x - p.x, y: w1.y - p.y});
       console.log('first', w1);
