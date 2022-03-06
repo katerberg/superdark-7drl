@@ -13,7 +13,7 @@ export class LoadingScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
     // if (isDebug()) {
     this.scene.start(SCENES.GAME);
-    //   // this.scene.start(SCENES.HUD);
+    this.scene.start(SCENES.HUD);
     //   // this.scene.start(SCENES.GAME);
     //   // this.scene.bringToTop(SCENES.HUD);
     // } else {

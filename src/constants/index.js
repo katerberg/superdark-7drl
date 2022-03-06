@@ -1,4 +1,5 @@
 export {COLORS} from './colors';
+export {EVENTS} from './events';
 
 export const GAME = {
   width: 1200,
