@@ -22,3 +22,5 @@ npm build
 
 - Riley Gombart for [Survival](https://opengameart.org/content/animated-top-down-survivor-player) assets
 - Jordan Irwin (AntumDeluge) for [Ladder](https://opengameart.org/content/rope-ladder)
+- textures.com for [Steel Floors](https://www.textures.com/download/MetalFloorsBare0026/13546)
+- divisionheaven.me for [Stairs](https://divisionheaven.me/2014/12/28/stairs-and-script/stairs-2/)
