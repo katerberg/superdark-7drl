@@ -1,8 +1,11 @@
 import * as Phaser from 'phaser';
 import {DEPTH, ENEMY} from '../constants';
+import {createFloatingText} from '../utils/visuals';
 import {PlayerLegs} from './PlayerLegs';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
+  lastShot = 0;
+  shotDelay = 1000;
   constructor({scene, x, y, key}) {
     super(scene, x, y, key);
     this.angle = 0;
@@ -27,5 +30,12 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     });
     this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, player: this});
     this.legs.play('walk');
+  }
+
+  update(time) {
+    if (time > this.lastShot + this.shotDelay) {
+      this.lastShot = time;
+      createFloatingText(this.scene, this.x, this.y, 'boom');
+    }
   }
 }

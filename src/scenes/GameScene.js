@@ -155,10 +155,13 @@ export class GameScene extends Phaser.Scene {
     this.player.play('walk');
   }
 
-  update() {
+  update(time) {
     if (this.player) {
       this.player.update();
     }
+    this.enemies.children.entries.forEach((enemy) => {
+      enemy.update(time);
+    });
     this.handleInput();
     this.clearShadows();
     this.drawShadows();
