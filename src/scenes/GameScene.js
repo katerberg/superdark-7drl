@@ -1,20 +1,32 @@
 import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
+import enemyRifleMove from '../assets/enemy-rifle-move.png';
 import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
+import {Enemy} from '../classes/Enemy';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
 import {Wall} from '../classes/Wall';
 import {WinSwitch} from '../classes/WinSwitch';
-import {COLORS, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES} from '../constants';
+import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES} from '../constants';
 import {isDebug} from '../utils/environments';
 import {createLevelExits, createWinSwitch} from '../utils/setup';
 
+const immovableOptions = {
+  createCallback: (p) => {
+    if (p?.body instanceof Phaser.Physics.Arcade.Body) {
+      p.body.setImmovable(true);
+    }
+  },
+};
+
 export class GameScene extends Phaser.Scene {
   player;
+  enemies;
+  projectiles;
   walls;
   shadows;
   exits;
@@ -35,6 +47,10 @@ export class GameScene extends Phaser.Scene {
       frameWidth: PLAYER.LEGS_WIDTH,
       frameHeight: PLAYER.LEGS_HEIGHT,
     });
+    this.load.spritesheet('enemy-rifle-move', enemyRifleMove, {
+      frameWidth: ENEMY.WIDTH,
+      frameHeight: ENEMY.HEIGHT,
+    });
     this.load.image('exit-up', exitUpImage);
     this.load.image('exit-down', exitDownImage);
     this.load.image('winSwitch', winSwitchImage);
@@ -48,18 +64,13 @@ export class GameScene extends Phaser.Scene {
 
     this.add.tileSprite(PLAY_AREA.width / 2, PLAY_AREA.height / 2, PLAY_AREA.width, PLAY_AREA.height, 'steel-tileset');
 
-    const immovableOptions = {
-      createCallback: (p) => {
-        if (p?.body instanceof Phaser.Physics.Arcade.Body) {
-          p.body.setImmovable(true);
-        }
-      },
-    };
-
     this.walls = this.physics.add.group(immovableOptions);
     this.shadows = [];
+    this.enemies = this.physics.add.group(immovableOptions);
+    this.projectiles = this.physics.add.group(immovableOptions);
 
     this.addPlayer(startingInfo);
+    this.addEnemy();
     this.addWalls();
     this.addExits();
     this.addWinSwitch();
@@ -70,7 +81,12 @@ export class GameScene extends Phaser.Scene {
     // this.drawShadows();
 
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
+    // TODO: Figure out how to get the collision box to match angle
+    this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
     this.physics.add.collider(this.player, this.walls);
+    this.physics.add.collider(this.player, this.enemies);
+    this.physics.add.collider(this.enemies, this.walls);
+    this.physics.add.collider(this.enemies, this.exits);
     this.cameras.main.startFollow(this.player);
   }
 
@@ -170,7 +186,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   addExits() {
-    this.exits = this.physics.add.group();
+    this.exits = this.physics.add.group(immovableOptions);
     createLevelExits(window.gameState.currentLevel);
     window.gameState.levels[window.gameState.currentLevel].exits.forEach((exit) => {
       this.exits.add(
@@ -186,6 +202,16 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  addEnemy() {
+    const enemy = new Enemy({scene: this, x: 200, y: 200, key: 'enemy-rifle-move'});
+    enemy.play('walk');
+    this.enemies.add(enemy);
+  }
+
+  addProjectile(projectile) {
+    this.projectiles.add(projectile);
+  }
+
   addPlayer(startingInfo) {
     this.player = new Player({
       scene: this,
@@ -197,10 +223,13 @@ export class GameScene extends Phaser.Scene {
     this.player.play('walk');
   }
 
-  update() {
+  update(time) {
     if (this.player) {
       this.player.update();
     }
+    this.enemies.children.entries.forEach((enemy) => {
+      enemy.update(time);
+    });
     this.handleInput();
     this.clearShadows();
     this.drawShadows();
@@ -250,7 +279,8 @@ export class GameScene extends Phaser.Scene {
         const m2 = getNormalized({x: w2.x - p.x, y: w2.y - p.y});
 
         const graphics = this.add.graphics();
-        graphics.fillStyle(COLORS.SHADOW); //.setAlpha(0);
+        graphics.fillStyle(COLORS.SHADOW);
+        graphics.setDepth(DEPTH.SHADOWS);
         graphics.beginPath();
 
         graphics.moveTo(w1.x, w1.y);
@@ -274,7 +304,8 @@ export class GameScene extends Phaser.Scene {
 
   drawPeripheralShadows() {
     const graphics = this.add.graphics();
-    graphics.fillStyle(COLORS.SHADOW); //.setAlpha(0);
+    graphics.fillStyle(COLORS.SHADOW);
+    graphics.setDepth(DEPTH.SHADOWS);
     graphics.beginPath();
 
     graphics.arc(

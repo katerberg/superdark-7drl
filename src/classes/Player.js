@@ -1,5 +1,7 @@
 import * as Phaser from 'phaser';
 import {DEPTH, PLAYER} from '../constants';
+import {isDebug} from '../utils/environments';
+import {createFloatingText} from '../utils/visuals';
 import {PlayerLegs} from './PlayerLegs';
 
 export class Player extends Phaser.GameObjects.Sprite {
@@ -18,6 +20,8 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.setDisplayOrigin(xOrigin, yOrigin);
     this.setOrigin(xOrigin, yOrigin);
     scene.physics.world.enable(this);
+
+    this.body.setCircle(90);
     this.body.setCollideWorldBounds();
     scene.add.existing(this);
 
@@ -31,11 +35,15 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.legs.play('walk');
   }
 
+  handleHit(projectile) {
+    createFloatingText(this.scene, this.x, this.y, 'ouch', 'red');
+  }
+
   handleMovement() {
     const {up, down, left, right} = this.cursors;
 
     if (up?.isDown || down?.isDown || left?.isDown || right?.isDown) {
-      const moveSpeed = 150;
+      const moveSpeed = isDebug() ? 1500 : 150;
       const angleSpeed = 5;
       const speedMagnitude = up?.isDown ? moveSpeed : down?.isDown ? -moveSpeed : 0;
 
