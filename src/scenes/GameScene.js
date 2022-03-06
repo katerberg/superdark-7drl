@@ -1,20 +1,23 @@
 import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
+import enemyRifleMove from '../assets/enemy-rifle-move.png';
 import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
+import {Enemy} from '../classes/Enemy';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
 import {Wall} from '../classes/Wall';
 import {WinSwitch} from '../classes/WinSwitch';
-import {COLORS, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES} from '../constants';
+import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES} from '../constants';
 import {isDebug} from '../utils/environments';
 import {createLevelExits, createWinSwitch} from '../utils/setup';
 
 export class GameScene extends Phaser.Scene {
   player;
+  enemies;
   walls;
   shadows;
   exits;
@@ -34,6 +37,10 @@ export class GameScene extends Phaser.Scene {
     this.load.spritesheet('characterLegsWalk', characterLegsWalk, {
       frameWidth: PLAYER.LEGS_WIDTH,
       frameHeight: PLAYER.LEGS_HEIGHT,
+    });
+    this.load.spritesheet('enemy-rifle-move', enemyRifleMove, {
+      frameWidth: ENEMY.WIDTH,
+      frameHeight: ENEMY.HEIGHT,
     });
     this.load.image('exit-up', exitUpImage);
     this.load.image('exit-down', exitDownImage);
@@ -58,8 +65,10 @@ export class GameScene extends Phaser.Scene {
 
     this.walls = this.physics.add.group(immovableOptions);
     this.shadows = [];
+    this.enemies = this.physics.add.group();
 
     this.addPlayer(startingInfo);
+    this.addEnemy();
     this.addWalls();
     this.addExits();
     this.addWinSwitch();
@@ -124,6 +133,12 @@ export class GameScene extends Phaser.Scene {
         }),
       );
     });
+  }
+
+  addEnemy() {
+    const enemy = new Enemy({scene: this, x: 200, y: 200, key: 'enemy-rifle-move'});
+    enemy.play('walk');
+    this.enemies.add(enemy);
   }
 
   addPlayer(startingInfo) {
@@ -191,6 +206,7 @@ export class GameScene extends Phaser.Scene {
 
         const graphics = this.add.graphics();
         graphics.fillStyle(COLORS.SHADOW);
+        graphics.setDepth(DEPTH.SHADOWS);
         graphics.beginPath();
 
         graphics.moveTo(w1.x, w1.y);
@@ -215,6 +231,7 @@ export class GameScene extends Phaser.Scene {
   drawPeripheralShadows() {
     const graphics = this.add.graphics();
     graphics.fillStyle(COLORS.SHADOW);
+    graphics.setDepth(DEPTH.SHADOWS);
     graphics.beginPath();
 
     graphics.arc(

@@ -26,10 +26,20 @@ export const PLAYER = {
   LEGS_HEIGHT: 124,
 };
 
+export const ENEMY = {
+  WIDTH: 313,
+  HEIGHT: 206,
+  SCALE: 0.25,
+  LEGS_WIDTH: 172,
+  LEGS_HEIGHT: 124,
+};
+
 export const DEPTH = {
   DEFAULT: 0,
-  PLAYER: 1,
-  HUD: 2,
+  ENEMY: 1,
+  PLAYER: 2,
+  SHADOWS: 3,
+  HUD: 4,
 };
 
 export const GAME_STATUS = {
