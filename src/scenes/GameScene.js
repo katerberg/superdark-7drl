@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
 import ladderImage from '../assets/ladder.png';
+import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
@@ -30,6 +31,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('steel-tileset', steelTileset);
     this.load.spritesheet('character', characterMove, {frameWidth: PLAYER.WIDTH, frameHeight: PLAYER.HEIGHT});
     this.load.spritesheet('characterLegsWalk', characterLegsWalk, {
       frameWidth: PLAYER.LEGS_WIDTH,
@@ -43,8 +45,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(startingInfo) {
-    this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
+    this.cameras.main.setBackgroundColor(COLORS.SHADOW);
     this.physics.world.setBounds(PLAY_AREA.xOffset, PLAY_AREA.yOffset, PLAY_AREA.width, PLAY_AREA.height);
+
+    this.add.tileSprite(PLAY_AREA.width / 2, PLAY_AREA.height / 2, PLAY_AREA.width, PLAY_AREA.height, 'steel-tileset');
 
     const immovableOptions = {
       createCallback: (p) => {
