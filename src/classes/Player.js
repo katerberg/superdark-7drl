@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {PLAYER} from '../constants';
+import {DEPTH, PLAYER} from '../constants';
 import {PlayerLegs} from './PlayerLegs';
 
 export class Player extends Phaser.GameObjects.Sprite {
@@ -11,7 +11,7 @@ export class Player extends Phaser.GameObjects.Sprite {
 
     this.cursors = this.scene.input.keyboard.createCursorKeys();
     this.angle = angle || 0;
-    this.depth = 1;
+    this.depth = DEPTH.PLAYER;
     this.setDisplaySize(PLAYER.HEIGHT * PLAYER.SCALE, PLAYER.WIDTH * PLAYER.SCALE);
     const xOrigin = 0.45;
     const yOrigin = 0.47;

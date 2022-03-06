@@ -25,7 +25,19 @@ export const PLAYER = {
   LEGS_HEIGHT: 124,
 };
 
+export const DEPTH = {
+  DEFAULT: 0,
+  PLAYER: 1,
+  HUD: 2,
+};
+
+export const GAME_STATUS = {
+  WIN: 'won',
+  LOSE: 'lost',
+};
+
 export const SCENES = {
-  game: 'GameScene',
-  loading: 'LoadingScene',
+  HUD: 'HudScene',
+  GAME: 'GameScene',
+  LOADING: 'LoadingScene',
 };

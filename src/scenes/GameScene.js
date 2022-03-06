@@ -5,9 +5,10 @@ import ladderImage from '../assets/ladder.png';
 import winSwitchImage from '../assets/winSwitch.png';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
+import {Text} from '../classes/Text';
 import {Wall} from '../classes/Wall';
 import {WinSwitch} from '../classes/WinSwitch';
-import {COLORS, GAME, LEVELS, PLAYER, PLAY_AREA, SCENES} from '../constants';
+import {COLORS, DEPTH, GAME, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES} from '../constants';
 import {isDebug} from '../utils/environments';
 import {createLevelExits, createWinSwitch} from '../utils/setup';
 
@@ -18,10 +19,13 @@ export class GameScene extends Phaser.Scene {
   exits;
   winSwitch;
   levelKey;
+  useKey;
+  levelText;
+  gameEndText;
 
   constructor() {
     super({
-      key: SCENES.game,
+      key: SCENES.GAME,
     });
   }
 
@@ -35,6 +39,7 @@ export class GameScene extends Phaser.Scene {
     this.load.image('winSwitch', winSwitchImage);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.levelKey = this.input.keyboard.addKey(KeyCodes.L);
+    this.useKey = this.input.keyboard.addKey(KeyCodes.SPACE);
   }
 
   create(startingInfo) {
@@ -61,17 +66,23 @@ export class GameScene extends Phaser.Scene {
     // this.clearShadows();
     // this.drawShadows();
 
-    this.add
-      .text(0, GAME.height, `Level ${window.gameState.currentLevel}`, {
-        fontSize: '36px',
-      })
-      .setOrigin(0, 1);
+    this.levelText = new Text({scene: this, x: 0, y: GAME.height, text: `Level ${window.gameState.currentLevel}`});
+    this.levelText.setFontSize('36px');
+    this.levelText.setOrigin(0, 1);
+    this.levelText.setDepth(DEPTH.HUD);
+
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
     this.physics.add.collider(this.player, this.walls);
     this.cameras.main.startFollow(this.player);
   }
 
   handleInput() {
+    if (this.useKey.isDown) {
+      if (window.gameState.gameEnded) {
+        window.resetGame();
+        this.scene.start(SCENES.LOADING);
+      }
+    }
     if (isDebug()) {
       if (this.levelKey.isDown) {
         const {currentLevel} = window.gameState;
@@ -82,7 +93,7 @@ export class GameScene extends Phaser.Scene {
 
   changeLevel(level) {
     window.gameState.currentLevel = level;
-    this.scene.start(SCENES.game, {
+    this.scene.start(SCENES.GAME, {
       startingPosition: {
         x: this.player.body.x + PLAYER.WIDTH * PLAYER.SCALE,
         y: this.player.body.y + PLAYER.WIDTH * PLAYER.SCALE,
@@ -95,6 +106,23 @@ export class GameScene extends Phaser.Scene {
     const goingUp = window.gameState.currentLevel === exit.end;
 
     this.changeLevel(goingUp ? exit.start : exit.end);
+  }
+
+  handlePlayerWinSwitch() {
+    this.cameras.main.setBackgroundColor('rgba(0,0,0,0.6)');
+
+    window.gameState.gameEnded = GAME_STATUS.WIN;
+    this.gameEndText = new Text({
+      scene: this,
+      x: this.game.scale.width / 2,
+      y: this.game.scale.height * 0.4,
+      text: 'CRISIS AVERTED\nSPACE TO RESTART',
+    })
+      .setAlign('center')
+      .setColor('#ffffff')
+      .setDepth(DEPTH.HUD);
+
+    this.gameEndText.setPosition(this.game.scale.width / 2 - this.gameEndText.width / 2, this.game.scale.height * 0.4);
   }
 
   addWalls() {
@@ -133,6 +161,7 @@ export class GameScene extends Phaser.Scene {
     if (this.player) {
       this.player.update();
     }
+    this.handleInput();
     this.clearShadows();
     this.drawShadows();
   }
@@ -143,6 +172,8 @@ export class GameScene extends Phaser.Scene {
     }
     createWinSwitch();
     this.winSwitch = new WinSwitch({scene: this, x: window.gameState.winSwitch.x, y: window.gameState.winSwitch.y});
+
+    this.physics.add.overlap(this.player, this.winSwitch, () => this.handlePlayerWinSwitch());
   }
 
   clearShadows() {
