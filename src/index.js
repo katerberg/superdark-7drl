@@ -13,6 +13,7 @@ const config = {
     arcade: {
       debug: false,
       gravity: {y: 0},
+      enableBody: true,
     },
   },
   scene: [LoadingScene, GameScene, HudScene],

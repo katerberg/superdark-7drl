@@ -16,6 +16,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
     scene.physics.world.enable(this);
     this.body.setCollideWorldBounds();
+    this.body.setCircle(30);
     scene.add.existing(this);
 
     this.anims.create({

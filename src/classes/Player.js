@@ -19,6 +19,8 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.setDisplayOrigin(xOrigin, yOrigin);
     this.setOrigin(xOrigin, yOrigin);
     scene.physics.world.enable(this);
+
+    this.body.setCircle(90);
     this.body.setCollideWorldBounds();
     scene.add.existing(this);
 

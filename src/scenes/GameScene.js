@@ -15,6 +15,14 @@ import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SC
 import {isDebug} from '../utils/environments';
 import {createLevelExits, createWinSwitch} from '../utils/setup';
 
+const immovableOptions = {
+  createCallback: (p) => {
+    if (p?.body instanceof Phaser.Physics.Arcade.Body) {
+      p.body.setImmovable(true);
+    }
+  },
+};
+
 export class GameScene extends Phaser.Scene {
   player;
   enemies;
@@ -55,17 +63,9 @@ export class GameScene extends Phaser.Scene {
 
     this.add.tileSprite(PLAY_AREA.width / 2, PLAY_AREA.height / 2, PLAY_AREA.width, PLAY_AREA.height, 'steel-tileset');
 
-    const immovableOptions = {
-      createCallback: (p) => {
-        if (p?.body instanceof Phaser.Physics.Arcade.Body) {
-          p.body.setImmovable(true);
-        }
-      },
-    };
-
     this.walls = this.physics.add.group(immovableOptions);
     this.shadows = [];
-    this.enemies = this.physics.add.group();
+    this.enemies = this.physics.add.group(immovableOptions);
 
     this.addPlayer(startingInfo);
     this.addEnemy();
@@ -80,6 +80,9 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
     this.physics.add.collider(this.player, this.walls);
+    this.physics.add.collider(this.player, this.enemies);
+    this.physics.add.collider(this.enemies, this.walls);
+    this.physics.add.collider(this.enemies, this.exits);
     this.cameras.main.startFollow(this.player);
   }
 
@@ -119,7 +122,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   addExits() {
-    this.exits = this.physics.add.group();
+    this.exits = this.physics.add.group(immovableOptions);
     createLevelExits(window.gameState.currentLevel);
     window.gameState.levels[window.gameState.currentLevel].exits.forEach((exit) => {
       this.exits.add(
