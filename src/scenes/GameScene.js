@@ -61,9 +61,7 @@ export class GameScene extends Phaser.Scene {
     if (this.player) {
       this.player.update();
     }
-    this.shadows.forEach((shadow) => {
-      shadow.destroy();
-    });
+    this.clearShadows();
     this.drawShadows();
   }
 
@@ -112,21 +110,19 @@ export class GameScene extends Phaser.Scene {
     this.player.play('walk');
   }
 
-  drawShadows() {
-    //! get player position (p)
-    //!    for each rectangle:
-    //      get pairs of line segments
-    //      for each segment:
-    //        get the vector from (p) to the first point (r1), normalized (m1)
-    //        getBoundsIntersection(r1, m1) (b1, boundnum1)
-    //        get the vector from (p) to the second point (r2), normalized (m2)
-    //        getBoundsIntersection(r2, m2) (b2, boundnum2)
-    //        find intermediate points using boundnum1 and boundnum2
-    //        draw from r1 to b1 to intermediate points to b2 to r2 to r1
-    // (also figure out divide by zero errors for slope)
-
+  clearShadows() {
+    this.shadows.forEach((shadow) => {
+      shadow.destroy();
+    });
     this.shadows = [];
+  }
 
+  drawShadows() {
+    this.drawObstacleShadows();
+    this.drawPeripheralShadows();
+  }
+
+  drawObstacleShadows() {
     const p = {x: this.player.x, y: this.player.y};
     const dirtyMultiplier = 10000;
 
@@ -145,7 +141,7 @@ export class GameScene extends Phaser.Scene {
         const m2 = getNormalized({x: w2.x - p.x, y: w2.y - p.y});
 
         const graphics = this.add.graphics();
-        graphics.fillStyle(0x999999);
+        graphics.fillStyle(COLORS.SHADOW);
         graphics.beginPath();
 
         graphics.moveTo(w1.x, w1.y);
@@ -159,6 +155,35 @@ export class GameScene extends Phaser.Scene {
         this.shadows.push(graphics);
       }
     });
+  }
+
+  drawPeripheralShadows() {
+    const graphics = this.add.graphics();
+    graphics.fillStyle(COLORS.SHADOW);
+    graphics.beginPath();
+
+    graphics.arc(
+      this.player.x,
+      this.player.y,
+      75,
+      Phaser.Math.DegToRad(this.player.angle - 100),
+      Phaser.Math.DegToRad(this.player.angle + 100),
+      true,
+    );
+
+    graphics.arc(
+      this.player.x,
+      this.player.y,
+      5000,
+      Phaser.Math.DegToRad(this.player.angle + 100),
+      Phaser.Math.DegToRad(this.player.angle - 100),
+      false,
+    );
+
+    graphics.closePath();
+    graphics.fillPath();
+
+    this.shadows.push(graphics);
   }
 }
 

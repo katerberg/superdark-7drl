@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import {PLAYER} from '../constants';
-import * as misc from '../utils/misc';
 import {PlayerLegs} from './PlayerLegs';
 
 export class Player extends Phaser.GameObjects.Sprite {
@@ -44,8 +43,8 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.angle -= left?.isDown ? angleSpeed : 0;
       this.angle += right?.isDown ? angleSpeed : 0;
       this.body.setVelocity(
-        speedMagnitude * Math.cos(misc.toRadians(this.angle)),
-        speedMagnitude * Math.sin(misc.toRadians(this.angle)),
+        speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),
+        speedMagnitude * Math.sin(Phaser.Math.DegToRad(this.angle)),
       );
     } else {
       this.body.setVelocity(0);
