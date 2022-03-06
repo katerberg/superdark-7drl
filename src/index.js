@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime';
 import * as Phaser from 'phaser';
 import {GAME, LEVELS} from './constants';
-import {GameScene, LoadingScene} from './scenes';
+import {HudScene, GameScene, LoadingScene} from './scenes';
 
 const config = {
   type: Phaser.AUTO,
@@ -15,7 +15,7 @@ const config = {
       gravity: {y: 0},
     },
   },
-  scene: [LoadingScene, GameScene],
+  scene: [LoadingScene, GameScene, HudScene],
 };
 
 const getInitialGameState = () => {
