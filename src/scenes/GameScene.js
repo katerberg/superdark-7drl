@@ -2,18 +2,21 @@ import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
 import ladderImage from '../assets/ladder.png';
+import winSwitchImage from '../assets/winSwitch.png';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
 import {Wall} from '../classes/Wall';
+import {WinSwitch} from '../classes/WinSwitch';
 import {COLORS, GAME, LEVELS, PLAYER, PLAY_AREA, SCENES} from '../constants';
 import {isDebug} from '../utils/environments';
-import {addLevelExits} from '../utils/setup';
+import {createLevelExits, createWinSwitch} from '../utils/setup';
 
 export class GameScene extends Phaser.Scene {
   player;
   walls;
   shadows;
   exits;
+  winSwitch;
   levelKey;
 
   constructor() {
@@ -29,6 +32,7 @@ export class GameScene extends Phaser.Scene {
       frameHeight: PLAYER.LEGS_HEIGHT,
     });
     this.load.image('exit', ladderImage);
+    this.load.image('winSwitch', winSwitchImage);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.levelKey = this.input.keyboard.addKey(KeyCodes.L);
   }
@@ -51,6 +55,7 @@ export class GameScene extends Phaser.Scene {
     this.addPlayer(startingInfo);
     this.addWalls();
     this.addExits();
+    this.addWinSwitch();
 
     this.add
       .text(0, GAME.height, `Level ${window.gameState.currentLevel}`, {
@@ -94,7 +99,7 @@ export class GameScene extends Phaser.Scene {
 
   addExits() {
     this.exits = this.physics.add.group();
-    addLevelExits(window.gameState.currentLevel);
+    createLevelExits(window.gameState.currentLevel);
     window.gameState.levels[window.gameState.currentLevel].exits.forEach((exit) => {
       this.exits.add(
         new Exit({
@@ -125,6 +130,14 @@ export class GameScene extends Phaser.Scene {
     }
     this.clearShadows();
     this.drawShadows();
+  }
+
+  addWinSwitch() {
+    if (window.gameState.currentLevel !== LEVELS.MAX_LEVEL) {
+      return;
+    }
+    createWinSwitch();
+    this.winSwitch = new WinSwitch({scene: this, x: window.gameState.winSwitch.x, y: window.gameState.winSwitch.y});
   }
 
   clearShadows() {
