@@ -18,24 +18,34 @@ const config = {
   scene: [LoadingScene, GameScene],
 };
 
-window.gameState = {
-  currentLevel: 1,
-  winSwitch: {
-    //x,y
-  },
-  levels: {
-    // 1: {
-    //   walls: [{x1, x2, y1, y2}]
-    //   blockingThings: [{x, y}]
-    //   enemies: [{x, y, type, hp}]
-    //   items: [{x, y, type}]
-    //   exits: [{x, y, start, end}]
-    // },
-  },
+const getInitialGameState = () => {
+  const initialGameState = {
+    currentLevel: 1,
+    gameEnded: undefined, // GAME_STATUS
+    winSwitch: {
+      //x,y
+    },
+    levels: {
+      // 1: {
+      //   walls: [{x1, x2, y1, y2}]
+      //   blockingThings: [{x, y}]
+      //   enemies: [{x, y, type, hp}]
+      //   items: [{x, y, type}]
+      //   exits: [{x, y, start, end}]
+      // },
+    },
+  };
+  for (let i = LEVELS.MIN_LEVEL; i <= LEVELS.MAX_LEVEL; i++) {
+    initialGameState.levels[i] = {exits: []};
+  }
+  return initialGameState;
 };
-for (let i = LEVELS.MIN_LEVEL; i <= LEVELS.MAX_LEVEL; i++) {
-  window.gameState.levels[i] = {exits: []};
-}
+
+window.resetGame = () => {
+  window.gameState = getInitialGameState();
+};
+
+window.gameState = getInitialGameState();
 
 export class Game extends Phaser.Game {}
 
