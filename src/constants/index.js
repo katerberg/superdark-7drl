@@ -6,8 +6,8 @@ export const GAME = {
 };
 
 export const PLAY_AREA = {
-  width: 1200,
-  height: 800,
+  width: 2500,
+  height: 2500,
   xOffset: 0,
   yOffset: 0,
 };

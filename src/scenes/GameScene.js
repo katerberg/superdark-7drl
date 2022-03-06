@@ -68,6 +68,7 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0, 1);
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
     this.physics.add.collider(this.player, this.walls);
+    this.cameras.main.startFollow(this.player);
   }
 
   handleInput() {
