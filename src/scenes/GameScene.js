@@ -212,6 +212,11 @@ export class GameScene extends Phaser.Scene {
     this.projectiles.add(projectile);
   }
 
+  removeProjectiles(enemy) {
+    const filtered = this.projectiles.children.entries.filter((p) => p.enemy === enemy);
+    filtered.forEach((p) => this.projectiles.remove(p, true, true));
+  }
+
   addPlayer(startingInfo) {
     this.player = new Player({
       scene: this,

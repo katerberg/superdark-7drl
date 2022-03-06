@@ -7,6 +7,8 @@ import {Projectile} from './Projectile';
 export class Enemy extends Phaser.GameObjects.Sprite {
   lastShot = 2000;
   shotDelay = 1000;
+  shotDuration = 100;
+
   constructor({scene, x, y, key}) {
     super(scene, x, y, key);
     this.angle = 180;
@@ -36,9 +38,15 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   update(time) {
     if (time > this.lastShot + this.shotDelay) {
       this.lastShot = time;
-      this.scene.addProjectile(new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle}));
+      this.scene.addProjectile(
+        new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, enemy: this}),
+      );
       createFloatingText(this.scene, this.x, this.y, 'boom');
     }
+    if (time > this.lastShot + this.shotDuration) {
+      this.scene.removeProjectiles(this);
+    }
+
     this.setAngle(this.angle + 0.25);
   }
 }
