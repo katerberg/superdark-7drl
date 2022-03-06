@@ -18,7 +18,7 @@ export class PlayerLegs extends Phaser.GameObjects.Sprite {
     this.anims.create({
       key: 'walk',
       frameRate: 20,
-      frames: this.anims.generateFrameNumbers('characterLegsWalk', {start: 0, end: 20}),
+      frames: this.anims.generateFrameNumbers('characterLegsWalk', {start: 0, end: 19}),
       repeat: -1,
     });
   }
