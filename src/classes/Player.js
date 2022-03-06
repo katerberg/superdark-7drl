@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import {PLAYER} from '../constants';
 import * as misc from '../utils/misc';
 import {PlayerLegs} from './PlayerLegs';
 
@@ -6,14 +7,14 @@ export class Player extends Phaser.GameObjects.Sprite {
   legs;
   cursors;
 
-  constructor({scene, x, y, key}) {
+  constructor({scene, x, y, key, angle}) {
     super(scene, x, y, key);
 
     this.cursors = this.scene.input.keyboard.createCursorKeys();
-    this.angle = 0;
+    this.angle = angle || 0;
+    console.log('angle', angle);
     this.depth = 1;
-    const scale = 0.25;
-    this.setDisplaySize(216 * scale, 253 * scale);
+    this.setDisplaySize(PLAYER.HEIGHT * PLAYER.SCALE, PLAYER.WIDTH * PLAYER.SCALE);
     const xOrigin = 0.45;
     const yOrigin = 0.47;
     this.setDisplayOrigin(xOrigin, yOrigin);
@@ -28,7 +29,7 @@ export class Player extends Phaser.GameObjects.Sprite {
       frames: this.anims.generateFrameNumbers('character', {start: 0, end: 19}),
       repeat: -1,
     });
-    this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, scale, player: this});
+    this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, player: this});
     this.legs.play('walk');
   }
 
@@ -56,6 +57,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   handleInput() {
     this.handleMovement();
   }
+
   update() {
     this.handleInput();
   }

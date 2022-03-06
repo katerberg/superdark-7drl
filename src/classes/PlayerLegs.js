@@ -1,11 +1,12 @@
 import * as Phaser from 'phaser';
+import {PLAYER} from '../constants';
 
 export class PlayerLegs extends Phaser.GameObjects.Sprite {
   player;
 
-  constructor({scene, x, y, key, scale, player}) {
+  constructor({scene, x, y, key, player}) {
     super(scene, x, y, key);
-    this.setScale(scale);
+    this.setScale(PLAYER.SCALE);
     const xOrigin = player.originY;
     const yOrigin = player.originY;
     this.setDisplayOrigin(xOrigin, yOrigin);
