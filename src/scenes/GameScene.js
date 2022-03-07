@@ -15,6 +15,7 @@ import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SC
 import {isDebug} from '../utils/environments';
 import {getNormalized} from '../utils/math';
 import {createLevelExits, createWinSwitch} from '../utils/setup';
+import {getTimeAwareOfPauses} from '../utils/time';
 
 const immovableOptions = {
   createCallback: (p) => {
@@ -209,7 +210,7 @@ export class GameScene extends Phaser.Scene {
     if (window.gameState.paused) {
       this.scene.pause();
     }
-    const timeAwareOfPauses = time - window.gameState.pauseTime;
+    const timeAwareOfPauses = getTimeAwareOfPauses(time);
     if (this.player) {
       this.player.update();
     }

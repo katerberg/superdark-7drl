@@ -8,11 +8,9 @@ export class HudScene extends Phaser.Scene {
   gameEndText;
   timerText;
   timerCsText;
-  //TODO: Get rid of the pause button
-  lastPause = 0; // temp to prevent pause flickers while I use the P key
   timeCop = 0; // holder for the time in between pauses
   useKey;
-  pauseKey;
+  playerKeys;
 
   constructor() {
     super({
@@ -23,7 +21,16 @@ export class HudScene extends Phaser.Scene {
   preload() {
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.useKey = this.input.keyboard.addKey(KeyCodes.SPACE);
-    this.pauseKey = this.input.keyboard.addKey(KeyCodes.P);
+    this.playerKeys = this.input.keyboard.addKeys({
+      w: KeyCodes.W,
+      s: KeyCodes.S,
+      a: KeyCodes.A,
+      d: KeyCodes.D,
+      up: KeyCodes.UP,
+      down: KeyCodes.DOWN,
+      left: KeyCodes.LEFT,
+      right: KeyCodes.RIGHT,
+    });
   }
 
   create() {
@@ -42,7 +49,7 @@ export class HudScene extends Phaser.Scene {
       .setColor(COLORS.TIMER_NORMAL)
       .setOrigin(0, 1)
       .setDepth(DEPTH.HUD);
-    this.timeCop = 0;
+    this.timeCop = window.gameState.startTime;
     this.lastPause = 0;
     this.drawTimer(window.gameState.startTime);
   }
@@ -57,7 +64,6 @@ export class HudScene extends Phaser.Scene {
   }
 
   handleGameEnd(status) {
-    this.cameras.main.setBackgroundColor('rgba(0,0,0,0.6)');
     this.game.scene.pause(SCENES.GAME);
     window.gameState.paused = true;
     window.gameState.gameEnded = status;
@@ -76,30 +82,24 @@ export class HudScene extends Phaser.Scene {
     this.gameEndText.setPosition(this.game.scale.width / 2 - this.gameEndText.width / 2, this.game.scale.height * 0.4);
   }
 
-  handleInput(currentTime) {
-    if (this.useKey.isDown) {
-      if (window.gameState.gameEnded) {
+  handleInput(time) {
+    if (window.gameState.gameEnded) {
+      if (this.useKey.isDown) {
         this.game.events.off(EVENTS.GAME_END, this.handleGameEnd);
         this.game.events.off(EVENTS.LEVEL_CHANGE, this.handleLevelChange);
         this.scene.start(SCENES.LOADING);
       }
+      return;
     }
-
-    if (this.pauseKey.isDown) {
-      if (currentTime < this.lastPause + 1000) {
-        return;
-      }
-      this.lastPause = currentTime;
-      window.gameState.paused = !window.gameState.paused;
+    if (Object.values(this.playerKeys).some((v) => v.isDown)) {
       if (window.gameState.paused) {
-        this.timeCop = currentTime;
-        this.game.scene.pause(SCENES.GAME);
-      } else {
-        const timeOffset = currentTime - this.timeCop;
-        window.gameState.pauseTime += timeOffset;
-        this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
+        window.gameState.pauseTime += time - this.timeCop;
+        window.gameState.paused = false;
         this.game.scene.resume(SCENES.GAME);
       }
+    } else if (!window.gameState.paused) {
+      this.timeCop = time;
+      window.gameState.paused = true;
     }
   }
 
