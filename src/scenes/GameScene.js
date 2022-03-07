@@ -71,7 +71,7 @@ export class GameScene extends Phaser.Scene {
     this.projectiles = this.physics.add.group(immovableOptions);
 
     this.addPlayer(startingInfo);
-    this.addEnemy();
+    //this.addEnemy();
     this.addWalls();
     this.addExits();
     this.addWinSwitch();
@@ -89,6 +89,8 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.walls);
     this.physics.add.collider(this.enemies, this.exits);
     this.cameras.main.startFollow(this.player);
+
+    this.drawRooms();
   }
 
   handleInput() {
@@ -141,69 +143,6 @@ export class GameScene extends Phaser.Scene {
     this.getWalls(100, 200, 250, 380).forEach((w) => {
       this.walls.add(w);
     });
-    // this.walls.add(new WallContainer({scene: this, x: 100, y: 250, wallWidth: 20, wallHeight: 20}));
-    // let yPos = 0;
-
-    // //walls top to bottom
-    // this.walls.add(new Wall({scene: this, x: 1250, y: yPos, width: 2500, height: 10}));
-
-    // yPos = 625;
-    // this.walls.add(new Wall({scene: this, x: 0 + 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 625 - 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 625 + 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 1250 - 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 1250 + 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 1875 - 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 1875 + 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 2500 - 125, y: yPos, width: 250, height: 10}));
-
-    // yPos = 1250;
-    // this.walls.add(new Wall({scene: this, x: 625 / 2, y: yPos, width: 625, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 2500 - 625 / 2, y: yPos, width: 625, height: 10}));
-
-    // yPos = 1875;
-    // this.walls.add(new Wall({scene: this, x: 0 + 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 625 - 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 625 + 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 1250 - 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 1250 + 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 1875 - 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 1875 + 125, y: yPos, width: 250, height: 10}));
-    // this.walls.add(new Wall({scene: this, x: 2500 - 125, y: yPos, width: 250, height: 10}));
-
-    // yPos = 2500;
-    // this.walls.add(new Wall({scene: this, x: 1250, y: yPos, width: 2500, height: 10}));
-
-    // //walls left to right
-    // let xPos = 0;
-    // this.walls.add(new Wall({scene: this, x: xPos, y: 1250, height: 2500, width: 10}));
-
-    // xPos = 625;
-    // this.walls.add(new Wall({scene: this, y: 0 + 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 625 - 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 625 + 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 1250 - 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 1250 + 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 1875 - 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 1875 + 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 2500 - 125, x: xPos, height: 250, width: 10}));
-
-    // xPos = 1250;
-    // this.walls.add(new Wall({scene: this, y: 625 / 2, x: xPos, height: 625, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 2500 - 625 / 2, x: xPos, height: 625, width: 10}));
-
-    // xPos = 1875;
-    // this.walls.add(new Wall({scene: this, y: 0 + 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 625 - 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 625 + 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 1250 - 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 1250 + 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 1875 - 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 1875 + 125, x: xPos, height: 250, width: 10}));
-    // this.walls.add(new Wall({scene: this, y: 2500 - 125, x: xPos, height: 250, width: 10}));
-
-    // xPos = 2500;
-    // this.walls.add(new Wall({scene: this, y: 1250, x: xPos, height: 2500, width: 10}));
   }
 
   addExits() {
@@ -363,4 +302,346 @@ export class GameScene extends Phaser.Scene {
 
     this.shadows.push(graphics);
   }
+
+  drawRooms() {
+    const minSize = 150;
+    const maxSize = 600;
+    const doorSize = 100;
+
+    let rooms = [{angleBegin: 0, angleEnd: 360, radiusBegin: 200, radiusEnd: 1250, doors: noDoors()}];
+
+    let splittable;
+    do {
+      splittable = false;
+      const newRooms = [];
+      //eslint-disable-next-line no-loop-func
+      rooms.forEach((r) => {
+        const radiusDiff = r.radiusEnd - r.radiusBegin;
+        const angleDiff = r.angleEnd - r.angleBegin;
+        const midRadius = (r.radiusBegin + r.radiusEnd) / 2;
+
+        const height = radiusDiff;
+        const width = angleToArcLength(angleDiff, midRadius);
+        // const width = 2 * Math.PI * r.radiusBegin * (angleDiff / 360);
+
+        // const minRadius = minSize;
+        // // const minAngle = (360 * minSize) / (2 * Math.PI * midRadius);
+        // const minAngle = arcLengthToAngle(minSize, r.radiusBegin);
+
+        if (height <= maxSize && width <= maxSize) {
+          newRooms.push(r);
+        } else if (height > width && isHorizontalWallPlaceable(r, minSize)) {
+          // room is tall, split it vertically
+          splittable = true;
+          // const newRadius = r.radiusBegin + minRadius + Math.random() * (radiusDiff - 2 * minRadius);
+          const newRadius = randomInRange(getVerticalRange(r, minSize));
+          const splitDoorSet = splitDoorsVertically(r, newRadius);
+          const newWallWidth = angleToArcLength(angleDiff, newRadius);
+          const newDoorOffset = Math.random() * (newWallWidth - doorSize);
+          const newDoorBegin = r.angleBegin + arcLengthToAngle(newDoorOffset, newRadius);
+          const newDoorEnd = newDoorBegin + arcLengthToAngle(doorSize, newRadius);
+          const newDoor = [newDoorBegin, newDoorEnd];
+          splitDoorSet.bottomRoomDoors.top = newDoor;
+          splitDoorSet.topRoomDoors.bottom = newDoor;
+
+          newRooms.push({
+            angleBegin: r.angleBegin,
+            angleEnd: r.angleEnd,
+            radiusBegin: r.radiusBegin,
+            radiusEnd: newRadius,
+            doors: splitDoorSet.bottomRoomDoors,
+          });
+          newRooms.push({
+            angleBegin: r.angleBegin,
+            angleEnd: r.angleEnd,
+            radiusBegin: newRadius,
+            radiusEnd: r.radiusEnd,
+            doors: splitDoorSet.topRoomDoors,
+          });
+        } else if (isVerticalWallPlaceable(r, minSize)) {
+          // room is wide, split it horizontally
+          splittable = true;
+
+          // const newAngle = r.angleBegin + minAngle + Math.random() * (angleDiff - 2 * minAngle);
+          const newAngle = randomInRange(getHorizontalRange(r, minSize));
+          const splitDoorSet = splitDoorsHorizontally(r, newAngle);
+          const newDoorOffset = Math.random() * (radiusDiff - doorSize);
+          const newDoorBegin = r.radiusBegin + newDoorOffset;
+          const newDoorEnd = newDoorBegin + doorSize;
+          const newDoor = [newDoorBegin, newDoorEnd];
+          splitDoorSet.leftRoomDoors.right = newDoor;
+          splitDoorSet.rightRoomDoors.left = newDoor;
+
+          newRooms.push({
+            angleBegin: r.angleBegin,
+            angleEnd: newAngle,
+            radiusBegin: r.radiusBegin,
+            radiusEnd: r.radiusEnd,
+            doors: splitDoorSet.leftRoomDoors,
+          });
+          newRooms.push({
+            angleBegin: newAngle,
+            angleEnd: r.angleEnd,
+            radiusBegin: r.radiusBegin,
+            radiusEnd: r.radiusEnd,
+            doors: splitDoorSet.rightRoomDoors,
+          });
+        } else {
+          // can't split room b/c of doors
+          newRooms.push(r);
+        }
+      });
+      rooms = newRooms;
+    } while (splittable);
+
+    const drawCenter = {x: PLAY_AREA.width / 2, y: PLAY_AREA.height / 2};
+    const drawScale = 1;
+    const wallWidth = 10;
+    const graphics = this.add.graphics();
+
+    rooms.forEach((r) => {
+      // const color = parseInt(Math.floor(Math.random() * 16777215).toString(16), 16);
+      // graphics.lineStyle(2,color,1);
+      graphics.lineStyle(wallWidth, 0x000000, 1);
+      // graphics.fillStyle(color);
+      graphics.beginPath();
+      graphics.arc(
+        drawCenter.x,
+        drawCenter.y,
+        r.radiusBegin * drawScale,
+        offsetDegToRad(r.angleBegin),
+        offsetDegToRad(r.angleEnd),
+        false,
+      );
+      graphics.arc(
+        drawCenter.x,
+        drawCenter.y,
+        r.radiusEnd * drawScale,
+        offsetDegToRad(r.angleEnd),
+        offsetDegToRad(r.angleBegin),
+        true,
+      );
+      graphics.closePath();
+      graphics.strokePath();
+      // graphics.fillPath();
+    });
+
+    rooms.forEach((r) => {
+      Object.entries(r.doors).forEach((entry) => {
+        const [direction, door] = entry;
+        if (door) {
+          graphics.lineStyle(wallWidth, 0xaaaaaa, 1);
+          graphics.beginPath();
+          if (direction === 'left') {
+            graphics.arc(
+              drawCenter.x,
+              drawCenter.y,
+              door[0] * drawScale,
+              offsetDegToRad(r.angleBegin),
+              offsetDegToRad(r.angleBegin),
+              false,
+            );
+            graphics.arc(
+              drawCenter.x,
+              drawCenter.y,
+              door[1] * drawScale,
+              offsetDegToRad(r.angleBegin),
+              offsetDegToRad(r.angleBegin),
+              true,
+            );
+          } else if (direction === 'right') {
+            graphics.arc(
+              drawCenter.x,
+              drawCenter.y,
+              door[0] * drawScale,
+              offsetDegToRad(r.angleEnd),
+              offsetDegToRad(r.angleEnd),
+              false,
+            );
+            graphics.arc(
+              drawCenter.x,
+              drawCenter.y,
+              door[1] * drawScale,
+              offsetDegToRad(r.angleEnd),
+              offsetDegToRad(r.angleEnd),
+              true,
+            );
+          } else if (direction === 'bottom') {
+            graphics.arc(
+              drawCenter.x,
+              drawCenter.y,
+              r.radiusBegin * drawScale,
+              offsetDegToRad(door[0]),
+              offsetDegToRad(door[1]),
+              false,
+            );
+          } else if (direction === 'top') {
+            graphics.arc(
+              drawCenter.x,
+              drawCenter.y,
+              r.radiusEnd * drawScale,
+              offsetDegToRad(door[0]),
+              offsetDegToRad(door[1]),
+              false,
+            );
+          }
+          graphics.closePath();
+          graphics.strokePath();
+        }
+      });
+    });
+  }
+}
+
+function offsetDegToRad(deg) {
+  return Phaser.Math.DegToRad(deg - 90);
+}
+
+function angleToArcLength(angle, radius) {
+  return 2 * Math.PI * radius * (angle / 360);
+}
+
+function arcLengthToAngle(arclength, radius) {
+  return (arclength * 360) / (2 * Math.PI * radius);
+}
+
+function rangeSize(oldRange) {
+  const range = normalizedRange(oldRange);
+  let size = 0;
+  for (let i = 0; i < range.length; i++) {
+    size += range[i][1] - range[i][0];
+  }
+  return size;
+}
+
+// // ranges look like [[200,550],[600,900],...,[1885.4,2000]]
+function normalizedRange(oldRange) {
+  let range = oldRange;
+  range.sort((a, b) => a[0] - b[0]);
+  let overlaps;
+  do {
+    overlaps = false;
+    const newRange = [];
+    for (let i = 0; i < range.length; i++) {
+      if (i < range.length - 1 && range[i][1] >= range[i + 1][0]) {
+        overlaps = true;
+        newRange.push([range[i][0], Math.max(range[i][1], range[i + 1][1])]);
+        i++;
+      } else {
+        newRange.push(range[i]);
+      }
+    }
+    range = newRange;
+  } while (overlaps);
+
+  return range;
+}
+
+function invertedRange(oldRange) {
+  const range = normalizedRange(oldRange);
+  const invertRange = [];
+  for (let i = 0; i < range.length - 1; i++) {
+    invertRange.push([range[i][1], range[i + 1][0]]);
+  }
+  return invertRange;
+}
+
+function randomInRange(oldRange) {
+  const range = normalizedRange(oldRange);
+  const magnitude = rangeSize(range);
+  let rand = Math.random() * magnitude;
+  for (let i = 0; i < range.length; i++) {
+    const rangeletMagnitude = range[i][1] - range[i][0];
+    if (rand > rangeletMagnitude) {
+      rand -= rangeletMagnitude;
+    } else {
+      return range[i][0] + rand;
+    }
+  }
+
+  //oh no
+  return -1;
+}
+
+// {...,doors: {left: [begin, end], right: [begin, end], ...}}
+
+function getVerticalRange(room, minSize) {
+  const range = [];
+  range.push([room.radiusBegin, room.radiusBegin + minSize]);
+  range.push([room.radiusEnd - minSize, room.radiusEnd]);
+  if (room.doors.left) {
+    range.push(room.doors.left);
+  }
+  if (room.doors.right) {
+    range.push(room.doors.right);
+  }
+  return invertedRange(range);
+}
+
+function isHorizontalWallPlaceable(room, minSize) {
+  return getVerticalRange(room, minSize).length > 0;
+}
+
+function getHorizontalRange(room, minSize) {
+  const range = [];
+  const minAngle = arcLengthToAngle(minSize, room.radiusBegin);
+  range.push([room.angleBegin, room.angleBegin + minAngle]);
+  range.push([room.angleEnd - minAngle, room.angleEnd]);
+  if (room.doors.top) {
+    range.push(room.doors.top);
+  }
+  if (room.doors.bottom) {
+    range.push(room.doors.bottom);
+  }
+  return invertedRange(range);
+}
+
+function isVerticalWallPlaceable(room, minSize) {
+  return getHorizontalRange(room, minSize).length > 0;
+}
+
+function splitDoorsVertically(room, radius) {
+  const bottomRoomDoors = noDoors();
+  const topRoomDoors = noDoors();
+  bottomRoomDoors.bottom = room.doors.bottom;
+  topRoomDoors.top = room.doors.top;
+
+  if (room.doors.left && room.doors.left[0] > radius) {
+    topRoomDoors.left = room.doors.left;
+  } else {
+    bottomRoomDoors.left = room.doors.left;
+  }
+
+  if (room.doors.right && room.doors.right[0] > radius) {
+    topRoomDoors.right = room.doors.right;
+  } else {
+    bottomRoomDoors.right = room.doors.right;
+  }
+
+  return {bottomRoomDoors, topRoomDoors};
+}
+
+function splitDoorsHorizontally(room, angle) {
+  const leftRoomDoors = noDoors();
+  const rightRoomDoors = noDoors();
+  leftRoomDoors.left = room.doors.left;
+  rightRoomDoors.right = room.doors.right;
+
+  if (room.doors.bottom && room.doors.bottom[0] > angle) {
+    rightRoomDoors.bottom = room.doors.bottom;
+  } else {
+    leftRoomDoors.bottom = room.doors.bottom;
+  }
+
+  if (room.doors.top && room.doors.top[0] > angle) {
+    rightRoomDoors.top = room.doors.top;
+  } else {
+    leftRoomDoors.top = room.doors.top;
+  }
+
+  return {leftRoomDoors, rightRoomDoors};
+}
+
+function noDoors() {
+  return {left: null, right: null, bottom: null, top: null};
 }
