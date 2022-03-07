@@ -7,7 +7,7 @@ import {PlayerLegs} from './PlayerLegs';
 export class Player extends Phaser.GameObjects.Sprite {
   legs;
   cursors;
-  hp = PLAYER.MAX_HP;
+  hp = isDebug() ? PLAYER.MAX_HP_DEBUG : PLAYER.MAX_HP;
 
   constructor({scene, x, y, key, angle}) {
     super(scene, x, y, key);

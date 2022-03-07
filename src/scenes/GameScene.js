@@ -34,6 +34,7 @@ export class GameScene extends Phaser.Scene {
   winSwitch;
   levelKey;
   gameEndText;
+  rooms;
 
   constructor() {
     super({
@@ -74,12 +75,10 @@ export class GameScene extends Phaser.Scene {
     this.addEnemy();
     this.addExits();
     this.addWinSwitch();
-    this.drawRooms();
+    this.addWalls();
+    this.addRooms();
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
-    //temp moved here to figure out shadow decay
-    // this.clearShadows();
-    // this.drawShadows();
 
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
     // TODO: Figure out how to get the collision box to match angle
@@ -123,7 +122,7 @@ export class GameScene extends Phaser.Scene {
     this.game.events.emit(EVENTS.GAME_END, GAME_STATUS.WIN);
   }
 
-  getWalls(x1, x2, y1, y2) {
+  makeWalls(x1, y1, x2, y2) {
     const walls = [];
     const xDistance = x2 - x1;
     const yDistance = y2 - y1;
@@ -138,8 +137,22 @@ export class GameScene extends Phaser.Scene {
     return walls;
   }
 
+  makeCurvyWalls(angleBegin, angleEnd, radius) {
+    const walls = [];
+    const angleDiff = angleEnd - angleBegin;
+    const wallLength = angleToArcLength(angleDiff, radius);
+    const nodeDiameter = WALLS.nodeRadius * 2;
+    const numberOfNodes = Math.ceil(wallLength / nodeDiameter);
+    for (let i = 0; i < numberOfNodes; i++) {
+      const wallAngle = angleBegin + (i / numberOfNodes) * angleDiff;
+      const wallPosition = polarToCartesian(wallAngle, radius);
+      walls.push(new Wall({scene: this, x: wallPosition.x, y: wallPosition.y}));
+    }
+    return walls;
+  }
+
   addWalls() {
-    this.getWalls(100, 200, 250, 380).forEach((w) => {
+    this.makeWalls(100, 250, 200, 380).forEach((w) => {
       this.walls.add(w);
     });
   }
@@ -308,37 +321,31 @@ export class GameScene extends Phaser.Scene {
     this.shadows.push(graphics);
   }
 
-  drawRooms() {
+  addRooms() {
     const minSize = 150;
     const maxSize = 600;
     const doorSize = 100;
 
-    let rooms = [{angleBegin: 0, angleEnd: 360, radiusBegin: 300, radiusEnd: 1250, doors: noDoors()}];
+    this.rooms = [{angleBegin: 0, angleEnd: 360, radiusBegin: 300, radiusEnd: 1250, doors: noDoors()}];
 
     let splittable;
     do {
       splittable = false;
       const newRooms = [];
       //eslint-disable-next-line no-loop-func
-      rooms.forEach((r) => {
+      this.rooms.forEach((r) => {
         const radiusDiff = r.radiusEnd - r.radiusBegin;
         const angleDiff = r.angleEnd - r.angleBegin;
         const midRadius = (r.radiusBegin + r.radiusEnd) / 2;
 
         const height = radiusDiff;
         const width = angleToArcLength(angleDiff, midRadius);
-        // const width = 2 * Math.PI * r.radiusBegin * (angleDiff / 360);
-
-        // const minRadius = minSize;
-        // // const minAngle = (360 * minSize) / (2 * Math.PI * midRadius);
-        // const minAngle = arcLengthToAngle(minSize, r.radiusBegin);
 
         if (height <= maxSize && width <= maxSize) {
           newRooms.push(r);
-        } else if (height > width && isHorizontalWallPlaceable(r, minSize)) {
-          // room is tall, split it vertically
+        } else if (isHorizontalWallPlaceable(r, minSize) && (height > width || !isVerticalWallPlaceable(r, minSize))) {
+          // room is tall or room is not splittable horizontally, then split it vertically
           splittable = true;
-          // const newRadius = r.radiusBegin + minRadius + Math.random() * (radiusDiff - 2 * minRadius);
           const newRadius = randomInRange(getVerticalRange(r, minSize));
           const splitDoorSet = splitDoorsVertically(r, newRadius);
           const newWallWidth = angleToArcLength(angleDiff, newRadius);
@@ -364,10 +371,8 @@ export class GameScene extends Phaser.Scene {
             doors: splitDoorSet.topRoomDoors,
           });
         } else if (isVerticalWallPlaceable(r, minSize)) {
-          // room is wide, split it horizontally
+          // otherwise split it horizontally
           splittable = true;
-
-          // const newAngle = r.angleBegin + minAngle + Math.random() * (angleDiff - 2 * minAngle);
           const newAngle = randomInRange(getHorizontalRange(r, minSize));
           const splitDoorSet = splitDoorsHorizontally(r, newAngle);
           const newDoorOffset = Math.random() * (radiusDiff - doorSize);
@@ -396,15 +401,53 @@ export class GameScene extends Phaser.Scene {
           newRooms.push(r);
         }
       });
-      rooms = newRooms;
+      this.rooms = newRooms;
     } while (splittable);
 
+    this.drawFloorplan();
+
+    this.rooms.forEach((room) => {
+      if (room.doors.left) {
+        let beginWall = polarToCartesian(room.angleBegin, room.radiusBegin);
+        let endWall = polarToCartesian(room.angleBegin, room.doors.left[0]);
+        this.makeWalls(beginWall.x, beginWall.y, endWall.x, endWall.y).forEach((w) => {
+          this.walls.add(w);
+        });
+        beginWall = polarToCartesian(room.angleBegin, room.doors.left[1]);
+        endWall = polarToCartesian(room.angleBegin, room.radiusEnd);
+        this.makeWalls(beginWall.x, beginWall.y, endWall.x, endWall.y).forEach((w) => {
+          this.walls.add(w);
+        });
+      } else {
+        const beginWall = polarToCartesian(room.angleBegin, room.radiusBegin);
+        const endWall = polarToCartesian(room.angleBegin, room.radiusEnd);
+        this.makeWalls(beginWall.x, beginWall.y, endWall.x, endWall.y).forEach((w) => {
+          this.walls.add(w);
+        });
+      }
+
+      if (room.doors.bottom) {
+        this.makeCurvyWalls(room.angleBegin, room.doors.bottom[0], room.radiusBegin).forEach((w) => {
+          this.walls.add(w);
+        });
+        this.makeCurvyWalls(room.doors.bottom[1], room.angleEnd, room.radiusBegin).forEach((w) => {
+          this.walls.add(w);
+        });
+      } else {
+        this.makeCurvyWalls(room.angleBegin, room.angleEnd, room.radiusBegin).forEach((w) => {
+          this.walls.add(w);
+        });
+      }
+    });
+  }
+
+  drawFloorplan() {
     const drawCenter = {x: PLAY_AREA.width / 2, y: PLAY_AREA.height / 2};
     const drawScale = 1;
     const wallWidth = 10;
     const graphics = this.add.graphics();
 
-    rooms.forEach((r) => {
+    this.rooms.forEach((r) => {
       // const color = parseInt(Math.floor(Math.random() * 16777215).toString(16), 16);
       // graphics.lineStyle(2,color,1);
       graphics.lineStyle(wallWidth, 0x000000, 1);
@@ -431,7 +474,7 @@ export class GameScene extends Phaser.Scene {
       // graphics.fillPath();
     });
 
-    rooms.forEach((r) => {
+    this.rooms.forEach((r) => {
       Object.entries(r.doors).forEach((entry) => {
         const [direction, door] = entry;
         if (door) {
@@ -508,6 +551,12 @@ function angleToArcLength(angle, radius) {
 
 function arcLengthToAngle(arclength, radius) {
   return (arclength * 360) / (2 * Math.PI * radius);
+}
+
+function polarToCartesian(angle, radius) {
+  const x = PLAY_AREA.width / 2 + radius * Math.cos(offsetDegToRad(angle));
+  const y = PLAY_AREA.height / 2 + radius * Math.sin(offsetDegToRad(angle));
+  return {x, y};
 }
 
 function rangeSize(oldRange) {
