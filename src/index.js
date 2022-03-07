@@ -27,8 +27,6 @@ const getInitialGameState = () => {
     winSwitch: {
       //x,y
     },
-    pauseTime: 0,
-    paused: false,
     levels: {
       // 1: {
       //   walls: [{x1, x2, y1, y2}]

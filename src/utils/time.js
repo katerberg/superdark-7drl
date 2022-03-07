@@ -2,7 +2,7 @@ import {TIME} from '../constants';
 import {minimumTwoDigits} from '../utils/math';
 
 export function getMsRemaining(currentTime) {
-  return TIME.TOTAL - currentTime + window.gameState.pauseTime;
+  return TIME.TOTAL - currentTime;
 }
 
 export function getTimeDisplayMain(msRemaining) {

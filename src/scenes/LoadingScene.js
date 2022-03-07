@@ -11,9 +11,14 @@ export class LoadingScene extends Phaser.Scene {
 
   update() {
     this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
+    const isFirstTime = !window.gameState.gameEnded;
+    if (isFirstTime) {
+      window.resetGame();
+      this.scene.scene.time.update(0);
+    }
     // if (isDebug()) {
-    this.scene.start(SCENES.GAME);
-    this.scene.start(SCENES.HUD);
+    this.scene.start(SCENES.GAME, {isFirstTime});
+    this.scene.start(SCENES.HUD, {isFirstTime});
     //   // this.scene.start(SCENES.GAME);
     //   // this.scene.bringToTop(SCENES.HUD);
     // } else {

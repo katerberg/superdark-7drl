@@ -72,7 +72,7 @@ export class GameScene extends Phaser.Scene {
 
     this.addPlayer(startingInfo);
     this.addEnemy();
-    this.addWalls();
+    // this.addWalls();
     this.addExits();
     this.addWinSwitch();
 
@@ -80,6 +80,7 @@ export class GameScene extends Phaser.Scene {
     //temp moved here to figure out shadow decay
     // this.clearShadows();
     // this.drawShadows();
+    this.drawRooms();
 
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
     // TODO: Figure out how to get the collision box to match angle
@@ -90,8 +91,18 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.walls);
     this.physics.add.collider(this.enemies, this.exits);
     this.cameras.main.startFollow(this.player);
+    if (startingInfo.isFirstTime) {
+      this.initListeners();
+    }
+  }
 
-    this.drawRooms();
+  initListeners() {
+    this.events.on('resume', (data, timer) => console.log('resuming', data, timer));
+    this.game.events.on(EVENTS.GAME_END, this.handleGameEnd, this);
+  }
+
+  handleGameEnd() {
+    this.scene.scene.time.update(0);
   }
 
   handleInput() {
@@ -194,8 +205,13 @@ export class GameScene extends Phaser.Scene {
     this.player.play('walk');
   }
 
-  update(time) {
-    const timeAwareOfPauses = time - window.gameState.pauseTime;
+  resume(data) {
+    console.log('resuming');
+    console.log(data);
+  }
+
+  update() {
+    const timeAwareOfPauses = this.scene.get(SCENES.HUD).timer.getElapsed();
     if (this.player) {
       this.player.update();
     }
