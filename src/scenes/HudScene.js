@@ -27,6 +27,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   create() {
+    this.initListeners();
     this.levelText = new Text({scene: this, x: 0, y: GAME.height, text: `Level ${window.gameState.currentLevel}`})
       .setFontSize('36px')
       .setOrigin(0, 1)
@@ -41,9 +42,9 @@ export class HudScene extends Phaser.Scene {
       .setColor(COLORS.TIMER_NORMAL)
       .setOrigin(0, 1)
       .setDepth(DEPTH.HUD);
-    this.initListeners();
     this.timeCop = 0;
     this.lastPause = 0;
+    this.drawTimer(window.gameState.startTime);
   }
 
   initListeners() {
@@ -92,7 +93,6 @@ export class HudScene extends Phaser.Scene {
       window.gameState.paused = !window.gameState.paused;
       if (window.gameState.paused) {
         this.timeCop = currentTime;
-        this.cameras.main.setBackgroundColor('rgba(0,0,0,0.6)');
         this.game.scene.pause(SCENES.GAME);
       } else {
         const timeOffset = currentTime - this.timeCop;
@@ -103,19 +103,24 @@ export class HudScene extends Phaser.Scene {
     }
   }
 
+  drawTimer(currentTime) {
+    const msRemaining = getMsRemaining(currentTime);
+    this.timerText.setText(getTimeDisplayMain(msRemaining));
+    this.timerCsText.setText(getTimeDisplayCs(msRemaining));
+    if (msRemaining < 300_000) {
+      this.timerText.setColor(COLORS.TIMER_DANGER);
+      this.timerCsText.setColor(COLORS.TIMER_DANGER);
+    }
+  }
+
   updateTimer(currentTime) {
     if (!window.gameState.paused) {
-      const msRemaining = getMsRemaining(currentTime);
-      this.timerText.setText(getTimeDisplayMain(msRemaining));
-      this.timerCsText.setText(getTimeDisplayCs(msRemaining));
-      if (msRemaining < 300_000) {
-        this.timerText.setColor(COLORS.TIMER_DANGER);
-        this.timerCsText.setColor(COLORS.TIMER_DANGER);
-      }
+      this.drawTimer(currentTime);
     }
   }
 
   update(time) {
+    this.cameras.main.setBackgroundColor(window.gameState.paused ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0)');
     this.handleInput(time);
     this.updateTimer(time);
   }

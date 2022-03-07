@@ -194,6 +194,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time) {
+    if (window.gameState.paused) {
+      this.scene.pause();
+    }
     const timeAwareOfPauses = time - window.gameState.pauseTime;
     if (this.player) {
       this.player.update();

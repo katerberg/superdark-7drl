@@ -29,7 +29,7 @@ const getInitialGameState = (startTime) => {
     },
     startTime,
     pauseTime: 0,
-    paused: false,
+    paused: true,
     levels: {
       // 1: {
       //   walls: [{x1, x2, y1, y2}]
