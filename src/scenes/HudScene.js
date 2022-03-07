@@ -42,6 +42,8 @@ export class HudScene extends Phaser.Scene {
       .setOrigin(0, 1)
       .setDepth(DEPTH.HUD);
     this.initListeners();
+    this.timeCop = 0;
+    this.lastPause = 0;
   }
 
   initListeners() {
@@ -56,8 +58,7 @@ export class HudScene extends Phaser.Scene {
   handleGameEnd(status) {
     this.cameras.main.setBackgroundColor('rgba(0,0,0,0.6)');
     this.game.scene.pause(SCENES.GAME);
-    window.gameState.paused = !window.gameState.paused;
-
+    window.gameState.paused = true;
     window.gameState.gameEnded = status;
 
     const restartMessage = 'SPACE TO RESTART';
@@ -79,7 +80,6 @@ export class HudScene extends Phaser.Scene {
       if (window.gameState.gameEnded) {
         this.game.events.off(EVENTS.GAME_END, this.handleGameEnd);
         this.game.events.off(EVENTS.LEVEL_CHANGE, this.handleLevelChange);
-        window.resetGame();
         this.scene.start(SCENES.LOADING);
       }
     }

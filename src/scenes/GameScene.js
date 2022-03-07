@@ -72,7 +72,6 @@ export class GameScene extends Phaser.Scene {
 
     this.addPlayer(startingInfo);
     this.addEnemy();
-    this.addWalls();
     this.addExits();
     this.addWinSwitch();
 
