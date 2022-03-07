@@ -47,6 +47,6 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       this.scene.removeProjectiles(this);
     }
 
-    this.setAngle(this.angle + 0.25);
+    this.setAngle(this.angle - 0.25);
   }
 }

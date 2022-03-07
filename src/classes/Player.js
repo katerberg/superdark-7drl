@@ -37,6 +37,7 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   handleHit(projectile) {
     createFloatingText(this.scene, this.x, this.y, 'ouch', 'red');
+    this.scene.removeProjectile(projectile);
   }
 
   handleMovement() {

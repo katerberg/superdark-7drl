@@ -84,6 +84,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
     // TODO: Figure out how to get the collision box to match angle
     this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
+    this.physics.add.overlap(this.walls, this.projectiles, (walls, projectile) => this.removeProjectile(projectile));
     this.physics.add.collider(this.player, this.walls);
     this.physics.add.collider(this.player, this.enemies);
     this.physics.add.collider(this.enemies, this.walls);
@@ -233,9 +234,13 @@ export class GameScene extends Phaser.Scene {
     this.projectiles.add(projectile);
   }
 
+  removeProjectile(projectile) {
+    this.projectiles.remove(projectile, true, true);
+  }
+
   removeProjectiles(enemy) {
     const filtered = this.projectiles.children.entries.filter((p) => p.enemy === enemy);
-    filtered.forEach((p) => this.projectiles.remove(p, true, true));
+    filtered.forEach((p) => this.removeProjectile(p));
   }
 
   addPlayer(startingInfo) {
