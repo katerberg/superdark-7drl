@@ -1,12 +1,13 @@
 import * as Phaser from 'phaser';
 import {Text} from '../classes/Text';
 import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, SCENES} from '../constants';
-import {getTimeDisplayMain} from '../utils/time';
+import {getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
 
 export class HudScene extends Phaser.Scene {
   levelText;
   gameEndText;
   timerText;
+  timerCsText;
   //TODO: Get rid of the pause button
   lastPause = 0; // temp to prevent pause flickers while I use the P key
   timeCop = 0; // holder for the time in between pauses
@@ -35,6 +36,11 @@ export class HudScene extends Phaser.Scene {
       .setColor(COLORS.TIMER_NORMAL)
       .setOrigin(1, 1)
       .setDepth(DEPTH.HUD);
+    this.timerCsText = new Text({scene: this, x: GAME.width - 50, y: GAME.height - 10, text: getTimeDisplayCs(0)})
+      .setFontSize('24px')
+      .setColor(COLORS.TIMER_NORMAL)
+      .setOrigin(0, 1)
+      .setDepth(DEPTH.HUD);
     this.initListeners();
   }
 
@@ -50,6 +56,7 @@ export class HudScene extends Phaser.Scene {
   handleGameEnd(status) {
     this.cameras.main.setBackgroundColor('rgba(0,0,0,0.6)');
     this.game.scene.pause(SCENES.GAME);
+    window.gameState.paused = !window.gameState.paused;
 
     window.gameState.gameEnded = status;
 
@@ -99,6 +106,7 @@ export class HudScene extends Phaser.Scene {
   updateTimer(currentTime) {
     if (!window.gameState.paused) {
       this.timerText.setText(getTimeDisplayMain(currentTime));
+      this.timerCsText.setText(getTimeDisplayCs(currentTime));
     }
   }
 
