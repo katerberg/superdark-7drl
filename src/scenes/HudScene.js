@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import {Text} from '../classes/Text';
-import {DEPTH, EVENTS, GAME, SCENES} from '../constants';
+import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, SCENES} from '../constants';
 
 export class HudScene extends Phaser.Scene {
   levelText;
@@ -39,14 +39,16 @@ export class HudScene extends Phaser.Scene {
     this.game.scene.pause(SCENES.GAME);
 
     window.gameState.gameEnded = status;
+
+    const restartMessage = 'SPACE TO RESTART';
     this.gameEndText = new Text({
       scene: this,
       x: this.game.scale.width / 2,
       y: this.game.scale.height * 0.4,
-      text: 'CRISIS AVERTED\nSPACE TO RESTART',
+      text: status === GAME_STATUS.WIN ? `CRISIS AVERTED\n${restartMessage}` : `WASTED\n${restartMessage}`,
     })
       .setAlign('center')
-      .setColor('#ffffff')
+      .setColor(status === GAME_STATUS.WIN ? COLORS.MESSAGE_WIN : COLORS.MESSAGE_LOSE)
       .setDepth(DEPTH.HUD);
 
     this.gameEndText.setPosition(this.game.scale.width / 2 - this.gameEndText.width / 2, this.game.scale.height * 0.4);

@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {DEPTH, PLAYER} from '../constants';
+import {DEPTH, EVENTS, GAME_STATUS, PLAYER} from '../constants';
 import {isDebug} from '../utils/environments';
 import {createFloatingText} from '../utils/visuals';
 import {PlayerLegs} from './PlayerLegs';
@@ -7,6 +7,7 @@ import {PlayerLegs} from './PlayerLegs';
 export class Player extends Phaser.GameObjects.Sprite {
   legs;
   cursors;
+  hp = PLAYER.MAX_HP;
 
   constructor({scene, x, y, key, angle}) {
     super(scene, x, y, key);
@@ -37,7 +38,11 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   handleHit(projectile) {
     createFloatingText(this.scene, this.x, this.y, 'ouch', 'red');
+    this.hp -= projectile.damage;
     this.scene.removeProjectile(projectile);
+    if (this.hp <= 0) {
+      this.scene.game.events.emit(EVENTS.GAME_END, GAME_STATUS.LOSE);
+    }
   }
 
   handleMovement() {

@@ -3,6 +3,7 @@ import {DEPTH, ENEMY} from '../constants';
 
 export class Projectile extends Phaser.GameObjects.Ellipse {
   enemy;
+  damage = ENEMY.PROJECTILE_DAMAGE;
 
   constructor({scene, x, y, angle, enemy}) {
     super(scene, x, y, 30, 30, undefined, 0);
