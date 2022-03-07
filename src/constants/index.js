@@ -39,6 +39,10 @@ export const ENEMY = {
   LEGS_HEIGHT: 124,
 };
 
+export const TIME = {
+  TOTAL: 900000,
+};
+
 export const GAME_STATUS = {
   WIN: 'won',
   LOSE: 'lost',
@@ -47,5 +51,6 @@ export const GAME_STATUS = {
 export const SCENES = {
   HUD: 'HudScene',
   GAME: 'GameScene',
+  TIMER: 'TimerScene',
   LOADING: 'LoadingScene',
 };

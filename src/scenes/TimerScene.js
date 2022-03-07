@@ -2,14 +2,10 @@ import * as Phaser from 'phaser';
 import {Text} from '../classes/Text';
 import {COLORS, DEPTH, EVENTS, GAME, SCENES, TIME} from '../constants';
 
-export class HudScene extends Phaser.Scene {
-  levelText;
-  gameEndText;
-  timerText;
-
+export class TimerScene extends Phaser.Scene {
   constructor() {
     super({
-      key: SCENES.HUD,
+      key: SCENES.TIMER,
     });
   }
 
@@ -19,15 +15,6 @@ export class HudScene extends Phaser.Scene {
   }
 
   create() {
-    this.levelText = new Text({scene: this, x: 0, y: GAME.height, text: `Level ${window.gameState.currentLevel}`})
-      .setFontSize('36px')
-      .setOrigin(0, 1)
-      .setDepth(DEPTH.HUD);
-    this.timerText = new Text({scene: this, x: GAME.width - 50, y: GAME.height, text: this.getTimeDisplayMain()})
-      .setFontSize('36px')
-      .setColor(COLORS.TIMER_NORMAL)
-      .setOrigin(1, 1)
-      .setDepth(DEPTH.HUD);
     this.initListeners();
   }
 
@@ -93,3 +80,4 @@ export class HudScene extends Phaser.Scene {
     this.updateTimer();
   }
 }
+

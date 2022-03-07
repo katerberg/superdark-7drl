@@ -1,4 +1,7 @@
 export const COLORS = {
   BACKGROUND: '#cfcfcf',
   SHADOW: '#000000',
+  TIMER_NORMAL: '#FFFFFF',
+  TIMER_WARNING: '#F0D500',
+  TIMER_DANGER: '#F32013',
 };
