@@ -11,8 +11,9 @@ import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
 import {Wall} from '../classes/Wall';
 import {WinSwitch} from '../classes/WinSwitch';
-import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES} from '../constants';
+import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES, WALLS} from '../constants';
 import {isDebug} from '../utils/environments';
+import {getNormalized} from '../utils/math';
 import {createLevelExits, createWinSwitch} from '../utils/setup';
 
 const immovableOptions = {
@@ -113,6 +114,7 @@ export class GameScene extends Phaser.Scene {
   handlePlayerExit(exit) {
     const goingUp = window.gameState.currentLevel === exit.end;
 
+    this.walls.add(new Wall({scene: this, x: 200, y: 400, width: 200, height: 80}));
     this.changeLevel(goingUp ? exit.start : exit.end);
   }
 
@@ -120,69 +122,88 @@ export class GameScene extends Phaser.Scene {
     this.game.events.emit(EVENTS.GAME_END, GAME_STATUS.WIN);
   }
 
+  getWalls(x1, x2, y1, y2) {
+    const walls = [];
+    const xDistance = x2 - x1;
+    const yDistance = y2 - y1;
+    const distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+    const nodeDiameter = WALLS.nodeRadius * 2;
+    const numberOfNodes = Math.ceil(distance / nodeDiameter);
+    const nodeDistanceX = xDistance / numberOfNodes;
+    const nodeDistanceY = yDistance / numberOfNodes;
+    for (let i = 0; i < numberOfNodes; i++) {
+      walls.push(new Wall({scene: this, x: x1 + i * nodeDistanceX, y: y1 + i * nodeDistanceY}));
+    }
+    return walls;
+  }
+
   addWalls() {
-    let yPos = 0;
+    this.getWalls(100, 200, 250, 380).forEach((w) => {
+      this.walls.add(w);
+    });
+    // this.walls.add(new WallContainer({scene: this, x: 100, y: 250, wallWidth: 20, wallHeight: 20}));
+    // let yPos = 0;
 
-    //walls top to bottom
-    this.walls.add(new Wall({scene: this, x: 1250, y: yPos, width: 2500, height: 10}));
+    // //walls top to bottom
+    // this.walls.add(new Wall({scene: this, x: 1250, y: yPos, width: 2500, height: 10}));
 
-    yPos = 625;
-    this.walls.add(new Wall({scene: this, x: 0 + 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 625 - 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 625 + 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 1250 - 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 1250 + 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 1875 - 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 1875 + 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 2500 - 125, y: yPos, width: 250, height: 10}));
+    // yPos = 625;
+    // this.walls.add(new Wall({scene: this, x: 0 + 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 625 - 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 625 + 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 1250 - 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 1250 + 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 1875 - 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 1875 + 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 2500 - 125, y: yPos, width: 250, height: 10}));
 
-    yPos = 1250;
-    this.walls.add(new Wall({scene: this, x: 625 / 2, y: yPos, width: 625, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 2500 - 625 / 2, y: yPos, width: 625, height: 10}));
+    // yPos = 1250;
+    // this.walls.add(new Wall({scene: this, x: 625 / 2, y: yPos, width: 625, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 2500 - 625 / 2, y: yPos, width: 625, height: 10}));
 
-    yPos = 1875;
-    this.walls.add(new Wall({scene: this, x: 0 + 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 625 - 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 625 + 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 1250 - 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 1250 + 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 1875 - 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 1875 + 125, y: yPos, width: 250, height: 10}));
-    this.walls.add(new Wall({scene: this, x: 2500 - 125, y: yPos, width: 250, height: 10}));
+    // yPos = 1875;
+    // this.walls.add(new Wall({scene: this, x: 0 + 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 625 - 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 625 + 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 1250 - 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 1250 + 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 1875 - 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 1875 + 125, y: yPos, width: 250, height: 10}));
+    // this.walls.add(new Wall({scene: this, x: 2500 - 125, y: yPos, width: 250, height: 10}));
 
-    yPos = 2500;
-    this.walls.add(new Wall({scene: this, x: 1250, y: yPos, width: 2500, height: 10}));
+    // yPos = 2500;
+    // this.walls.add(new Wall({scene: this, x: 1250, y: yPos, width: 2500, height: 10}));
 
-    //walls left to right
-    let xPos = 0;
-    this.walls.add(new Wall({scene: this, x: xPos, y: 1250, height: 2500, width: 10}));
+    // //walls left to right
+    // let xPos = 0;
+    // this.walls.add(new Wall({scene: this, x: xPos, y: 1250, height: 2500, width: 10}));
 
-    xPos = 625;
-    this.walls.add(new Wall({scene: this, y: 0 + 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 625 - 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 625 + 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 1250 - 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 1250 + 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 1875 - 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 1875 + 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 2500 - 125, x: xPos, height: 250, width: 10}));
+    // xPos = 625;
+    // this.walls.add(new Wall({scene: this, y: 0 + 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 625 - 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 625 + 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 1250 - 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 1250 + 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 1875 - 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 1875 + 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 2500 - 125, x: xPos, height: 250, width: 10}));
 
-    xPos = 1250;
-    this.walls.add(new Wall({scene: this, y: 625 / 2, x: xPos, height: 625, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 2500 - 625 / 2, x: xPos, height: 625, width: 10}));
+    // xPos = 1250;
+    // this.walls.add(new Wall({scene: this, y: 625 / 2, x: xPos, height: 625, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 2500 - 625 / 2, x: xPos, height: 625, width: 10}));
 
-    xPos = 1875;
-    this.walls.add(new Wall({scene: this, y: 0 + 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 625 - 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 625 + 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 1250 - 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 1250 + 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 1875 - 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 1875 + 125, x: xPos, height: 250, width: 10}));
-    this.walls.add(new Wall({scene: this, y: 2500 - 125, x: xPos, height: 250, width: 10}));
+    // xPos = 1875;
+    // this.walls.add(new Wall({scene: this, y: 0 + 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 625 - 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 625 + 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 1250 - 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 1250 + 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 1875 - 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 1875 + 125, x: xPos, height: 250, width: 10}));
+    // this.walls.add(new Wall({scene: this, y: 2500 - 125, x: xPos, height: 250, width: 10}));
 
-    xPos = 2500;
-    this.walls.add(new Wall({scene: this, y: 1250, x: xPos, height: 2500, width: 10}));
+    // xPos = 2500;
+    // this.walls.add(new Wall({scene: this, y: 1250, x: xPos, height: 2500, width: 10}));
   }
 
   addExits() {
@@ -204,7 +225,7 @@ export class GameScene extends Phaser.Scene {
 
   addEnemy() {
     const enemy = new Enemy({scene: this, x: 200, y: 200, key: 'enemy-rifle-move'});
-    enemy.play('walk');
+    enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }
 
@@ -262,7 +283,7 @@ export class GameScene extends Phaser.Scene {
 
   drawShadows() {
     this.drawObstacleShadows();
-    this.drawPeripheralShadows();
+    // this.drawPeripheralShadows();
   }
 
   drawObstacleShadows() {
@@ -342,9 +363,4 @@ export class GameScene extends Phaser.Scene {
 
     this.shadows.push(graphics);
   }
-}
-
-function getNormalized(vector) {
-  const magnitude = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2));
-  return {x: vector.x / magnitude, y: vector.y / magnitude};
 }

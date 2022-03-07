@@ -19,6 +19,10 @@ export const LEVELS = {
   MAX_LEVEL: 10,
 };
 
+export const WALLS = {
+  nodeRadius: 10,
+};
+
 export const PLAYER = {
   WIDTH: 253,
   HEIGHT: 216,
