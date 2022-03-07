@@ -43,7 +43,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     const {up, down, left, right} = this.cursors;
 
     if (up?.isDown || down?.isDown || left?.isDown || right?.isDown) {
-      const moveSpeed = isDebug() ? 1500 : 150;
+      const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : PLAYER.SPEED;
       const angleSpeed = 5;
       const speedMagnitude = up?.isDown ? moveSpeed : down?.isDown ? -moveSpeed : 0;
 
