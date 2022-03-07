@@ -75,6 +75,7 @@ export class GameScene extends Phaser.Scene {
     this.addWalls();
     this.addExits();
     this.addWinSwitch();
+    this.drawRooms();
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
     //temp moved here to figure out shadow decay
@@ -90,8 +91,6 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.walls);
     this.physics.add.collider(this.enemies, this.exits);
     this.cameras.main.startFollow(this.player);
-
-    this.drawRooms();
   }
 
   handleInput() {
@@ -203,8 +202,8 @@ export class GameScene extends Phaser.Scene {
       enemy.update(timeAwareOfPauses);
     });
     this.handleInput();
-    this.clearShadows();
-    this.drawShadows();
+    // this.clearShadows();
+    // this.drawShadows();
   }
 
   addWinSwitch() {
@@ -315,7 +314,7 @@ export class GameScene extends Phaser.Scene {
     const maxSize = 600;
     const doorSize = 100;
 
-    let rooms = [{angleBegin: 0, angleEnd: 360, radiusBegin: 200, radiusEnd: 1250, doors: noDoors()}];
+    let rooms = [{angleBegin: 0, angleEnd: 360, radiusBegin: 300, radiusEnd: 1250, doors: noDoors()}];
 
     let splittable;
     do {

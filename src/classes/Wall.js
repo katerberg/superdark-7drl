@@ -9,5 +9,6 @@ export class Wall extends Phaser.GameObjects.Ellipse {
     scene.add.existing(this);
     this.setOrigin(0.5);
     this.body.setCircle(WALLS.nodeRadius);
+    this.setVisible(false);
   }
 }
