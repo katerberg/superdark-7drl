@@ -1,18 +1,23 @@
 import * as Phaser from 'phaser';
-import {DEPTH} from '../constants';
+import {DEPTH, ENEMY} from '../constants';
 
-export class Projectile extends Phaser.GameObjects.Rectangle {
+export class Projectile extends Phaser.GameObjects.Ellipse {
   enemy;
 
   constructor({scene, x, y, angle, enemy}) {
-    super(scene, x, y, 5000, 1, 0xcc5555);
+    super(scene, x, y, 30, 30, undefined, 0);
     this.depth = DEPTH.PROJECTILE;
-    this.setOrigin(0);
 
     scene.physics.world.enable(this);
-    scene.add.existing(this);
-    this.angle = angle;
+
+    this.setAngle(angle);
     this.enemy = enemy;
-    // TODO: Figure out how to get the collision box to match
+    scene.add.existing(this);
+  }
+
+  update() {
+    const xVelocity = Math.cos((this.angle * Math.PI) / 180) * ENEMY.PROJECTILE_SPEED;
+    const yVelocity = Math.sin((this.angle * Math.PI) / 180) * ENEMY.PROJECTILE_SPEED;
+    this.body.setVelocity(xVelocity, yVelocity);
   }
 }

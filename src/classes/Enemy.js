@@ -6,8 +6,8 @@ import {Projectile} from './Projectile';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
   lastShot = 2000;
-  shotDelay = 1000;
-  shotDuration = 100;
+  shotDelay = ENEMY.SHOT_DELAY;
+  shotDuration = ENEMY.PROJECTILE_DURATION;
 
   constructor({scene, x, y, key}) {
     super(scene, x, y, key);
