@@ -20,13 +20,14 @@ const config = {
   scene: [LoadingScene, GameScene, HudScene],
 };
 
-const getInitialGameState = () => {
+const getInitialGameState = (startTime) => {
   const initialGameState = {
     currentLevel: 1,
     gameEnded: undefined, // GAME_STATUS
     winSwitch: {
       //x,y
     },
+    startTime,
     pauseTime: 0,
     paused: false,
     levels: {
@@ -45,8 +46,8 @@ const getInitialGameState = () => {
   return initialGameState;
 };
 
-window.resetGame = () => {
-  window.gameState = getInitialGameState();
+window.resetGame = (startTime = 0) => {
+  window.gameState = getInitialGameState(startTime);
 };
 
 window.gameState = getInitialGameState();
