@@ -193,11 +193,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time) {
+    const timeAwareOfPauses = time - window.gameState.pauseTime;
     if (this.player) {
       this.player.update();
     }
     this.enemies.children.entries.forEach((enemy) => {
-      enemy.update(time);
+      enemy.update(timeAwareOfPauses);
     });
     this.handleInput();
     this.clearShadows();

@@ -25,6 +25,10 @@ export const WALLS = {
   nodeRadius: 10,
 };
 
+export const TIME = {
+  TOTAL: 900000,
+};
+
 export const GAME_STATUS = {
   WIN: 'won',
   LOSE: 'lost',

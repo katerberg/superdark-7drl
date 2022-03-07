@@ -1,10 +1,17 @@
 import * as Phaser from 'phaser';
 import {Text} from '../classes/Text';
 import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, SCENES} from '../constants';
+import {getTimeDisplayMain} from '../utils/time';
 
 export class HudScene extends Phaser.Scene {
   levelText;
   gameEndText;
+  timerText;
+  //TODO: Get rid of the pause button
+  lastPause = 0; // temp to prevent pause flickers while I use the P key
+  timeCop = 0; // holder for the time in between pauses
+  useKey;
+  pauseKey;
 
   constructor() {
     super({
@@ -15,12 +22,18 @@ export class HudScene extends Phaser.Scene {
   preload() {
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.useKey = this.input.keyboard.addKey(KeyCodes.SPACE);
+    this.pauseKey = this.input.keyboard.addKey(KeyCodes.P);
   }
 
   create() {
     this.levelText = new Text({scene: this, x: 0, y: GAME.height, text: `Level ${window.gameState.currentLevel}`})
       .setFontSize('36px')
       .setOrigin(0, 1)
+      .setDepth(DEPTH.HUD);
+    this.timerText = new Text({scene: this, x: GAME.width - 50, y: GAME.height, text: getTimeDisplayMain(0)})
+      .setFontSize('36px')
+      .setColor(COLORS.TIMER_NORMAL)
+      .setOrigin(1, 1)
       .setDepth(DEPTH.HUD);
     this.initListeners();
   }
@@ -54,7 +67,7 @@ export class HudScene extends Phaser.Scene {
     this.gameEndText.setPosition(this.game.scale.width / 2 - this.gameEndText.width / 2, this.game.scale.height * 0.4);
   }
 
-  handleInput() {
+  handleInput(currentTime) {
     if (this.useKey.isDown) {
       if (window.gameState.gameEnded) {
         this.game.events.off(EVENTS.GAME_END, this.handleGameEnd);
@@ -63,9 +76,34 @@ export class HudScene extends Phaser.Scene {
         this.scene.start(SCENES.LOADING);
       }
     }
+
+    if (this.pauseKey.isDown) {
+      if (currentTime < this.lastPause + 1000) {
+        return;
+      }
+      this.lastPause = currentTime;
+      window.gameState.paused = !window.gameState.paused;
+      if (window.gameState.paused) {
+        this.timeCop = currentTime;
+        this.cameras.main.setBackgroundColor('rgba(0,0,0,0.6)');
+        this.game.scene.pause(SCENES.GAME);
+      } else {
+        const timeOffset = currentTime - this.timeCop;
+        window.gameState.pauseTime += timeOffset;
+        this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
+        this.game.scene.resume(SCENES.GAME);
+      }
+    }
   }
 
-  update() {
-    this.handleInput();
+  updateTimer(currentTime) {
+    if (!window.gameState.paused) {
+      this.timerText.setText(getTimeDisplayMain(currentTime));
+    }
+  }
+
+  update(time) {
+    this.handleInput(time);
+    this.updateTimer(time);
   }
 }
