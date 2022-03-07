@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import {Text} from '../classes/Text';
 import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, SCENES} from '../constants';
-import {getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
+import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
 
 export class HudScene extends Phaser.Scene {
   levelText;
@@ -105,8 +105,13 @@ export class HudScene extends Phaser.Scene {
 
   updateTimer(currentTime) {
     if (!window.gameState.paused) {
-      this.timerText.setText(getTimeDisplayMain(currentTime));
-      this.timerCsText.setText(getTimeDisplayCs(currentTime));
+      const msRemaining = getMsRemaining(currentTime);
+      this.timerText.setText(getTimeDisplayMain(msRemaining));
+      this.timerCsText.setText(getTimeDisplayCs(msRemaining));
+      if (msRemaining < 300_000) {
+        this.timerText.setColor(COLORS.TIMER_DANGER);
+        this.timerCsText.setColor(COLORS.TIMER_DANGER);
+      }
     }
   }
 

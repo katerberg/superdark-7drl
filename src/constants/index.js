@@ -26,7 +26,7 @@ export const WALLS = {
 };
 
 export const TIME = {
-  TOTAL: 900000,
+  TOTAL: 900_000,
 };
 
 export const GAME_STATUS = {
