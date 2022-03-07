@@ -71,7 +71,7 @@ export class GameScene extends Phaser.Scene {
     this.projectiles = this.physics.add.group({runChildUpdate: true});
 
     this.addPlayer(startingInfo);
-    //this.addEnemy();
+    this.addEnemy();
     this.addWalls();
     this.addExits();
     this.addWinSwitch();
