@@ -1,6 +1,8 @@
 export {COLORS} from './colors';
 export {EVENTS} from './events';
 export {DEPTH} from './depth';
+export {ENEMY} from './enemy';
+export {PLAYER} from './player';
 
 export const GAME = {
   width: 1200,
@@ -23,20 +25,8 @@ export const WALLS = {
   nodeRadius: 10,
 };
 
-export const PLAYER = {
-  WIDTH: 253,
-  HEIGHT: 216,
-  SCALE: 0.25,
-  LEGS_WIDTH: 172,
-  LEGS_HEIGHT: 124,
-};
-
-export const ENEMY = {
-  WIDTH: 313,
-  HEIGHT: 206,
-  SCALE: 0.25,
-  LEGS_WIDTH: 172,
-  LEGS_HEIGHT: 124,
+export const TIME = {
+  TOTAL: 900_000,
 };
 
 export const GAME_STATUS = {

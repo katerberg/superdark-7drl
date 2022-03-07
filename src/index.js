@@ -2,6 +2,7 @@ import 'regenerator-runtime/runtime';
 import * as Phaser from 'phaser';
 import {GAME, LEVELS} from './constants';
 import {HudScene, GameScene, LoadingScene} from './scenes';
+import {isDebug} from './utils/environments';
 
 const config = {
   type: Phaser.AUTO,
@@ -11,7 +12,7 @@ const config = {
   physics: {
     default: 'arcade',
     arcade: {
-      debug: false,
+      debug: isDebug(),
       gravity: {y: 0},
       enableBody: true,
     },
@@ -26,6 +27,8 @@ const getInitialGameState = () => {
     winSwitch: {
       //x,y
     },
+    pauseTime: 0,
+    paused: false,
     levels: {
       // 1: {
       //   walls: [{x1, x2, y1, y2}]

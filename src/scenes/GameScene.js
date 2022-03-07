@@ -68,7 +68,7 @@ export class GameScene extends Phaser.Scene {
     this.walls = this.physics.add.group(immovableOptions);
     this.shadows = [];
     this.enemies = this.physics.add.group(immovableOptions);
-    this.projectiles = this.physics.add.group(immovableOptions);
+    this.projectiles = this.physics.add.group({runChildUpdate: true});
 
     this.addPlayer(startingInfo);
     //this.addEnemy();
@@ -84,6 +84,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
     // TODO: Figure out how to get the collision box to match angle
     this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
+    this.physics.add.overlap(this.walls, this.projectiles, (walls, projectile) => this.removeProjectile(projectile));
     this.physics.add.collider(this.player, this.walls);
     this.physics.add.collider(this.player, this.enemies);
     this.physics.add.collider(this.enemies, this.walls);
@@ -164,6 +165,7 @@ export class GameScene extends Phaser.Scene {
 
   addEnemy() {
     const enemy = new Enemy({scene: this, x: 200, y: 200, key: 'enemy-rifle-move'});
+    enemy.setAimTarget(this.player);
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }
@@ -172,9 +174,13 @@ export class GameScene extends Phaser.Scene {
     this.projectiles.add(projectile);
   }
 
+  removeProjectile(projectile) {
+    this.projectiles.remove(projectile, true, true);
+  }
+
   removeProjectiles(enemy) {
     const filtered = this.projectiles.children.entries.filter((p) => p.enemy === enemy);
-    filtered.forEach((p) => this.projectiles.remove(p, true, true));
+    filtered.forEach((p) => this.removeProjectile(p));
   }
 
   addPlayer(startingInfo) {
@@ -189,11 +195,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time) {
+    const timeAwareOfPauses = time - window.gameState.pauseTime;
     if (this.player) {
       this.player.update();
     }
     this.enemies.children.entries.forEach((enemy) => {
-      enemy.update(time);
+      enemy.update(timeAwareOfPauses);
     });
     this.handleInput();
     this.clearShadows();

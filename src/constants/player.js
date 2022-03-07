@@ -1,0 +1,10 @@
+export const PLAYER = {
+  WIDTH: 253,
+  HEIGHT: 216,
+  SCALE: 0.25,
+  LEGS_WIDTH: 172,
+  LEGS_HEIGHT: 124,
+  SPEED: 150,
+  SPEED_DEBUG: 700,
+  MAX_HP: 10,
+};

@@ -6,12 +6,13 @@ import {Projectile} from './Projectile';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
   lastShot = 2000;
-  shotDelay = 1000;
-  shotDuration = 100;
+  shotDelay = ENEMY.SHOT_DELAY;
+  shotDuration = ENEMY.PROJECTILE_DURATION;
+  aimTarget;
 
   constructor({scene, x, y, key}) {
     super(scene, x, y, key);
-    this.angle = 180;
+    this.angle = 0;
     this.depth = DEPTH.ENEMY;
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
@@ -35,6 +36,10 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.legs.play('walk');
   }
 
+  setAimTarget(target) {
+    this.aimTarget = target;
+  }
+
   update(time) {
     if (time > this.lastShot + this.shotDelay) {
       this.lastShot = time;
@@ -47,6 +52,27 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       this.scene.removeProjectiles(this);
     }
 
-    this.setAngle(this.angle + 0.25);
+    if (this.aimTarget) {
+      const goalAngle = Phaser.Math.RadToDeg(
+        Phaser.Math.Angle.Between(this.x, this.y, this.aimTarget.x, this.aimTarget.y),
+      );
+
+      // const absolute = abs(a-b)
+      // if absolute is > 180
+      //  subtract 360 from larger
+      // if a-b >0 ? clockwise
+      let a = goalAngle;
+      let b = this.angle;
+      const absolute = Math.abs(goalAngle - this.angle);
+      if (absolute > 180) {
+        if (goalAngle > this.angle) {
+          a = goalAngle - 360;
+        } else {
+          b = this.angle - 360;
+        }
+      }
+
+      this.setAngle(a < b ? this.angle - ENEMY.TURN_SPEED : this.angle + ENEMY.TURN_SPEED);
+    }
   }
 }
