@@ -76,7 +76,6 @@ export class GameScene extends Phaser.Scene {
     this.addEnemy();
     this.addExits();
     this.addWinSwitch();
-    this.addWalls();
     this.addRooms();
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
@@ -150,12 +149,6 @@ export class GameScene extends Phaser.Scene {
       walls.push(new Wall({scene: this, x: wallPosition.x, y: wallPosition.y}));
     }
     return walls;
-  }
-
-  addWalls() {
-    this.makeWalls(100, 250, 200, 380).forEach((w) => {
-      this.walls.add(w);
-    });
   }
 
   addExits() {

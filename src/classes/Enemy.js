@@ -40,22 +40,30 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.aimTarget = target;
   }
 
-  update(time) {
-    if (time > this.lastShot + this.shotDelay) {
+  shoot(time) {
+    if (this.aimTarget && Math.abs(this.getGoalAimAngle() - this.angle) < 30) {
       this.lastShot = time;
       this.scene.addProjectile(
         new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, enemy: this}),
       );
       createFloatingText(this.scene, this.x, this.y, 'boom');
     }
+  }
+
+  getGoalAimAngle() {
+    return Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.x, this.y, this.aimTarget.x, this.aimTarget.y));
+  }
+
+  update(time) {
+    if (time > this.lastShot + this.shotDelay) {
+      this.shoot(time);
+    }
     if (time > this.lastShot + this.shotDuration) {
       this.scene.removeProjectiles(this);
     }
 
     if (this.aimTarget) {
-      const goalAngle = Phaser.Math.RadToDeg(
-        Phaser.Math.Angle.Between(this.x, this.y, this.aimTarget.x, this.aimTarget.y),
-      );
+      const goalAngle = this.getGoalAimAngle();
 
       // const absolute = abs(a-b)
       // if absolute is > 180
