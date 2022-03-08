@@ -45,15 +45,15 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   handleMovement() {
-    const {up, down, left, right} = this.scene.scene.get(SCENES.HUD).playerKeys;
-
-    if (up?.isDown || down?.isDown || left?.isDown || right?.isDown) {
+    const keys = this.scene.scene.get(SCENES.HUD).playerKeys;
+    const {up, down, left, right, w, s, a, d} = keys;
+    if (up?.isDown || down?.isDown || left?.isDown || right?.isDown || w.isDown || s.isDown || a.isDown || d.isDown) {
       const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : PLAYER.SPEED;
-      const angleSpeed = 5;
-      const speedMagnitude = up?.isDown ? moveSpeed : down?.isDown ? -moveSpeed : 0;
+      const angleSpeed = PLAYER.ANGLE_SPEED;
+      const speedMagnitude = up?.isDown || w.isDown ? moveSpeed : down?.isDown || s.isDown ? -moveSpeed : 0;
 
-      this.angle -= left?.isDown ? angleSpeed : 0;
-      this.angle += right?.isDown ? angleSpeed : 0;
+      this.angle -= left?.isDown || a.isDown ? angleSpeed : 0;
+      this.angle += right?.isDown || d.isDown ? angleSpeed : 0;
       this.body.setVelocity(
         speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),
         speedMagnitude * Math.sin(Phaser.Math.DegToRad(this.angle)),
