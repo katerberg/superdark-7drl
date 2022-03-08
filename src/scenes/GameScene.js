@@ -226,7 +226,7 @@ export class GameScene extends Phaser.Scene {
     }
     const timeAwareOfPauses = getTimeAwareOfPauses(time);
     if (this.player) {
-      this.player.update();
+      this.player.update(timeAwareOfPauses);
     }
     this.enemies.children.entries.forEach((enemy) => {
       enemy.update(timeAwareOfPauses);

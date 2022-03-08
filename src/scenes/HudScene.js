@@ -26,6 +26,7 @@ export class HudScene extends Phaser.Scene {
       s: KeyCodes.S,
       a: KeyCodes.A,
       d: KeyCodes.D,
+      r: KeyCodes.R,
       up: KeyCodes.UP,
       down: KeyCodes.DOWN,
       left: KeyCodes.LEFT,
