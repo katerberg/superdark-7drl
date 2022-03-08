@@ -30,6 +30,7 @@ export class GameScene extends Phaser.Scene {
   enemies;
   projectiles;
   walls;
+  shadowWalls;
   shadows;
   exits;
   winSwitch;
@@ -68,6 +69,7 @@ export class GameScene extends Phaser.Scene {
     this.add.tileSprite(PLAY_AREA.width / 2, PLAY_AREA.height / 2, PLAY_AREA.width, PLAY_AREA.height, 'steel-tileset');
 
     this.walls = this.physics.add.group(immovableOptions);
+    this.shadowWalls = [];
     this.shadows = [];
     this.enemies = this.physics.add.group(immovableOptions);
     this.projectiles = this.physics.add.group({runChildUpdate: true});
@@ -76,7 +78,6 @@ export class GameScene extends Phaser.Scene {
     this.addEnemy();
     this.addExits();
     this.addWinSwitch();
-    this.addWalls();
     this.addRooms();
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
@@ -124,7 +125,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   makeWalls(x1, y1, x2, y2) {
-    const walls = [];
+    const boundaryWalls = [];
+    const shadowWalls = [];
     const xDistance = x2 - x1;
     const yDistance = y2 - y1;
     const distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
@@ -133,29 +135,31 @@ export class GameScene extends Phaser.Scene {
     const nodeDistanceX = xDistance / numberOfNodes;
     const nodeDistanceY = yDistance / numberOfNodes;
     for (let i = 0; i < numberOfNodes; i++) {
-      walls.push(new Wall({scene: this, x: x1 + i * nodeDistanceX, y: y1 + i * nodeDistanceY}));
+      boundaryWalls.push(new Wall({scene: this, x: x1 + i * nodeDistanceX, y: y1 + i * nodeDistanceY}));
     }
-    return walls;
+    shadowWalls.push([x1, y1, x2, y2]);
+    return {boundaryWalls, shadowWalls};
   }
 
   makeCurvyWalls(angleBegin, angleEnd, radius) {
-    const walls = [];
+    const boundaryWalls = [];
+    const shadowWalls = [];
     const angleDiff = angleEnd - angleBegin;
     const wallLength = angleToArcLength(angleDiff, radius);
     const nodeDiameter = WALLS.nodeRadius * 2;
     const numberOfNodes = Math.ceil(wallLength / nodeDiameter);
-    for (let i = 0; i < numberOfNodes; i++) {
-      const wallAngle = angleBegin + (i / numberOfNodes) * angleDiff;
-      const wallPosition = polarToCartesian(wallAngle, radius);
-      walls.push(new Wall({scene: this, x: wallPosition.x, y: wallPosition.y}));
-    }
-    return walls;
-  }
 
-  addWalls() {
-    this.makeWalls(100, 250, 200, 380).forEach((w) => {
-      this.walls.add(w);
-    });
+    let wallAngle = angleBegin;
+    let wallPosition = polarToCartesian(wallAngle, radius);
+    for (let i = 1; i <= numberOfNodes; i++) {
+      const newWallAngle = angleBegin + (i / numberOfNodes) * angleDiff;
+      const newWallPosition = polarToCartesian(newWallAngle, radius);
+      boundaryWalls.push(new Wall({scene: this, x: wallPosition.x, y: wallPosition.y}));
+      shadowWalls.push([wallPosition.x, wallPosition.y, newWallPosition.x, newWallPosition.y]);
+      wallAngle = newWallAngle;
+      wallPosition = newWallPosition;
+    }
+    return {boundaryWalls, shadowWalls};
   }
 
   addExits() {
@@ -198,7 +202,7 @@ export class GameScene extends Phaser.Scene {
   addPlayer(startingInfo) {
     this.player = new Player({
       scene: this,
-      x: startingInfo?.startingPosition?.x || 100,
+      x: startingInfo?.startingPosition?.x || PLAY_AREA.width / 2 + 100,
       y: startingInfo?.startingPosition?.y || 100,
       key: 'character',
       angle: startingInfo?.angle,
@@ -218,8 +222,8 @@ export class GameScene extends Phaser.Scene {
       enemy.update(timeAwareOfPauses);
     });
     this.handleInput();
-    // this.clearShadows();
-    // this.drawShadows();
+    this.clearShadows();
+    this.drawShadows();
   }
 
   addWinSwitch() {
@@ -251,41 +255,39 @@ export class GameScene extends Phaser.Scene {
     const p = {x: this.player.x, y: this.player.y};
     const dirtyMultiplier = 10000;
 
-    this.walls.children.entries.forEach((wall) => {
-      for (let i = 0; i < wall.pathData.length - 2; i += 2) {
-        const w1 = {
-          x: wall.pathData[i] + wall.x - wall.width / 2,
-          y: wall.pathData[i + 1] + wall.y - wall.height / 2,
-        };
-        const m1 = getNormalized({x: w1.x - p.x, y: w1.y - p.y});
+    this.shadowWalls.forEach((wall) => {
+      const w1 = {
+        x: wall[0],
+        y: wall[1],
+      };
+      const m1 = getNormalized({x: w1.x - p.x, y: w1.y - p.y});
 
-        const w2 = {
-          x: wall.pathData[i + 2] + wall.x - wall.width / 2,
-          y: wall.pathData[i + 3] + wall.y - wall.height / 2,
-        };
-        const m2 = getNormalized({x: w2.x - p.x, y: w2.y - p.y});
+      const w2 = {
+        x: wall[2],
+        y: wall[3],
+      };
+      const m2 = getNormalized({x: w2.x - p.x, y: w2.y - p.y});
 
-        const graphics = this.add.graphics();
-        graphics.fillStyle(COLORS.SHADOW);
-        graphics.setDepth(DEPTH.SHADOWS);
-        graphics.beginPath();
+      const graphics = this.add.graphics();
+      graphics.fillStyle(COLORS.SHADOW);
+      graphics.setDepth(DEPTH.SHADOWS);
+      graphics.beginPath();
 
-        graphics.moveTo(w1.x, w1.y);
-        graphics.lineTo(w1.x + dirtyMultiplier * m1.x, w1.y + dirtyMultiplier * m1.y);
-        graphics.lineTo(w2.x + dirtyMultiplier * m2.x, w2.y + dirtyMultiplier * m2.y);
-        graphics.lineTo(w2.x, w2.y);
+      graphics.moveTo(w1.x, w1.y);
+      graphics.lineTo(w1.x + dirtyMultiplier * m1.x, w1.y + dirtyMultiplier * m1.y);
+      graphics.lineTo(w2.x + dirtyMultiplier * m2.x, w2.y + dirtyMultiplier * m2.y);
+      graphics.lineTo(w2.x, w2.y);
 
-        graphics.closePath();
-        graphics.fillPath();
+      graphics.closePath();
+      graphics.fillPath();
 
-        // this.tweens.add({
-        //   targets: graphics,
-        //   alpha: 1,
-        //   duration: 300,
-        // });
+      // this.tweens.add({
+      //   targets: graphics,
+      //   alpha: 1,
+      //   duration: 300,
+      // });
 
-        this.shadows.push(graphics);
-      }
+      this.shadows.push(graphics);
     });
   }
 
@@ -408,40 +410,44 @@ export class GameScene extends Phaser.Scene {
       this.rooms = newRooms;
     } while (splittable);
 
-    this.drawFloorplan();
+    // this.drawFloorplan();
 
     this.rooms.forEach((room) => {
       if (room.doors.left) {
-        let beginWall = polarToCartesian(room.angleBegin, room.radiusBegin);
-        let endWall = polarToCartesian(room.angleBegin, room.doors.left[0]);
-        this.makeWalls(beginWall.x, beginWall.y, endWall.x, endWall.y).forEach((w) => {
-          this.walls.add(w);
-        });
-        beginWall = polarToCartesian(room.angleBegin, room.doors.left[1]);
-        endWall = polarToCartesian(room.angleBegin, room.radiusEnd);
-        this.makeWalls(beginWall.x, beginWall.y, endWall.x, endWall.y).forEach((w) => {
-          this.walls.add(w);
-        });
+        this.addWall(room.angleBegin, room.radiusBegin, room.doors.left[0]);
+        this.addWall(room.angleBegin, room.doors.left[1], room.radiusEnd);
       } else {
-        const beginWall = polarToCartesian(room.angleBegin, room.radiusBegin);
-        const endWall = polarToCartesian(room.angleBegin, room.radiusEnd);
-        this.makeWalls(beginWall.x, beginWall.y, endWall.x, endWall.y).forEach((w) => {
-          this.walls.add(w);
-        });
+        this.addWall(room.angleBegin, room.radiusBegin, room.radiusEnd);
       }
 
       if (room.doors.bottom) {
-        this.makeCurvyWalls(room.angleBegin, room.doors.bottom[0], room.radiusBegin).forEach((w) => {
-          this.walls.add(w);
-        });
-        this.makeCurvyWalls(room.doors.bottom[1], room.angleEnd, room.radiusBegin).forEach((w) => {
-          this.walls.add(w);
-        });
+        this.addCurvyWall(room.angleBegin, room.doors.bottom[0], room.radiusBegin);
+        this.addCurvyWall(room.doors.bottom[1], room.angleEnd, room.radiusBegin);
       } else {
-        this.makeCurvyWalls(room.angleBegin, room.angleEnd, room.radiusBegin).forEach((w) => {
-          this.walls.add(w);
-        });
+        this.addCurvyWall(room.angleBegin, room.angleEnd, room.radiusBegin);
       }
+    });
+  }
+
+  addWall(angle, radiusBegin, radiusEnd) {
+    const beginWall = polarToCartesian(angle, radiusBegin);
+    const endWall = polarToCartesian(angle, radiusEnd);
+    const walls = this.makeWalls(beginWall.x, beginWall.y, endWall.x, endWall.y);
+    walls.boundaryWalls.forEach((w) => {
+      this.walls.add(w);
+    });
+    walls.shadowWalls.forEach((w) => {
+      this.shadowWalls.push(w);
+    });
+  }
+
+  addCurvyWall(angleBegin, angleEnd, radius) {
+    const walls = this.makeCurvyWalls(angleBegin, angleEnd, radius);
+    walls.boundaryWalls.forEach((w) => {
+      this.walls.add(w);
+    });
+    walls.shadowWalls.forEach((w) => {
+      this.shadowWalls.push(w);
     });
   }
 
