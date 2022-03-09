@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import revolverSilhouette from '../assets/weapons/revolver-silhouette.png';
 import {Text} from '../classes/Text';
 import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, SCENES} from '../constants';
+import {isDebug} from '../utils/environments';
 import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
 
 export class HudScene extends Phaser.Scene {
@@ -11,7 +12,7 @@ export class HudScene extends Phaser.Scene {
   timerText;
   timerCsText;
   timeCop = 0; // holder for the time in between pauses
-  useKey;
+  restartKey;
   playerKeys;
   inventoryImages; // image[]
   inventoryAmmoTexts; // text[]
@@ -25,7 +26,7 @@ export class HudScene extends Phaser.Scene {
   preload() {
     this.load.image('weapon-revolver', revolverSilhouette);
     const {KeyCodes} = Phaser.Input.Keyboard;
-    this.useKey = this.input.keyboard.addKey(KeyCodes.SPACE);
+    this.restartKey = this.input.keyboard.addKey(KeyCodes.ENTER);
     this.playerKeys = this.input.keyboard.addKeys({
       w: KeyCodes.W,
       s: KeyCodes.S,
@@ -94,7 +95,7 @@ export class HudScene extends Phaser.Scene {
     window.gameState.paused = true;
     window.gameState.gameEnded = status;
 
-    const restartMessage = 'SPACE TO RESTART';
+    const restartMessage = 'ENTER TO RESTART';
     this.gameEndText = new Text({
       scene: this,
       x: this.game.scale.width / 2,
@@ -110,7 +111,7 @@ export class HudScene extends Phaser.Scene {
 
   handleInput(time) {
     if (window.gameState.gameEnded) {
-      if (this.useKey.isDown) {
+      if (this.restartKey.isDown) {
         this.game.events.off(EVENTS.GAME_END, this.handleGameEnd);
         this.game.events.off(EVENTS.LEVEL_CHANGE, this.handleLevelChange);
         this.scene.start(SCENES.LOADING);
@@ -133,6 +134,11 @@ export class HudScene extends Phaser.Scene {
         delete window.gameState.runUntil[timeEvent];
       }
     });
+    if (isDebug()) {
+      if (this.restartKey.isDown) {
+        this.scene.scene.game.events.emit(EVENTS.GAME_END, GAME_STATUS.LOSE);
+      }
+    }
   }
 
   drawTimer(currentTime) {
@@ -158,7 +164,7 @@ export class HudScene extends Phaser.Scene {
     }
     if (this.inventoryAmmoTexts) {
       this.inventoryAmmoTexts?.forEach((text, i) => {
-        text.setText(gameScene.player.inventory.weaponSlots[i].getAmmoText());
+        text.setText(gameScene.player.inventory.weaponSlots[i]?.getAmmoText());
       });
     }
   }

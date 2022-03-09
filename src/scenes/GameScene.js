@@ -93,7 +93,7 @@ export class GameScene extends Phaser.Scene {
     this.shadowWalls = [];
     this.shadows = [];
     this.paths = [];
-    this.enemies = this.physics.add.group(immovableOptions);
+    this.enemies = this.physics.add.group();
     this.projectiles = this.physics.add.group({runChildUpdate: true});
     this.playerProjectiles = this.physics.add.group({runChildUpdate: true});
 
@@ -420,8 +420,7 @@ export class GameScene extends Phaser.Scene {
   addEnemy() {
     const x = PLAY_AREA.width / 2 + 100;
     const y = 200;
-    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: 3});
-    enemy.setAimTarget(this.player);
+    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: 1});
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }
@@ -450,7 +449,6 @@ export class GameScene extends Phaser.Scene {
     });
     this.playerProjectiles.children.each((p) => {
       if (time > p.weapon.range + p.shotTime) {
-        console.log(time, p.weapon.range + p.shotTime);
         this.removePlayerProjectile(p);
       }
     });
