@@ -19,7 +19,7 @@ export class Projectile extends Phaser.GameObjects.Ellipse {
   }
 
   getDamage() {
-    this.weapon.damage;
+    return this.weapon.damage;
   }
 
   update() {

@@ -6,14 +6,16 @@ import {Projectile} from './Projectile';
 import {EnemyGun} from './Weapon';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
+  hp;
   lastShot = 2000;
   shotDelay = ENEMY.SHOT_DELAY;
   shotDuration = ENEMY.PROJECTILE_DURATION;
   aimTarget;
   weapon;
 
-  constructor({scene, x, y, key}) {
+  constructor({scene, x, y, key, hp}) {
     super(scene, x, y, key);
+    this.hp = hp;
     this.angle = 0;
     this.depth = DEPTH.ENEMY;
     this.weapon = new EnemyGun();
@@ -50,6 +52,20 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, weapon: this.weapon}),
       );
       createFloatingText(this.scene, this.x, this.y, 'boom');
+    }
+  }
+
+  handleDeath() {
+    this.legs.destroy();
+    this.destroy();
+  }
+
+  handleHit(projectile) {
+    createFloatingText(this.scene, this.x, this.y, 'ouch', 'red');
+    this.hp -= projectile.getDamage();
+    this.scene.removePlayerProjectile(projectile);
+    if (this.hp <= 0) {
+      this.handleDeath();
     }
   }
 
