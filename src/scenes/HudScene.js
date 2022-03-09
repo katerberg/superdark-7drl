@@ -116,7 +116,8 @@ export class HudScene extends Phaser.Scene {
       }
       return;
     }
-    if (Object.values(this.playerKeys).some((v) => v.isDown)) {
+    const timeEvents = Object.keys(window.gameState.runUntil);
+    if (Object.values(this.playerKeys).some((v) => v.isDown) || timeEvents.length) {
       if (window.gameState.paused) {
         window.gameState.pauseTime += time - this.timeCop;
         window.gameState.paused = false;
@@ -126,6 +127,11 @@ export class HudScene extends Phaser.Scene {
       this.timeCop = time;
       window.gameState.paused = true;
     }
+    timeEvents.forEach((timeEvent) => {
+      if (timeEvent < time) {
+        delete window.gameState.runUntil[timeEvent];
+      }
+    });
   }
 
   drawTimer(currentTime) {

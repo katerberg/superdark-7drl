@@ -29,6 +29,9 @@ const getInitialGameState = (startTime) => {
     },
     startTime,
     pauseTime: 0,
+    runUntil: {
+      // 4000: 'reload' // number is currentTime when it ends
+    },
     paused: true,
     levels: {
       // 1: {
