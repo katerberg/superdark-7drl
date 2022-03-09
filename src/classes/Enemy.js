@@ -21,7 +21,6 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.angle = 0;
     this.depth = DEPTH.ENEMY;
     this.weapon = new EnemyGun();
-    this.moveTarget = new MoveTarget(x, y);
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
     const xOrigin = 0.45;

@@ -288,7 +288,6 @@ export class GameScene extends Phaser.Scene {
     const x = PLAY_AREA.width / 2 + 100;
     const y = 200;
     const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: 1});
-    enemy.setMoveTarget(this.player);
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }
