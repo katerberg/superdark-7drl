@@ -18,7 +18,7 @@ class Weapon {
   constructor(
     image,
     active = false,
-    range = 100,
+    range = 1000,
     size = 20,
     damage = 1,
     currentAmmunition = 999_999_999,
@@ -77,12 +77,12 @@ class Weapon {
 
 export class Revolver extends Weapon {
   constructor(active) {
-    super('weapon-revolver', active, 100, 20, 1, 5, 6);
+    super('weapon-revolver', active, 10_000, 20, 1, 5, 6);
   }
 }
 
 export class EnemyGun extends Weapon {
   constructor() {
-    super('NEVER RENDER', false, 100, 20, 5);
+    super('NEVER RENDER', false, 10_000, 20, 5);
   }
 }

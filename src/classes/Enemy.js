@@ -61,9 +61,6 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     if (time > this.lastShot + this.shotDelay) {
       this.shoot(time);
     }
-    if (time > this.lastShot + this.shotDuration) {
-      this.scene.removeProjectiles(this);
-    }
 
     if (this.aimTarget) {
       const goalAngle = this.getGoalAimAngle();
