@@ -47,9 +47,15 @@ export class Player extends Phaser.GameObjects.Sprite {
       } else if (result === WEAPON_EVENT.OUT_OF_AMMO) {
         createFloatingText(this.scene, this.x, this.y, 'click');
       }
-      // this.scene.addPlayerProjectile(
-      //   new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, enemy: this}),
-      // );
+      this.scene.addPlayerProjectile(
+        new Projectile({
+          scene: this.scene,
+          x: this.x,
+          y: this.y,
+          angle: this.angle,
+          weapon: this.inventory.getActiveWeapon(),
+        }),
+      );
     }
   }
 

@@ -3,17 +3,20 @@ import {DEPTH, ENEMY} from '../constants';
 import {createFloatingText} from '../utils/visuals';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
+import {EnemyGun} from './Weapon';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
   lastShot = 2000;
   shotDelay = ENEMY.SHOT_DELAY;
   shotDuration = ENEMY.PROJECTILE_DURATION;
   aimTarget;
+  weapon;
 
   constructor({scene, x, y, key}) {
     super(scene, x, y, key);
     this.angle = 0;
     this.depth = DEPTH.ENEMY;
+    this.weapon = new EnemyGun();
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
     const xOrigin = 0.45;
@@ -44,7 +47,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     if (this.aimTarget && Math.abs(this.getGoalAimAngle() - this.angle) < 30) {
       this.lastShot = time;
       this.scene.addProjectile(
-        new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, enemy: this}),
+        new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, weapon: this.weapon}),
       );
       createFloatingText(this.scene, this.x, this.y, 'boom');
     }

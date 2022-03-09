@@ -80,3 +80,9 @@ export class Revolver extends Weapon {
     super('weapon-revolver', active, 100, 20, 1, 5, 6);
   }
 }
+
+export class EnemyGun extends Weapon {
+  constructor() {
+    super('NEVER RENDER', false, 100, 20, 5);
+  }
+}
