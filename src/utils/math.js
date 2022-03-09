@@ -30,3 +30,19 @@ export function polarToCartesian(angle, radius) {
   const y = PLAY_AREA.height / 2 + radius * Math.sin(offsetDegToRad(angle));
   return {x, y};
 }
+
+export function distance(pointA, pointB) {
+  let A, B;
+  if (pointA.x) {
+    A = pointA;
+  } else {
+    A = polarToCartesian(pointA.angle, pointA.radius);
+  }
+  if (pointB.x) {
+    B = pointB;
+  } else {
+    B = polarToCartesian(pointB.angle, pointB.radius);
+  }
+
+  return Math.sqrt(Math.pow(A.x - B.x, 2) + Math.pow(A.y - B.y, 2));
+}

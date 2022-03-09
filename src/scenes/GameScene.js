@@ -23,7 +23,14 @@ import {
   splitDoorsHorizontally,
   splitDoorsVertically,
 } from '../utils/maps';
-import {angleToArcLength, arcLengthToAngle, getNormalized, offsetDegToRad, polarToCartesian} from '../utils/math';
+import {
+  angleToArcLength,
+  arcLengthToAngle,
+  distance,
+  getNormalized,
+  offsetDegToRad,
+  polarToCartesian,
+} from '../utils/math';
 import {createLevelExits, createWinSwitch} from '../utils/setup';
 import {getTimeAwareOfPauses} from '../utils/time';
 
@@ -47,6 +54,7 @@ export class GameScene extends Phaser.Scene {
   levelKey;
   gameEndText;
   rooms;
+  paths;
 
   constructor() {
     super({
@@ -81,6 +89,7 @@ export class GameScene extends Phaser.Scene {
     this.walls = this.physics.add.group(immovableOptions);
     this.shadowWalls = [];
     this.shadows = [];
+    this.paths = [];
     this.enemies = this.physics.add.group(immovableOptions);
     this.projectiles = this.physics.add.group({runChildUpdate: true});
 
@@ -89,6 +98,7 @@ export class GameScene extends Phaser.Scene {
     this.addExits();
     this.addWinSwitch();
     this.addRooms();
+    this.makePaths();
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
 
@@ -139,9 +149,9 @@ export class GameScene extends Phaser.Scene {
     const shadowWalls = [];
     const xDistance = x2 - x1;
     const yDistance = y2 - y1;
-    const distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+    const wallLength = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
     const nodeDiameter = WALLS.nodeRadius * 2;
-    const numberOfNodes = Math.ceil(distance / nodeDiameter);
+    const numberOfNodes = Math.ceil(wallLength / nodeDiameter);
     const nodeDistanceX = xDistance / numberOfNodes;
     const nodeDistanceY = yDistance / numberOfNodes;
     for (let i = 0; i < numberOfNodes; i++) {
@@ -170,6 +180,86 @@ export class GameScene extends Phaser.Scene {
       wallPosition = newWallPosition;
     }
     return {boundaryWalls, shadowWalls};
+  }
+
+  makePaths() {
+    this.rooms.forEach((room, roomIndex) => {
+      const nodes = [];
+      Object.entries(room.doors).forEach((doorEntry) => {
+        const [position, door] = doorEntry;
+        if (door) {
+          const node = {roomNumber: roomIndex, door, polarPosition: {}};
+
+          if (position === 'left') {
+            node.polarPosition.radius = (door[0] + door[1]) / 2;
+            node.polarPosition.angle =
+              room.angleBegin + arcLengthToAngle(ROOMS.nodeDistance, node.polarPosition.radius);
+          } else if (position === 'right') {
+            node.polarPosition.radius = (door[0] + door[1]) / 2;
+            node.polarPosition.angle = room.angleEnd - arcLengthToAngle(ROOMS.nodeDistance, node.polarPosition.radius);
+          } else if (position === 'top') {
+            node.polarPosition.angle = (door[0] + door[1]) / 2;
+            node.polarPosition.radius = room.radiusEnd - ROOMS.nodeDistance;
+          } else if (position === 'bottom') {
+            node.polarPosition.angle = (door[0] + door[1]) / 2;
+            node.polarPosition.radius = room.radiusBegin + ROOMS.nodeDistance;
+          }
+          nodes.push(node);
+        }
+      });
+
+      // connect em all
+      nodes.forEach((node, nodeIndex) => {
+        node.neighbors = [];
+        nodes.forEach((neighborNode, neighborIndex) => {
+          if (nodeIndex !== neighborIndex) {
+            node.neighbors.push({
+              number: this.paths.length + neighborIndex,
+              distance: distance(node.polarPosition, neighborNode.polarPosition),
+            });
+          }
+        });
+      });
+
+      this.paths = this.paths.concat(nodes);
+      // push to this.paths
+    });
+
+    this.paths.forEach((node, nodeIndex) => {
+      this.paths.forEach((otherNode, otherNodeIndex) => {
+        // TODO: fix asap. dirtiest hack ever.
+        if (nodeIndex !== otherNodeIndex && node.door[0] === otherNode.door[0] && node.door[1] === otherNode.door[1]) {
+          node.neighbors.push({
+            number: otherNodeIndex,
+            distance: distance(node.polarPosition, otherNode.polarPosition),
+          });
+        }
+      });
+    });
+
+    if (isDebug()) {
+      this.drawPaths();
+    }
+  }
+
+  drawPaths() {
+    this.paths.forEach((node) => {
+      const position = polarToCartesian(node.polarPosition.angle, node.polarPosition.radius);
+      console.log(position);
+      const circle = new Phaser.Geom.Circle(position.x, position.y, 5);
+      const graphics = this.add.graphics();
+      graphics.fillStyle(0xff0000, 1);
+      graphics.lineStyle(2, 0xff0000, 1);
+      graphics.fillCircleShape(circle);
+      node.neighbors.forEach((neighborNode) => {
+        const neighborPosition = polarToCartesian(
+          this.paths[neighborNode.number].polarPosition.angle,
+          this.paths[neighborNode.number].polarPosition.radius,
+        );
+        const line = new Phaser.Geom.Line(position.x, position.y, neighborPosition.x, neighborPosition.y);
+        graphics.strokeLineShape(line);
+      });
+    });
   }
 
   addExits() {

@@ -31,6 +31,7 @@ export const ROOMS = {
   doorSize: 100,
   minRadius: 300,
   maxRadius: 1250,
+  nodeDistance: 10,
 };
 
 export const TIME = {
