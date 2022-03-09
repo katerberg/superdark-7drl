@@ -8,7 +8,6 @@ import {EnemyGun} from './Weapon';
 export class Enemy extends Phaser.GameObjects.Sprite {
   lastShot = 2000;
   shotDelay = ENEMY.SHOT_DELAY;
-  shotDuration = ENEMY.PROJECTILE_DURATION;
   aimTarget;
   weapon;
 
@@ -60,9 +59,6 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   update(time) {
     if (time > this.lastShot + this.shotDelay) {
       this.shoot(time);
-    }
-    if (time > this.lastShot + this.shotDuration) {
-      this.scene.removeProjectiles(this);
     }
 
     if (this.aimTarget) {
