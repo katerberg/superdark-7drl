@@ -1,9 +1,11 @@
 import * as Phaser from 'phaser';
+import revolverSilhouette from '../assets/weapons/revolver-silhouette.png';
 import {Text} from '../classes/Text';
-import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, SCENES} from '../constants';
+import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, SCENES} from '../constants';
 import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
 
 export class HudScene extends Phaser.Scene {
+  gameScene;
   levelText;
   gameEndText;
   timerText;
@@ -11,6 +13,8 @@ export class HudScene extends Phaser.Scene {
   timeCop = 0; // holder for the time in between pauses
   useKey;
   playerKeys;
+  inventoryImages; // image[]
+  inventoryAmmoTexts; // text[]
 
   constructor() {
     super({
@@ -19,6 +23,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('weapon-revolver', revolverSilhouette);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.useKey = this.input.keyboard.addKey(KeyCodes.SPACE);
     this.playerKeys = this.input.keyboard.addKeys({
@@ -53,6 +58,25 @@ export class HudScene extends Phaser.Scene {
     this.timeCop = window.gameState.startTime;
     this.lastPause = 0;
     this.drawTimer(window.gameState.startTime);
+    this.addInventory();
+  }
+
+  getGameScene() {
+    return this.game.scene.getScene(SCENES.GAME);
+  }
+
+  addInventory(gameScene) {
+    if (gameScene?.player?.inventory?.weaponSlots) {
+      this.inventoryImages = gameScene.player.inventory.weaponSlots.map((slot, i) =>
+        this.add
+          .image(250 + i * INVENTORY.ITEM_WIDTH, GAME.height, slot.image)
+          .setOrigin(0, 1)
+          .setScale(0.1),
+      );
+      this.inventoryAmmoTexts = gameScene.player.inventory.weaponSlots.map((slot, i) =>
+        this.add.text(300 + i * INVENTORY.ITEM_WIDTH, GAME.height, slot.getAmmoText()).setOrigin(0, 1),
+      );
+    }
   }
 
   initListeners() {
@@ -120,9 +144,22 @@ export class HudScene extends Phaser.Scene {
     }
   }
 
+  updateInventory() {
+    const gameScene = this.getGameScene();
+    if (!this.inventoryImages) {
+      this.addInventory(gameScene);
+    }
+    if (this.inventoryAmmoTexts) {
+      this.inventoryAmmoTexts?.forEach((text, i) => {
+        text.setText(gameScene.player.inventory.weaponSlots[i].getAmmoText());
+      });
+    }
+  }
+
   update(time) {
     this.cameras.main.setBackgroundColor(window.gameState.paused ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0)');
     this.handleInput(time);
     this.updateTimer(time);
+    this.updateInventory();
   }
 }

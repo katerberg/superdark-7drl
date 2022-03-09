@@ -47,3 +47,7 @@ export const SCENES = {
   GAME: 'GameScene',
   LOADING: 'LoadingScene',
 };
+
+export const INVENTORY = {
+  ITEM_WIDTH: 128,
+};

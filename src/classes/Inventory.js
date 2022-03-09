@@ -5,8 +5,7 @@ export class Inventory {
   gear;
 
   constructor() {
-    const weapon = new Revolver();
-    weapon.setActive();
+    const weapon = new Revolver(true);
     this.weaponSlots = [weapon]; //Weapon[]
     this.gear = []; //Gear[]
   }

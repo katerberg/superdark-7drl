@@ -9,7 +9,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   inventory;
   legs;
   cursors;
-  lastReload = window.gameState.startTime;
+  lastReload = window.gameState.startTime - 10_0000;
   hp = isDebug() ? PLAYER.MAX_HP_DEBUG : PLAYER.MAX_HP;
 
   constructor({scene, x, y, key, angle}) {
