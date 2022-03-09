@@ -1,3 +1,4 @@
+import clone from 'just-clone';
 import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
@@ -26,6 +27,7 @@ import {
 import {
   angleToArcLength,
   arcLengthToAngle,
+  cartesianToPolar,
   distance,
   getNormalized,
   offsetDegToRad,
@@ -249,14 +251,14 @@ export class GameScene extends Phaser.Scene {
   }
 
   drawPaths() {
-    this.paths.forEach((node) => {
+    this.paths.forEach((node, nodeIndex) => {
       const position = polarToCartesian(node.polarPosition.angle, node.polarPosition.radius);
-      console.log(position);
       const circle = new Phaser.Geom.Circle(position.x, position.y, 5);
       const graphics = this.add.graphics();
       graphics.fillStyle(0xff0000, 1);
       graphics.lineStyle(2, 0xff0000, 1);
       graphics.fillCircleShape(circle);
+      this.add.text(position.x, position.y, `${nodeIndex}`);
       node.neighbors.forEach((neighborNode) => {
         const neighborPosition = polarToCartesian(
           this.paths[neighborNode.number].polarPosition.angle,
@@ -266,6 +268,136 @@ export class GameScene extends Phaser.Scene {
         graphics.strokeLineShape(line);
       });
     });
+
+    const testPath = this.findPath({x: 1350, y: 100}, {x: 1150, y: 100});
+    testPath.forEach((point, pointIndex) => {
+      if (pointIndex < testPath.length - 1) {
+        const graphics = this.add.graphics();
+        graphics.lineStyle(4, 0xff9999, 1);
+        const line = new Phaser.Geom.Line(point.x, point.y, testPath[pointIndex + 1].x, testPath[pointIndex + 1].y);
+        graphics.strokeLineShape(line);
+      }
+    });
+  }
+
+  findPath(start, end) {
+    console.log('find path');
+    // find what rooms start and end are in and generate new paths array incorporating them
+    // (how do i generate if they're in a doorway?)
+    const polarStart = cartesianToPolar(start.x, start.y);
+    const polarEnd = cartesianToPolar(end.x, end.y);
+    console.log('polarStart', polarStart);
+    console.log('polarEnd', polarEnd);
+    let startRoomIndex, endRoomIndex;
+    this.rooms.forEach((room, roomIndex) => {
+      console.log(room);
+      if (
+        polarStart.angle > room.angleBegin &&
+        polarStart.angle < room.angleEnd &&
+        polarStart.radius > room.radiusBegin &&
+        polarStart.radius < room.radiusEnd
+      ) {
+        startRoomIndex = roomIndex;
+      }
+      if (
+        polarEnd.angle > room.angleBegin &&
+        polarEnd.angle < room.angleEnd &&
+        polarEnd.radius > room.radiusBegin &&
+        polarEnd.radius < room.radiusEnd
+      ) {
+        endRoomIndex = roomIndex;
+      }
+    });
+
+    console.log('start room', startRoomIndex);
+    console.log('end room', endRoomIndex);
+
+    if (startRoomIndex === endRoomIndex) {
+      return [start, end];
+    }
+
+    const newPaths = clone(this.paths);
+    const startIndex = newPaths.length;
+    const endIndex = newPaths.length + 1;
+    newPaths.push({roomNumber: startRoomIndex, polarPosition: polarStart, neighbors: []});
+    newPaths.push({roomNumber: endRoomIndex, polarPosition: polarEnd, neighbors: []});
+
+    newPaths.forEach((node, nodeIndex) => {
+      if (nodeIndex < startIndex) {
+        if (node.roomNumber === startRoomIndex) {
+          const nodeDistance = distance(node.polarPosition, polarStart);
+          node.neighbors.push({number: startIndex, distance: nodeDistance});
+          newPaths[startIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});
+        }
+        if (node.roomNumber === endRoomIndex) {
+          const nodeDistance = distance(node.polarPosition, polarEnd);
+          node.neighbors.push({number: endIndex, distance: nodeDistance});
+          newPaths[endIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});
+        }
+      }
+    });
+    console.log(newPaths);
+
+    const frontier = [];
+    frontier.push({index: startIndex, priority: 0});
+    const cameFrom = {};
+    cameFrom[startIndex] = -1; // not sure if that's right
+    const costSoFar = {};
+    costSoFar[startIndex] = 0;
+    while (frontier.length > 0) {
+      const nodeIndex = frontier.pop().index;
+      if (nodeIndex === endIndex) {
+        break;
+      }
+      newPaths[nodeIndex].neighbors.forEach((neighborNode) => {
+        const neighborNodeIndex = neighborNode.number;
+        const costToNeighbor =
+          costSoFar[nodeIndex] + distance(newPaths[nodeIndex].polarPosition, newPaths[neighborNodeIndex].polarPosition);
+        if (typeof costSoFar[neighborNodeIndex] === 'undefined' || costToNeighbor < costSoFar[neighborNodeIndex]) {
+          costSoFar[neighborNodeIndex] = costToNeighbor;
+          const priority =
+            costToNeighbor + distance(newPaths[neighborNodeIndex].polarPosition, newPaths[endIndex].polarPosition);
+          cameFrom[neighborNodeIndex] = nodeIndex;
+          frontier.push({index: neighborNodeIndex, priority});
+          frontier.sort((a, b) => b.priority - a.priority);
+        }
+      });
+    }
+
+    const nodeIndexPath = [endIndex];
+    while (true) {
+      const nextNodeIndex = nodeIndexPath[nodeIndexPath.length - 1];
+      if (cameFrom[nextNodeIndex] === -1) {
+        break;
+      }
+      nodeIndexPath.push(cameFrom[nextNodeIndex]);
+    }
+    nodeIndexPath.reverse();
+
+    const pointPath = [];
+    nodeIndexPath.forEach((nodeIndex) => {
+      pointPath.push(
+        polarToCartesian(newPaths[nodeIndex].polarPosition.angle, newPaths[nodeIndex].polarPosition.radius),
+      );
+    });
+    return pointPath;
+
+    //! add start to frontier with priority 0
+    //! make came_from array. given an node index, shows what node it came from
+    //! came_from[start] is null
+    //! make cost_so_far array. distance travelled from start position to node
+    //! cost_so_far[start] is 0
+    //! while frontier is not empty:
+    //!    currentNode = frontier.get()
+    //!    if currentNode == end:
+    //!      we're done, break
+    //!    for each neighbor of currentNode.neighbors:
+    //!      cost_to_neighbor = cost_so_far[currentNode] + distance(currentNode, neighbor)
+    //!      if neighbor isn't in cost_so_far, or this is a shorter path (cost_to_neighbor is less than cost_so_far[neighbor]):
+    //!        cost_so_far[neighbor] = cost_to_neighbor
+    //!        priority = cost_to_neighbor + distance(neighbor, end)
+    //!        add (neighbor, priority) to frontier
+    //!        came_from[neighbor] = currentNode
   }
 
   addExits() {

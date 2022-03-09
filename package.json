@@ -24,6 +24,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
+    "just-clone": "^5.0.1",
     "phaser": "^3.55.2",
     "prettier": "^2.5.1",
     "regenerator-runtime": "^0.13.9",
