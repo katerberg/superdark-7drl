@@ -9,6 +9,10 @@ export function getTimeAwareOfPauses(currentTime) {
   return currentTime - window.gameState.pauseTime - window.gameState.startTime;
 }
 
+export function getRealTime(pauseAwareTime) {
+  return pauseAwareTime + window.gameState.pauseTime + window.gameState.startTime;
+}
+
 export function getTimeDisplayMain(msRemaining) {
   const minutes = Math.floor(msRemaining / 1000 / 60);
   const seconds = Math.floor((msRemaining - minutes * 1000 * 60) / 1000);
