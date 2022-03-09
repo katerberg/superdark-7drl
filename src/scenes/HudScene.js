@@ -65,8 +65,7 @@ export class HudScene extends Phaser.Scene {
     return this.game.scene.getScene(SCENES.GAME);
   }
 
-  addInventory() {
-    const gameScene = this.getGameScene();
+  addInventory(gameScene) {
     if (gameScene?.player?.inventory?.weaponSlots) {
       this.inventoryImages = gameScene.player.inventory.weaponSlots.map((slot, i) =>
         this.add
@@ -146,11 +145,11 @@ export class HudScene extends Phaser.Scene {
   }
 
   updateInventory() {
-    if (!this.inventoryImages) {
-      this.addInventory();
-    }
     const gameScene = this.getGameScene();
-    if (gameScene) {
+    if (!this.inventoryImages) {
+      this.addInventory(gameScene);
+    }
+    if (this.inventoryAmmoTexts) {
       this.inventoryAmmoTexts?.forEach((text, i) => {
         text.setText(gameScene.player.inventory.weaponSlots[i].getAmmoText());
       });
