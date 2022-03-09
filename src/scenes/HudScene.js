@@ -157,14 +157,27 @@ export class HudScene extends Phaser.Scene {
     }
   }
 
+  clearDrawnInventory() {
+    if (this.inventoryImages) {
+      this.inventoryImages.forEach((image) => image.destroy());
+    }
+    if (this.inventoryAmmoTexts) {
+      this.inventoryAmmoTexts.forEach((image) => image.destroy());
+    }
+    this.inventoryImages = null;
+    this.inventoryAmmoTexts = null;
+  }
+
   updateInventory() {
     const gameScene = this.getGameScene();
-    if (!this.inventoryImages) {
+    if (!this.inventoryImages?.some((i) => i.active)) {
       this.addInventory(gameScene);
     }
     if (this.inventoryAmmoTexts) {
       this.inventoryAmmoTexts?.forEach((text, i) => {
-        text.setText(gameScene.player.inventory.weaponSlots[i]?.getAmmoText());
+        if (text && text.scene) {
+          text.setText(gameScene.player?.inventory?.weaponSlots[i]?.getAmmoText());
+        }
       });
     }
   }
