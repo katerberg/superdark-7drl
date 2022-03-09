@@ -1,16 +1,15 @@
 import * as Phaser from 'phaser';
-import {DEPTH, EVENTS, GAME_STATUS, PLAYER, SCENES} from '../constants';
+import {DEPTH, EVENTS, GAME_STATUS, PLAYER, SCENES, WEAPON_EVENT} from '../constants';
 import {isDebug} from '../utils/environments';
-import {getRealTime} from '../utils/time';
 import {createFloatingText} from '../utils/visuals';
 import {Inventory} from './Inventory';
 import {PlayerLegs} from './PlayerLegs';
+import {Projectile} from './Projectile';
 
 export class Player extends Phaser.GameObjects.Sprite {
   inventory;
   legs;
   cursors;
-  lastReload = window.gameState.startTime - 10_0000;
   hp = isDebug() ? PLAYER.MAX_HP_DEBUG : PLAYER.MAX_HP;
 
   constructor({scene, x, y, key, angle}) {
@@ -40,9 +39,29 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.legs.play('walk');
   }
 
+  handleShoot(currentTime, keys) {
+    if (keys.space.isDown) {
+      const result = this.inventory.getActiveWeapon().use(currentTime);
+      if (result === WEAPON_EVENT.FIRED) {
+        createFloatingText(this.scene, this.x, this.y, 'boom');
+        this.scene.addPlayerProjectile(
+          new Projectile({
+            scene: this.scene,
+            x: this.x,
+            y: this.y,
+            angle: this.angle,
+            weapon: this.inventory.getActiveWeapon(),
+          }),
+        );
+      } else if (result === WEAPON_EVENT.OUT_OF_AMMO) {
+        createFloatingText(this.scene, this.x, this.y, 'click');
+      }
+    }
+  }
+
   handleHit(projectile) {
     createFloatingText(this.scene, this.x, this.y, 'ouch', 'red');
-    this.hp -= projectile.damage;
+    this.hp -= projectile.getDamage();
     this.scene.removeProjectile(projectile);
     if (this.hp <= 0) {
       this.scene.game.events.emit(EVENTS.GAME_END, GAME_STATUS.LOSE);
@@ -50,27 +69,22 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   handleReload(currentTime, keys) {
-    if (keys.r.isDown && currentTime > this.lastReload + this.inventory.getActiveWeapon().reloadTime) {
-      this.inventory.getActiveWeapon().reload();
-      window.gameState.runUntil[getRealTime(this.inventory.getActiveWeapon().reloadTime + currentTime)] = 'reload';
-
-      this.lastReload = currentTime;
+    if (keys.r.isDown) {
+      this.inventory.getActiveWeapon().reload(currentTime);
     }
   }
 
   handleActions(currentTime, keys) {
     this.handleReload(currentTime, keys);
+    this.handleShoot(currentTime, keys);
   }
 
   handleMovement(keys) {
     const {up, down, left, right, w, s, a, d} = keys;
-    if (up?.isDown || down?.isDown || left?.isDown || right?.isDown || w.isDown || s.isDown || a.isDown || d.isDown) {
+    if (up?.isDown || down?.isDown || w.isDown || s.isDown) {
       const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : PLAYER.SPEED;
-      const angleSpeed = PLAYER.ANGLE_SPEED;
       const speedMagnitude = up?.isDown || w.isDown ? moveSpeed : down?.isDown || s.isDown ? -moveSpeed : 0;
 
-      this.angle -= left?.isDown || a.isDown ? angleSpeed : 0;
-      this.angle += right?.isDown || d.isDown ? angleSpeed : 0;
       this.body.setVelocity(
         speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),
         speedMagnitude * Math.sin(Phaser.Math.DegToRad(this.angle)),
@@ -78,7 +92,12 @@ export class Player extends Phaser.GameObjects.Sprite {
     } else {
       this.body.setVelocity(0);
     }
-    this.legs.setAngle(this.angle);
+    if (left.isDown || right.isDown || a.isDown || d.isDown) {
+      this.body.setAngularVelocity(left.isDown || a.isDown ? -1 * PLAYER.ANGLE_SPEED : PLAYER.ANGLE_SPEED);
+    } else {
+      this.body.setAngularVelocity(0);
+    }
+    this.legs.setAngle(this.angle); //Where we're going, we don't need legs
     this.legs.moveTo(this.body.x, this.body.y);
   }
 

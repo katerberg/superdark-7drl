@@ -46,6 +46,7 @@ export class GameScene extends Phaser.Scene {
   player;
   enemies;
   projectiles;
+  playerProjectiles;
   walls;
   shadowWalls;
   shadows;
@@ -92,6 +93,7 @@ export class GameScene extends Phaser.Scene {
     this.paths = [];
     this.enemies = this.physics.add.group(immovableOptions);
     this.projectiles = this.physics.add.group({runChildUpdate: true});
+    this.playerProjectiles = this.physics.add.group({runChildUpdate: true});
 
     this.addPlayer(startingInfo);
     this.addEnemy();
@@ -104,8 +106,12 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.add.overlap(this.player, this.exits, (_, exit) => this.handlePlayerExit(exit));
     // TODO: Figure out how to get the collision box to match angle
+    this.physics.add.overlap(this.enemies, this.playerProjectiles, (enemy, projectile) => enemy.handleHit(projectile));
     this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
     this.physics.add.overlap(this.walls, this.projectiles, (walls, projectile) => this.removeProjectile(projectile));
+    this.physics.add.overlap(this.walls, this.playerProjectiles, (walls, projectile) =>
+      this.removePlayerProjectile(projectile),
+    );
     this.physics.add.collider(this.player, this.walls);
     this.physics.add.collider(this.player, this.enemies);
     this.physics.add.collider(this.enemies, this.walls);
@@ -280,7 +286,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   addEnemy() {
-    const enemy = new Enemy({scene: this, x: 200, y: 200, key: 'enemy-rifle-move'});
+    const x = PLAY_AREA.width / 2 + 100;
+    const y = 200;
+    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: 3});
     enemy.setAimTarget(this.player);
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
@@ -290,13 +298,30 @@ export class GameScene extends Phaser.Scene {
     this.projectiles.add(projectile);
   }
 
+  addPlayerProjectile(projectile) {
+    this.playerProjectiles.add(projectile);
+  }
+
+  removePlayerProjectile(projectile) {
+    this.playerProjectiles.remove(projectile, true, true);
+  }
+
   removeProjectile(projectile) {
     this.projectiles.remove(projectile, true, true);
   }
 
-  removeProjectiles(enemy) {
-    const filtered = this.projectiles.children.entries.filter((p) => p.enemy === enemy);
-    filtered.forEach((p) => this.removeProjectile(p));
+  removeExtraProjectiles(time) {
+    this.projectiles.children.each((p) => {
+      if (time > p.weapon.range + p.shotTime) {
+        this.removeProjectile(p);
+      }
+    });
+    this.playerProjectiles.children.each((p) => {
+      if (time > p.weapon.range + p.shotTime) {
+        console.log(time, p.weapon.range + p.shotTime);
+        this.removePlayerProjectile(p);
+      }
+    });
   }
 
   addPlayer(startingInfo) {
@@ -318,12 +343,13 @@ export class GameScene extends Phaser.Scene {
     if (this.player) {
       this.player.update(timeAwareOfPauses);
     }
-    this.enemies.children.entries.forEach((enemy) => {
+    this.enemies.children.iterate((enemy) => {
       enemy.update(timeAwareOfPauses);
     });
     this.handleInput();
     this.clearShadows();
     this.drawShadows();
+    this.removeExtraProjectiles(timeAwareOfPauses);
   }
 
   addWinSwitch() {

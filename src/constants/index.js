@@ -52,3 +52,9 @@ export const SCENES = {
 export const INVENTORY = {
   ITEM_WIDTH: 128,
 };
+
+export const WEAPON_EVENT = {
+  OUT_OF_AMMO: 'click',
+  FIRED: 'boom',
+  NOT_READY: 'still warm',
+};

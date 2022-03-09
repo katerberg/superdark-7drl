@@ -1,3 +1,6 @@
+import {WEAPON_EVENT} from '../constants';
+import {getRealTime} from '../utils/time';
+
 class Weapon {
   range;
   size;
@@ -9,11 +12,13 @@ class Weapon {
   reloadTime;
   soundRadiusOfUse;
   active;
+  lastReload = -10000;
+  lastShot = -10000;
 
   constructor(
     image,
     active = false,
-    range = 100,
+    range = 1000,
     size = 20,
     damage = 1,
     currentAmmunition = 999_999_999,
@@ -48,20 +53,36 @@ class Weapon {
     return `${this.currentAmmunition}/${this.storedAmmunition > 100_000 ? '∞' : this.storedAmmunition}`;
   }
 
-  useAmmo() {
-    if (this.currentAmmunition) {
-      return --this.currentAmmunition;
+  use(time) {
+    if (time > this.lastShot + this.useTime) {
+      window.gameState.runUntil[getRealTime(this.useTime + time)] = 'item use';
+      this.lastShot = time;
+      if (this.currentAmmunition) {
+        --this.currentAmmunition;
+        return WEAPON_EVENT.FIRED;
+      }
+      return WEAPON_EVENT.OUT_OF_AMMO;
     }
-    return 0;
+    return WEAPON_EVENT.NOT_READY;
   }
 
-  reload() {
-    this.currentAmmunition = this.maxAmmunition;
+  reload(currentTime) {
+    if (currentTime > this.lastReload + this.reloadTime) {
+      this.currentAmmunition = this.maxAmmunition;
+      window.gameState.runUntil[getRealTime(this.reloadTime + currentTime)] = 'reload';
+      this.lastReload = currentTime;
+    }
   }
 }
 
 export class Revolver extends Weapon {
   constructor(active) {
-    super('weapon-revolver', active, 100, 20, 1, 5, 6);
+    super('weapon-revolver', active, 10_000, 20, 1, 5, 6);
+  }
+}
+
+export class EnemyGun extends Weapon {
+  constructor() {
+    super('NEVER RENDER', false, 10_000, 20, 5);
   }
 }

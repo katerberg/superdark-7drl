@@ -3,17 +3,22 @@ import {DEPTH, ENEMY} from '../constants';
 import {createFloatingText} from '../utils/visuals';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
+import {EnemyGun} from './Weapon';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
+  hp;
   lastShot = 2000;
   shotDelay = ENEMY.SHOT_DELAY;
   shotDuration = ENEMY.PROJECTILE_DURATION;
   aimTarget;
+  weapon;
 
-  constructor({scene, x, y, key}) {
+  constructor({scene, x, y, key, hp}) {
     super(scene, x, y, key);
+    this.hp = hp;
     this.angle = 0;
     this.depth = DEPTH.ENEMY;
+    this.weapon = new EnemyGun();
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
     const xOrigin = 0.45;
@@ -44,9 +49,23 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     if (this.aimTarget && Math.abs(this.getGoalAimAngle() - this.angle) < 30) {
       this.lastShot = time;
       this.scene.addProjectile(
-        new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, enemy: this}),
+        new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, weapon: this.weapon}),
       );
       createFloatingText(this.scene, this.x, this.y, 'boom');
+    }
+  }
+
+  handleDeath() {
+    this.legs.destroy();
+    this.destroy();
+  }
+
+  handleHit(projectile) {
+    createFloatingText(this.scene, this.x, this.y, 'ouch', 'red');
+    this.hp -= projectile.getDamage();
+    this.scene.removePlayerProjectile(projectile);
+    if (this.hp <= 0) {
+      this.handleDeath();
     }
   }
 
@@ -57,9 +76,6 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   update(time) {
     if (time > this.lastShot + this.shotDelay) {
       this.shoot(time);
-    }
-    if (time > this.lastShot + this.shotDuration) {
-      this.scene.removeProjectiles(this);
     }
 
     if (this.aimTarget) {
@@ -80,7 +96,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         }
       }
 
-      this.setAngle(a < b ? this.angle - ENEMY.TURN_SPEED : this.angle + ENEMY.TURN_SPEED);
+      this.body.setAngularVelocity(a < b ? ENEMY.TURN_SPEED * -1 : ENEMY.TURN_SPEED);
     }
   }
 }

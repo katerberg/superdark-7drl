@@ -8,5 +8,5 @@ export const PLAYER = {
   SPEED_DEBUG: 700,
   MAX_HP: 10,
   MAX_HP_DEBUG: 10000000,
-  ANGLE_SPEED: 5,
+  ANGLE_SPEED: 200,
 };

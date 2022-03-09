@@ -1,19 +1,25 @@
 import * as Phaser from 'phaser';
 import {DEPTH, ENEMY} from '../constants';
+import {getTimeAwareOfPauses} from '../utils/time';
 
 export class Projectile extends Phaser.GameObjects.Ellipse {
-  enemy;
-  damage = ENEMY.PROJECTILE_DAMAGE;
+  shotTime;
+  weapon;
 
-  constructor({scene, x, y, angle, enemy}) {
+  constructor({scene, x, y, angle, weapon}) {
     super(scene, x, y, 30, 30, undefined, 0);
+    this.shotTime = getTimeAwareOfPauses(scene.time.now);
     this.depth = DEPTH.PROJECTILE;
 
     scene.physics.world.enable(this);
 
     this.setAngle(angle);
-    this.enemy = enemy;
+    this.weapon = weapon;
     scene.add.existing(this);
+  }
+
+  getDamage() {
+    return this.weapon.damage;
   }
 
   update() {
