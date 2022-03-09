@@ -96,7 +96,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         }
       }
 
-      this.setAngle(a < b ? this.angle - ENEMY.TURN_SPEED : this.angle + ENEMY.TURN_SPEED);
+      this.body.setAngularVelocity(a < b ? ENEMY.TURN_SPEED * -1 : ENEMY.TURN_SPEED);
     }
   }
 }
