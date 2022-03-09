@@ -251,7 +251,6 @@ export class GameScene extends Phaser.Scene {
   drawPaths() {
     this.paths.forEach((node) => {
       const position = polarToCartesian(node.polarPosition.angle, node.polarPosition.radius);
-      console.log(position);
       const circle = new Phaser.Geom.Circle(position.x, position.y, 5);
       const graphics = this.add.graphics();
       graphics.fillStyle(0xff0000, 1);
@@ -318,7 +317,6 @@ export class GameScene extends Phaser.Scene {
     });
     this.playerProjectiles.children.each((p) => {
       if (time > p.weapon.range + p.shotTime) {
-        console.log(time, p.weapon.range + p.shotTime);
         this.removePlayerProjectile(p);
       }
     });
