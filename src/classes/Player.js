@@ -1,16 +1,18 @@
 import * as Phaser from 'phaser';
-import {DEPTH, EVENTS, GAME_STATUS, PLAYER, SCENES} from '../constants';
+import {DEPTH, EVENTS, GAME_STATUS, PLAYER, SCENES, WEAPON_EVENT} from '../constants';
 import {isDebug} from '../utils/environments';
 import {getRealTime} from '../utils/time';
 import {createFloatingText} from '../utils/visuals';
 import {Inventory} from './Inventory';
 import {PlayerLegs} from './PlayerLegs';
+import {Projectile} from './Projectile';
 
 export class Player extends Phaser.GameObjects.Sprite {
   inventory;
   legs;
   cursors;
   lastReload = window.gameState.startTime - 10_0000;
+  lastShot = window.gameState.startTime - 10_0000;
   hp = isDebug() ? PLAYER.MAX_HP_DEBUG : PLAYER.MAX_HP;
 
   constructor({scene, x, y, key, angle}) {
@@ -40,6 +42,20 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.legs.play('walk');
   }
 
+  handleShoot(currentTime, keys) {
+    if (keys.space.isDown) {
+      const result = this.inventory.getActiveWeapon().use(currentTime);
+      if (result === WEAPON_EVENT.FIRED) {
+        createFloatingText(this.scene, this.x, this.y, 'boom');
+      } else if (result === WEAPON_EVENT.OUT_OF_AMMO) {
+        createFloatingText(this.scene, this.x, this.y, 'click');
+      }
+      // this.scene.addPlayerProjectile(
+      //   new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, enemy: this}),
+      // );
+    }
+  }
+
   handleHit(projectile) {
     createFloatingText(this.scene, this.x, this.y, 'ouch', 'red');
     this.hp -= projectile.damage;
@@ -60,6 +76,7 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   handleActions(currentTime, keys) {
     this.handleReload(currentTime, keys);
+    this.handleShoot(currentTime, keys);
   }
 
   handleMovement(keys) {

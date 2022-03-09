@@ -1,3 +1,6 @@
+import {WEAPON_EVENT} from '../constants';
+import {getRealTime} from '../utils/time';
+
 class Weapon {
   range;
   size;
@@ -9,6 +12,7 @@ class Weapon {
   reloadTime;
   soundRadiusOfUse;
   active;
+  lastShot = -10000;
 
   constructor(
     image,
@@ -48,11 +52,17 @@ class Weapon {
     return `${this.currentAmmunition}/${this.storedAmmunition > 100_000 ? '∞' : this.storedAmmunition}`;
   }
 
-  useAmmo() {
-    if (this.currentAmmunition) {
-      return --this.currentAmmunition;
+  use(time) {
+    if (time > this.lastShot + this.useTime) {
+      window.gameState.runUntil[getRealTime(this.useTime + time)] = 'item use';
+      this.lastShot = time;
+      if (this.currentAmmunition) {
+        --this.currentAmmunition;
+        return WEAPON_EVENT.FIRED;
+      }
+      return WEAPON_EVENT.OUT_OF_AMMO;
     }
-    return 0;
+    return WEAPON_EVENT.NOT_READY;
   }
 
   reload() {
