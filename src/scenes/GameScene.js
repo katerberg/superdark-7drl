@@ -11,7 +11,7 @@ import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
 import {Wall} from '../classes/Wall';
 import {WinSwitch} from '../classes/WinSwitch';
-import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES, WALLS} from '../constants';
+import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES, WALLS, ROOMS} from '../constants';
 import {isDebug} from '../utils/environments';
 import {
   getHorizontalRange,
@@ -338,11 +338,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   addRooms() {
-    const minSize = 150;
-    const maxSize = 600;
-    const doorSize = 100;
-
-    this.rooms = [{angleBegin: 0, angleEnd: 360, radiusBegin: 300, radiusEnd: 1250, doors: noDoors()}];
+    this.rooms = [
+      {angleBegin: 0, angleEnd: 360, radiusBegin: ROOMS.minRadius, radiusEnd: ROOMS.maxRadius, doors: noDoors()},
+    ];
 
     let splittable;
     do {
@@ -357,17 +355,17 @@ export class GameScene extends Phaser.Scene {
         const height = radiusDiff;
         const width = angleToArcLength(angleDiff, midRadius);
 
-        if (height <= maxSize && width <= maxSize) {
+        if (height <= ROOMS.maxSize && width <= ROOMS.maxSize) {
           newRooms.push(r);
-        } else if (isHorizontalWallPlaceable(r, minSize) && (height > width || !isVerticalWallPlaceable(r, minSize))) {
+        } else if (isHorizontalWallPlaceable(r) && (height > width || !isVerticalWallPlaceable(r))) {
           // room is tall or room is not splittable horizontally, then split it vertically
           splittable = true;
-          const newRadius = randomInRange(getVerticalRange(r, minSize));
+          const newRadius = randomInRange(getVerticalRange(r));
           const splitDoorSet = splitDoorsVertically(r, newRadius);
           const newWallWidth = angleToArcLength(angleDiff, newRadius);
-          const newDoorOffset = Math.random() * (newWallWidth - doorSize);
+          const newDoorOffset = Math.random() * (newWallWidth - ROOMS.doorSize);
           const newDoorBegin = r.angleBegin + arcLengthToAngle(newDoorOffset, newRadius);
-          const newDoorEnd = newDoorBegin + arcLengthToAngle(doorSize, newRadius);
+          const newDoorEnd = newDoorBegin + arcLengthToAngle(ROOMS.doorSize, newRadius);
           const newDoor = [newDoorBegin, newDoorEnd];
           splitDoorSet.bottomRoomDoors.top = newDoor;
           splitDoorSet.topRoomDoors.bottom = newDoor;
@@ -386,14 +384,14 @@ export class GameScene extends Phaser.Scene {
             radiusEnd: r.radiusEnd,
             doors: splitDoorSet.topRoomDoors,
           });
-        } else if (isVerticalWallPlaceable(r, minSize)) {
+        } else if (isVerticalWallPlaceable(r)) {
           // otherwise split it horizontally
           splittable = true;
-          const newAngle = randomInRange(getHorizontalRange(r, minSize));
+          const newAngle = randomInRange(getHorizontalRange(r));
           const splitDoorSet = splitDoorsHorizontally(r, newAngle);
-          const newDoorOffset = Math.random() * (radiusDiff - doorSize);
+          const newDoorOffset = Math.random() * (radiusDiff - ROOMS.doorSize);
           const newDoorBegin = r.radiusBegin + newDoorOffset;
-          const newDoorEnd = newDoorBegin + doorSize;
+          const newDoorEnd = newDoorBegin + ROOMS.doorSize;
           const newDoor = [newDoorBegin, newDoorEnd];
           splitDoorSet.leftRoomDoors.right = newDoor;
           splitDoorSet.rightRoomDoors.left = newDoor;
@@ -421,7 +419,10 @@ export class GameScene extends Phaser.Scene {
     } while (splittable);
 
     // this.drawFloorplan();
+    this.addWalls();
+  }
 
+  addWalls() {
     this.rooms.forEach((room) => {
       if (room.doors.left) {
         this.addWall(room.angleBegin, room.radiusBegin, room.doors.left[0]);
@@ -437,6 +438,7 @@ export class GameScene extends Phaser.Scene {
         this.addCurvyWall(room.angleBegin, room.angleEnd, room.radiusBegin);
       }
     });
+    this.addCurvyWall(0, 360, ROOMS.maxRadius);
   }
 
   addWall(angle, radiusBegin, radiusEnd) {

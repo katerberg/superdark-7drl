@@ -25,6 +25,14 @@ export const WALLS = {
   nodeRadius: 10,
 };
 
+export const ROOMS = {
+  minSize: 150,
+  maxSize: 600,
+  doorSize: 100,
+  minRadius: 300,
+  maxRadius: 1250,
+};
+
 export const TIME = {
   TOTAL: 900_000,
 };

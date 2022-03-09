@@ -1,3 +1,4 @@
+import {ROOMS} from '../constants/index';
 import {arcLengthToAngle} from './math';
 
 function rangeSize(oldRange) {
@@ -60,10 +61,10 @@ export function randomInRange(oldRange) {
 
 // {...,doors: {left: [begin, end], right: [begin, end], ...}}
 
-export function getVerticalRange(room, minSize) {
+export function getVerticalRange(room) {
   const range = [];
-  range.push([room.radiusBegin, room.radiusBegin + minSize]);
-  range.push([room.radiusEnd - minSize, room.radiusEnd]);
+  range.push([room.radiusBegin, room.radiusBegin + ROOMS.minSize]);
+  range.push([room.radiusEnd - ROOMS.minSize, room.radiusEnd]);
   if (room.doors.left) {
     range.push(room.doors.left);
   }
@@ -73,13 +74,13 @@ export function getVerticalRange(room, minSize) {
   return invertedRange(range);
 }
 
-export function isHorizontalWallPlaceable(room, minSize) {
-  return getVerticalRange(room, minSize).length > 0;
+export function isHorizontalWallPlaceable(room) {
+  return getVerticalRange(room, ROOMS.minSize).length > 0;
 }
 
-export function getHorizontalRange(room, minSize) {
+export function getHorizontalRange(room) {
   const range = [];
-  const minAngle = arcLengthToAngle(minSize, room.radiusBegin);
+  const minAngle = arcLengthToAngle(ROOMS.minSize, room.radiusBegin);
   range.push([room.angleBegin, room.angleBegin + minAngle]);
   range.push([room.angleEnd - minAngle, room.angleEnd]);
   if (room.doors.top) {
@@ -91,8 +92,8 @@ export function getHorizontalRange(room, minSize) {
   return invertedRange(range);
 }
 
-export function isVerticalWallPlaceable(room, minSize) {
-  return getHorizontalRange(room, minSize).length > 0;
+export function isVerticalWallPlaceable(room) {
+  return getHorizontalRange(room, ROOMS.minSize).length > 0;
 }
 
 export function splitDoorsVertically(room, radius) {
