@@ -91,6 +91,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
           speedMagnitude * Math.sin(Phaser.Math.DegToRad(this.angle)),
         );
       }
+      this.legs.setAngle(this.angle); //Where we're going, we don't need legs
+      this.legs.moveTo(this.body.x, this.body.y);
     }
     // TODO: Turn towards needed angle
   }
