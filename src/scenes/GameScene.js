@@ -281,16 +281,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   findPath(start, end) {
-    console.log('find path');
     // find what rooms start and end are in and generate new paths array incorporating them
     // (how do i generate if they're in a doorway?)
     const polarStart = cartesianToPolar(start.x, start.y);
     const polarEnd = cartesianToPolar(end.x, end.y);
-    console.log('polarStart', polarStart);
-    console.log('polarEnd', polarEnd);
     let startRoomIndex, endRoomIndex;
     this.rooms.forEach((room, roomIndex) => {
-      console.log(room);
       if (
         polarStart.angle > room.angleBegin &&
         polarStart.angle < room.angleEnd &&
@@ -308,9 +304,6 @@ export class GameScene extends Phaser.Scene {
         endRoomIndex = roomIndex;
       }
     });
-
-    console.log('start room', startRoomIndex);
-    console.log('end room', endRoomIndex);
 
     if (startRoomIndex === endRoomIndex) {
       return [start, end];
@@ -336,7 +329,6 @@ export class GameScene extends Phaser.Scene {
         }
       }
     });
-    console.log(newPaths);
 
     const frontier = [];
     frontier.push({index: startIndex, priority: 0});
