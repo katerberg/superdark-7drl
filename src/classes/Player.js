@@ -64,13 +64,10 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   handleMovement(keys) {
     const {up, down, left, right, w, s, a, d} = keys;
-    if (up?.isDown || down?.isDown || left?.isDown || right?.isDown || w.isDown || s.isDown || a.isDown || d.isDown) {
+    if (up?.isDown || down?.isDown || w.isDown || s.isDown) {
       const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : PLAYER.SPEED;
-      const angleSpeed = PLAYER.ANGLE_SPEED;
       const speedMagnitude = up?.isDown || w.isDown ? moveSpeed : down?.isDown || s.isDown ? -moveSpeed : 0;
 
-      this.angle -= left?.isDown || a.isDown ? angleSpeed : 0;
-      this.angle += right?.isDown || d.isDown ? angleSpeed : 0;
       this.body.setVelocity(
         speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),
         speedMagnitude * Math.sin(Phaser.Math.DegToRad(this.angle)),
@@ -78,7 +75,12 @@ export class Player extends Phaser.GameObjects.Sprite {
     } else {
       this.body.setVelocity(0);
     }
-    this.legs.setAngle(this.angle);
+    if (left.isDown || right.isDown || a.isDown || d.isDown) {
+      this.body.setAngularVelocity(left.isDown || a.isDown ? -1 * PLAYER.ANGLE_SPEED : PLAYER.ANGLE_SPEED);
+    } else {
+      this.body.setAngularVelocity(0);
+    }
+    this.legs.setAngle(this.angle); //Where we're going, we don't need legs
     this.legs.moveTo(this.body.x, this.body.y);
   }
 
