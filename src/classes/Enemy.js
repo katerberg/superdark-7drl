@@ -1,7 +1,6 @@
 import * as Phaser from 'phaser';
-import {DEPTH, ENEMY} from '../constants';
+import {DEPTH, ENEMY, WALLS} from '../constants';
 import {createFloatingText} from '../utils/visuals';
-import {MoveTarget} from './MoveTarget';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
 import {EnemyGun} from './Weapon';
@@ -79,11 +78,28 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     return Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.x, this.y, target.x, target.y));
   }
 
+  isInFieldOfView(angle) {
+    return Math.abs(angle - this.angle) < ENEMY.VIEW_ANGLE;
+  }
+
+  isSeeing(target) {
+    if (!this.isInFieldOfView(this.getGoalAngle(target))) {
+      return false;
+    }
+
+    const line = new Phaser.Geom.Line(this.x, this.y, target.x, target.y);
+    return !this.scene.walls
+      .getChildren()
+      .some((wall) =>
+        Phaser.Geom.Intersects.LineToCircle(line, new Phaser.Geom.Circle(wall.x, wall.y, WALLS.nodeRadius)),
+      );
+  }
+
   moveTowardsMoveTarget() {
     if (this.moveTarget) {
       const goalAngle = this.getGoalAngle(this.moveTarget);
       this.aimTowards(goalAngle);
-      if (Math.abs(goalAngle - this.angle) < 90) {
+      if (this.isInFieldOfView(goalAngle)) {
         const speedMagnitude = ENEMY.MOVE_SPEED;
         this.body.setVelocity(
           speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),
@@ -126,8 +142,14 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     if (time > this.lastShot + this.shotDelay) {
       this.shoot(time);
     }
-
-    this.moveTowardsMoveTarget();
+    const canSeePlayer = this.isSeeing(this.scene.player);
+    if (!this.aimTarget && canSeePlayer) {
+      this.aimTarget = this.scene.player;
+      this.moveTarget = this.scene.player;
+    }
+    if (!canSeePlayer) {
+      this.moveTowardsMoveTarget();
+    }
     this.aimTowardsAimTarget();
   }
 }
