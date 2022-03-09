@@ -12,6 +12,7 @@ class Weapon {
   reloadTime;
   soundRadiusOfUse;
   active;
+  lastReload = -10000;
   lastShot = -10000;
 
   constructor(
@@ -65,8 +66,12 @@ class Weapon {
     return WEAPON_EVENT.NOT_READY;
   }
 
-  reload() {
-    this.currentAmmunition = this.maxAmmunition;
+  reload(currentTime) {
+    if (currentTime > this.lastReload + this.reloadTime) {
+      this.currentAmmunition = this.maxAmmunition;
+      window.gameState.runUntil[getRealTime(this.reloadTime + currentTime)] = 'reload';
+      this.lastReload = currentTime;
+    }
   }
 }
 

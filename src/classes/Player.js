@@ -1,7 +1,6 @@
 import * as Phaser from 'phaser';
 import {DEPTH, EVENTS, GAME_STATUS, PLAYER, SCENES, WEAPON_EVENT} from '../constants';
 import {isDebug} from '../utils/environments';
-import {getRealTime} from '../utils/time';
 import {createFloatingText} from '../utils/visuals';
 import {Inventory} from './Inventory';
 import {PlayerLegs} from './PlayerLegs';
@@ -11,8 +10,6 @@ export class Player extends Phaser.GameObjects.Sprite {
   inventory;
   legs;
   cursors;
-  lastReload = window.gameState.startTime - 10_0000;
-  lastShot = window.gameState.startTime - 10_0000;
   hp = isDebug() ? PLAYER.MAX_HP_DEBUG : PLAYER.MAX_HP;
 
   constructor({scene, x, y, key, angle}) {
@@ -66,11 +63,8 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   handleReload(currentTime, keys) {
-    if (keys.r.isDown && currentTime > this.lastReload + this.inventory.getActiveWeapon().reloadTime) {
-      this.inventory.getActiveWeapon().reload();
-      window.gameState.runUntil[getRealTime(this.inventory.getActiveWeapon().reloadTime + currentTime)] = 'reload';
-
-      this.lastReload = currentTime;
+    if (keys.r.isDown) {
+      this.inventory.getActiveWeapon().reload(currentTime);
     }
   }
 
