@@ -190,6 +190,9 @@ export class GameScene extends Phaser.Scene {
     return {boundaryWalls, shadowWalls};
   }
 
+  //{doorEntry: {
+  //  door: [startValueOfDoor, endValueOfDoor] // curved wall are start and end angle, straight are radius from center
+  // }}
   makePaths() {
     this.rooms.forEach((room, roomIndex) => {
       const nodes = [];
