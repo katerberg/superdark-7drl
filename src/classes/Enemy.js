@@ -51,6 +51,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   }
 
   shoot(time) {
+    console.log(this.getCurrentRoom());
     if (this.aimTarget && Math.abs(this.getGoalAngle(this.aimTarget) - this.angle) < 30) {
       this.lastShot = time;
       this.scene.addProjectile(
@@ -136,6 +137,10 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       const goalAngle = this.getGoalAngle(this.aimTarget);
       this.aimTowards(goalAngle);
     }
+  }
+
+  getCurrentRoom() {
+    return this.scene.rooms.find((r) => r.isPointInRoom(this.x, this.y));
   }
 
   update(time) {
