@@ -169,7 +169,18 @@ export class GameScene extends Phaser.Scene {
     for (let i = 0; i < numberOfNodes; i++) {
       boundaryWalls.push(new BoundaryWall({scene: this, x: x1 + i * nodeDistanceX, y: y1 + i * nodeDistanceY}));
     }
-    shadowWalls.push([x1, y1, x2, y2]);
+
+    const normal = getNormalized({x: y2 - y1, y: x1 - x2});
+    const inner1 = {x: x1 - normal.x * WALLS.nodeRadius, y: y1 - normal.y * WALLS.nodeRadius};
+    const outer1 = {x: x1 + normal.x * WALLS.nodeRadius, y: y1 + normal.y * WALLS.nodeRadius};
+    const inner2 = {x: x2 - normal.x * WALLS.nodeRadius, y: y2 - normal.y * WALLS.nodeRadius};
+    const outer2 = {x: x2 + normal.x * WALLS.nodeRadius, y: y2 + normal.y * WALLS.nodeRadius};
+    shadowWalls.push(
+      [inner1.x, inner1.y, outer1.x, outer1.y],
+      [inner2.x, inner2.y, outer2.x, outer2.y],
+      [inner1.x, inner1.y, inner2.x, inner2.y],
+      [outer1.x, outer1.y, outer2.x, outer2.y],
+    );
     return {boundaryWalls, shadowWalls};
   }
 
@@ -183,14 +194,25 @@ export class GameScene extends Phaser.Scene {
 
     let wallAngle = angleBegin;
     let wallPosition = polarToCartesian(wallAngle, radius);
+    let wallInnerPosition = polarToCartesian(wallAngle, radius - WALLS.nodeRadius);
+    let wallOuterPosition = polarToCartesian(wallAngle, radius + WALLS.nodeRadius);
+    shadowWalls.push([wallInnerPosition.x, wallInnerPosition.y, wallOuterPosition.x, wallOuterPosition.y]);
     for (let i = 1; i <= numberOfNodes; i++) {
       const newWallAngle = angleBegin + (i / numberOfNodes) * angleDiff;
       const newWallPosition = polarToCartesian(newWallAngle, radius);
+      const newWallInnerPosition = polarToCartesian(newWallAngle, radius - WALLS.nodeRadius);
+      const newWallOuterPosition = polarToCartesian(newWallAngle, radius + WALLS.nodeRadius);
       boundaryWalls.push(new BoundaryWall({scene: this, x: wallPosition.x, y: wallPosition.y}));
-      shadowWalls.push([wallPosition.x, wallPosition.y, newWallPosition.x, newWallPosition.y]);
+      shadowWalls.push(
+        [wallInnerPosition.x, wallInnerPosition.y, newWallInnerPosition.x, newWallInnerPosition.y],
+        [wallOuterPosition.x, wallOuterPosition.y, newWallOuterPosition.x, newWallOuterPosition.y],
+      );
       wallAngle = newWallAngle;
       wallPosition = newWallPosition;
+      wallInnerPosition = newWallInnerPosition;
+      wallOuterPosition = newWallOuterPosition;
     }
+    shadowWalls.push([wallInnerPosition.x, wallInnerPosition.y, wallOuterPosition.x, wallOuterPosition.y]);
     return {boundaryWalls, shadowWalls};
   }
 
