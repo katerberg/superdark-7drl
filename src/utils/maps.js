@@ -1,5 +1,6 @@
+import {Room} from '../classes/Room';
 import {ROOMS} from '../constants/index';
-import {arcLengthToAngle} from './math';
+import {angleToArcLength, arcLengthToAngle} from './math';
 
 function rangeSize(oldRange) {
   const range = normalizedRange(oldRange);
@@ -42,7 +43,7 @@ function invertedRange(oldRange) {
   return invertRange;
 }
 
-export function randomInRange(oldRange) {
+function randomInRange(oldRange) {
   const range = normalizedRange(oldRange);
   const magnitude = rangeSize(range);
   let rand = Math.random() * magnitude;
@@ -61,7 +62,7 @@ export function randomInRange(oldRange) {
 
 // {...,doors: {left: [begin, end], right: [begin, end], ...}}
 
-export function getVerticalRange(room) {
+function getVerticalRange(room) {
   const range = [];
   range.push([room.radiusBegin, room.radiusBegin + ROOMS.minSize]);
   range.push([room.radiusEnd - ROOMS.minSize, room.radiusEnd]);
@@ -74,11 +75,11 @@ export function getVerticalRange(room) {
   return invertedRange(range);
 }
 
-export function isHorizontalWallPlaceable(room) {
+function isHorizontalWallPlaceable(room) {
   return getVerticalRange(room, ROOMS.minSize).length > 0;
 }
 
-export function getHorizontalRange(room) {
+function getHorizontalRange(room) {
   const range = [];
   const minAngle = arcLengthToAngle(ROOMS.minSize, room.radiusBegin);
   range.push([room.angleBegin, room.angleBegin + minAngle]);
@@ -92,11 +93,11 @@ export function getHorizontalRange(room) {
   return invertedRange(range);
 }
 
-export function isVerticalWallPlaceable(room) {
+function isVerticalWallPlaceable(room) {
   return getHorizontalRange(room, ROOMS.minSize).length > 0;
 }
 
-export function splitDoorsVertically(room, radius) {
+function splitDoorsVertically(room, radius) {
   const bottomRoomDoors = noDoors();
   const topRoomDoors = noDoors();
   bottomRoomDoors.bottom = room.doors.bottom;
@@ -117,7 +118,7 @@ export function splitDoorsVertically(room, radius) {
   return {bottomRoomDoors, topRoomDoors};
 }
 
-export function splitDoorsHorizontally(room, angle) {
+function splitDoorsHorizontally(room, angle) {
   const leftRoomDoors = noDoors();
   const rightRoomDoors = noDoors();
   leftRoomDoors.left = room.doors.left;
@@ -138,6 +139,65 @@ export function splitDoorsHorizontally(room, angle) {
   return {leftRoomDoors, rightRoomDoors};
 }
 
-export function noDoors() {
+function noDoors() {
   return {left: null, right: null, bottom: null, top: null};
+}
+
+export function generateRooms() {
+  let rooms = [new Room(0, 360, ROOMS.minRadius, ROOMS.maxRadius, noDoors())];
+
+  let splittable;
+  do {
+    splittable = false;
+    const newRooms = [];
+    //eslint-disable-next-line no-loop-func
+    rooms.forEach((r) => {
+      const radiusDiff = r.radiusEnd - r.radiusBegin;
+      const angleDiff = r.angleEnd - r.angleBegin;
+      const midRadius = (r.radiusBegin + r.radiusEnd) / 2;
+
+      const height = radiusDiff;
+      const width = angleToArcLength(angleDiff, midRadius);
+
+      if (height <= ROOMS.maxSize && width <= ROOMS.maxSize) {
+        newRooms.push(r);
+      } else if (isHorizontalWallPlaceable(r) && (height > width || !isVerticalWallPlaceable(r))) {
+        // room is tall or room is not splittable horizontally, then split it vertically
+        splittable = true;
+        const newRadius = randomInRange(getVerticalRange(r));
+        const splitDoorSet = splitDoorsVertically(r, newRadius);
+        const newWallWidth = angleToArcLength(angleDiff, newRadius);
+        const newDoorOffset = Math.random() * (newWallWidth - ROOMS.doorSize);
+        const newDoorBegin = r.angleBegin + arcLengthToAngle(newDoorOffset, newRadius);
+        const newDoorEnd = newDoorBegin + arcLengthToAngle(ROOMS.doorSize, newRadius);
+        const newDoor = [newDoorBegin, newDoorEnd];
+        splitDoorSet.bottomRoomDoors.top = newDoor;
+        splitDoorSet.topRoomDoors.bottom = newDoor;
+
+        newRooms.push(new Room(r.angleBegin, r.angleEnd, r.radiusBegin, newRadius, splitDoorSet.bottomRoomDoors));
+        newRooms.push(new Room(r.angleBegin, r.angleEnd, newRadius, r.radiusEnd, splitDoorSet.topRoomDoors));
+      } else if (isVerticalWallPlaceable(r)) {
+        // otherwise split it horizontally
+        splittable = true;
+        const newAngle = randomInRange(getHorizontalRange(r));
+        const splitDoorSet = splitDoorsHorizontally(r, newAngle);
+        const newDoorOffset = Math.random() * (radiusDiff - ROOMS.doorSize);
+        const newDoorBegin = r.radiusBegin + newDoorOffset;
+        const newDoorEnd = newDoorBegin + ROOMS.doorSize;
+        const newDoor = [newDoorBegin, newDoorEnd];
+        splitDoorSet.leftRoomDoors.right = newDoor;
+        splitDoorSet.rightRoomDoors.left = newDoor;
+
+        newRooms.push(new Room(r.angleBegin, newAngle, r.radiusBegin, r.radiusEnd, splitDoorSet.leftRoomDoors));
+        newRooms.push(new Room(newAngle, r.angleEnd, r.radiusBegin, r.radiusEnd, splitDoorSet.rightRoomDoors));
+      } else {
+        // can't split room b/c of doors
+        newRooms.push(r);
+      }
+    });
+    rooms = newRooms;
+  } while (splittable);
+
+  // this.addWalls();
+  return rooms;
 }

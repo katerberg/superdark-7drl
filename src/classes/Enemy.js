@@ -18,14 +18,14 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   lastNode;
   nodeIncrement = -1;
 
-  constructor({scene, x, y, key, hp}) {
+  constructor({scene, x, y, key, hp, path}) {
     super(scene, x, y, key);
     this.hp = hp;
     this.angle = 0;
     this.depth = DEPTH.ENEMY;
     this.weapon = new EnemyGun();
     this.lastNode = 0;
-    this.path = this.scene.findPath({x, y}, {x: 1150, y: 100}).slice(0, 5);
+    this.path = path;
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
     this.setOrigin(ENEMY.XCENTER / ENEMY.WIDTH, ENEMY.YCENTER / ENEMY.HEIGHT);
@@ -109,16 +109,14 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     // TODO: Handle having to turn around after overshooting the other side of the door
     if (!this.moveTarget || this.moveTarget.matches(this.x, this.y)) {
       if (this.lastNode === this.path.length - 1 || this.lastNode === 0) {
-        console.log('reversing direction');
         this.nodeIncrement *= -1;
       }
       this.lastNode += this.nodeIncrement;
-      console.log(`going to step ${this.lastNode}`);
       this.goToNode(this.lastNode);
     }
     const goalAngle = this.getGoalAngle(this.moveTarget);
     this.aimTowards(goalAngle);
-    if (this.isInFieldOfView(goalAngle)) {
+    if (Math.abs(goalAngle - this.angle) < 40) {
       const speedMagnitude = ENEMY.MOVE_SPEED;
       this.body.setVelocity(
         speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),

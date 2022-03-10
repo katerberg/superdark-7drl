@@ -12,20 +12,10 @@ import {Enemy} from '../classes/Enemy';
 import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
 import {Player} from '../classes/Player';
-import {Room} from '../classes/Room';
 import {WinSwitch} from '../classes/WinSwitch';
 import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES, WALLS, ROOMS} from '../constants';
 import {isDebug} from '../utils/environments';
-import {
-  getHorizontalRange,
-  getVerticalRange,
-  isHorizontalWallPlaceable,
-  isVerticalWallPlaceable,
-  noDoors,
-  randomInRange,
-  splitDoorsHorizontally,
-  splitDoorsVertically,
-} from '../utils/maps';
+import {generateRooms} from '../utils/maps';
 import {
   angleToArcLength,
   arcLengthToAngle,
@@ -104,7 +94,9 @@ export class GameScene extends Phaser.Scene {
     this.addWinSwitch();
     this.addRooms();
     this.makePaths();
-    this.addEnemy();
+    for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
+      this.addEnemy();
+    }
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
 
@@ -252,12 +244,13 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
+    this.basePath = this.findPath({x: 1350, y: 100}, {x: 1150, y: 100});
     if (isDebug()) {
-      this.drawPaths();
+      this.drawBasePath();
     }
   }
 
-  drawPaths() {
+  drawBasePath() {
     this.nodes.forEach((node, nodeIndex) => {
       const position = polarToCartesian(node.polarPosition.angle, node.polarPosition.radius);
       const circle = new Phaser.Geom.Circle(position.x, position.y, 5);
@@ -276,12 +269,16 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
-    const testPath = this.findPath({x: 1350, y: 100}, {x: 1150, y: 100});
-    testPath.forEach((point, pointIndex) => {
-      if (pointIndex < testPath.length - 1) {
+    this.basePath.forEach((point, pointIndex) => {
+      if (pointIndex < this.basePath.length - 1) {
         const graphics = this.add.graphics();
         graphics.lineStyle(4, 0xff9999, 1);
-        const line = new Phaser.Geom.Line(point.x, point.y, testPath[pointIndex + 1].x, testPath[pointIndex + 1].y);
+        const line = new Phaser.Geom.Line(
+          point.x,
+          point.y,
+          this.basePath[pointIndex + 1].x,
+          this.basePath[pointIndex + 1].y,
+        );
         graphics.strokeLineShape(line);
       }
     });
@@ -407,9 +404,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   addEnemy() {
-    const x = PLAY_AREA.width / 2 + 100;
-    const y = 200;
-    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: ENEMY.HP});
+    // Disallow first 4 rooms, and ensure that there is some space to walk
+    const firstNode = Math.floor(Math.random() * (this.basePath.length - 8)) + 4;
+    const path = this.basePath.slice(firstNode, firstNode + 4);
+    const [{x, y}] = path;
+    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: ENEMY.HP, path});
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }
@@ -573,63 +572,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   addRooms() {
-    this.rooms = [new Room(0, 360, ROOMS.minRadius, ROOMS.maxRadius, noDoors())];
-
-    let splittable;
-    do {
-      splittable = false;
-      const newRooms = [];
-      //eslint-disable-next-line no-loop-func
-      this.rooms.forEach((r) => {
-        const radiusDiff = r.radiusEnd - r.radiusBegin;
-        const angleDiff = r.angleEnd - r.angleBegin;
-        const midRadius = (r.radiusBegin + r.radiusEnd) / 2;
-
-        const height = radiusDiff;
-        const width = angleToArcLength(angleDiff, midRadius);
-
-        if (height <= ROOMS.maxSize && width <= ROOMS.maxSize) {
-          newRooms.push(r);
-        } else if (isHorizontalWallPlaceable(r) && (height > width || !isVerticalWallPlaceable(r))) {
-          // room is tall or room is not splittable horizontally, then split it vertically
-          splittable = true;
-          const newRadius = randomInRange(getVerticalRange(r));
-          const splitDoorSet = splitDoorsVertically(r, newRadius);
-          const newWallWidth = angleToArcLength(angleDiff, newRadius);
-          const newDoorOffset = Math.random() * (newWallWidth - ROOMS.doorSize);
-          const newDoorBegin = r.angleBegin + arcLengthToAngle(newDoorOffset, newRadius);
-          const newDoorEnd = newDoorBegin + arcLengthToAngle(ROOMS.doorSize, newRadius);
-          const newDoor = [newDoorBegin, newDoorEnd];
-          splitDoorSet.bottomRoomDoors.top = newDoor;
-          splitDoorSet.topRoomDoors.bottom = newDoor;
-
-          newRooms.push(new Room(r.angleBegin, r.angleEnd, r.radiusBegin, newRadius, splitDoorSet.bottomRoomDoors));
-          newRooms.push(new Room(r.angleBegin, r.angleEnd, newRadius, r.radiusEnd, splitDoorSet.topRoomDoors));
-        } else if (isVerticalWallPlaceable(r)) {
-          // otherwise split it horizontally
-          splittable = true;
-          const newAngle = randomInRange(getHorizontalRange(r));
-          const splitDoorSet = splitDoorsHorizontally(r, newAngle);
-          const newDoorOffset = Math.random() * (radiusDiff - ROOMS.doorSize);
-          const newDoorBegin = r.radiusBegin + newDoorOffset;
-          const newDoorEnd = newDoorBegin + ROOMS.doorSize;
-          const newDoor = [newDoorBegin, newDoorEnd];
-          splitDoorSet.leftRoomDoors.right = newDoor;
-          splitDoorSet.rightRoomDoors.left = newDoor;
-
-          newRooms.push(new Room(r.angleBegin, newAngle, r.radiusBegin, r.radiusEnd, splitDoorSet.leftRoomDoors));
-          newRooms.push(new Room(newAngle, r.angleEnd, r.radiusBegin, r.radiusEnd, splitDoorSet.rightRoomDoors));
-        } else {
-          // can't split room b/c of doors
-          newRooms.push(r);
-        }
-      });
-      this.rooms = newRooms;
-    } while (splittable);
+    this.rooms = generateRooms();
 
     if (isDebug()) {
       this.drawFloorplan();
     }
+
     this.addWalls();
   }
 
