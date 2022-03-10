@@ -6,6 +6,7 @@ import {createExpandingText, createFloatingText, drawTracer} from '../utils/visu
 import {Inventory} from './Inventory';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
+import {Reticle} from './Reticle';
 
 export class Player extends Phaser.GameObjects.Sprite {
   inventory;
@@ -41,6 +42,8 @@ export class Player extends Phaser.GameObjects.Sprite {
     });
     this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, player: this});
     this.legs.play('walk');
+
+    this.reticle = new Reticle({scene, x, y, player: this});
   }
 
   getProjectileStart() {
@@ -128,5 +131,6 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   update(currentTime) {
     this.handleInput(currentTime);
+    this.reticle.update();
   }
 }
