@@ -292,22 +292,12 @@ export class GameScene extends Phaser.Scene {
     const polarStart = cartesianToPolar(start.x, start.y);
     const polarEnd = cartesianToPolar(end.x, end.y);
     let startRoomIndex, endRoomIndex;
-    this.rooms.forEach((room, roomIndex) => {
-      if (
-        polarStart.angle > room.angleBegin &&
-        polarStart.angle < room.angleEnd &&
-        polarStart.radius > room.radiusBegin &&
-        polarStart.radius < room.radiusEnd
-      ) {
-        startRoomIndex = roomIndex;
+    this.rooms.forEach((room, i) => {
+      if (room.isPointInRoom(start.x, start.y)) {
+        startRoomIndex = i;
       }
-      if (
-        polarEnd.angle > room.angleBegin &&
-        polarEnd.angle < room.angleEnd &&
-        polarEnd.radius > room.radiusBegin &&
-        polarEnd.radius < room.radiusEnd
-      ) {
-        endRoomIndex = roomIndex;
+      if (room.isPointInRoom(end.x, end.y)) {
+        endRoomIndex = i;
       }
     });
 
