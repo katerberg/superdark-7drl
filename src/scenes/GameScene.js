@@ -507,7 +507,7 @@ export class GameScene extends Phaser.Scene {
       enemy.update(timeAwareOfPauses);
     });
     this.handleInput();
-    this.clearShadows();
+    // this.clearShadows();
     this.drawShadows();
     this.removeExtraProjectiles(timeAwareOfPauses);
   }
@@ -543,7 +543,8 @@ export class GameScene extends Phaser.Scene {
     const p = {x: this.player.x, y: this.player.y};
     const dirtyMultiplier = 10000;
 
-    this.shadowWalls.forEach((wall) => {
+    // set of two points
+    this.shadowWalls.forEach((wall, i) => {
       const w1 = {
         x: wall[0],
         y: wall[1],
@@ -556,7 +557,12 @@ export class GameScene extends Phaser.Scene {
       };
       const m2 = getNormalized({x: w2.x - p.x, y: w2.y - p.y});
 
-      const graphics = this.add.graphics();
+      let graphics = this.shadows[i];
+      if (!graphics) {
+        graphics = this.add.graphics();
+        this.shadows.push(graphics);
+      }
+      graphics.clear();
       graphics.fillStyle(COLORS.SHADOW);
       graphics.setDepth(DEPTH.SHADOWS);
       graphics.beginPath();
@@ -568,19 +574,16 @@ export class GameScene extends Phaser.Scene {
 
       graphics.closePath();
       graphics.fillPath();
-
-      // this.tweens.add({
-      //   targets: graphics,
-      //   alpha: 1,
-      //   duration: 300,
-      // });
-
-      this.shadows.push(graphics);
     });
   }
 
   drawPeripheralShadows() {
-    const graphics = this.add.graphics();
+    let graphics = this.shadows[this.shadows.length - 1];
+    if (this.shadows.length !== this.shadowWalls.length) {
+      graphics = this.add.graphics();
+      this.shadows.push(graphics);
+    }
+    graphics.clear();
     graphics.fillStyle(COLORS.SHADOW);
     graphics.setDepth(DEPTH.SHADOWS);
     graphics.beginPath();
@@ -611,8 +614,6 @@ export class GameScene extends Phaser.Scene {
     //   alpha: 1,
     //   duration: 300,
     // });
-
-    this.shadows.push(graphics);
   }
 
   addRooms() {
@@ -656,6 +657,7 @@ export class GameScene extends Phaser.Scene {
       this.boundaryWalls.add(w);
     });
     walls.shadowWalls.forEach((w) => {
+      // [x1, y1, x2, y2]
       this.shadowWalls.push(w);
     });
   }
