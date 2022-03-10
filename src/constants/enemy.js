@@ -1,6 +1,9 @@
 export const ENEMY = {
   WIDTH: 313,
   HEIGHT: 206,
+  XCENTER: 96,
+  YCENTER: 120,
+  BOUNDINGSIZE: 90,
   SCALE: 0.25,
   HP: 2,
   LEGS_WIDTH: 172,

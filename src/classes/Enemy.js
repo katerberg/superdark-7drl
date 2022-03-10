@@ -28,14 +28,11 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.path = this.scene.findPath({x, y}, {x: 1150, y: 100}).slice(0, 5);
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
-    const xOrigin = 0.45;
-    const yOrigin = 0.47;
-    this.setDisplayOrigin(xOrigin, yOrigin);
-    this.setOrigin(xOrigin, yOrigin);
+    this.setOrigin(ENEMY.XCENTER / ENEMY.WIDTH, ENEMY.YCENTER / ENEMY.HEIGHT);
 
     scene.physics.world.enable(this);
     this.body.setCollideWorldBounds();
-    this.body.setCircle(30);
+    this.body.setCircle(ENEMY.BOUNDINGSIZE, ENEMY.XCENTER - ENEMY.BOUNDINGSIZE, ENEMY.YCENTER - ENEMY.BOUNDINGSIZE);
     scene.add.existing(this);
 
     this.anims.create({

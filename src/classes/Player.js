@@ -19,13 +19,16 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.angle = angle || 0;
     this.depth = DEPTH.PLAYER;
     this.setDisplaySize(PLAYER.HEIGHT * PLAYER.SCALE, PLAYER.WIDTH * PLAYER.SCALE);
-    const xOrigin = 0.45;
-    const yOrigin = 0.47;
-    this.setDisplayOrigin(xOrigin, yOrigin);
-    this.setOrigin(xOrigin, yOrigin);
+    this.setOrigin(PLAYER.XCENTER / PLAYER.WIDTH, PLAYER.YCENTER / PLAYER.HEIGHT);
+
     scene.physics.world.enable(this);
 
-    this.body.setCircle(90);
+    this.body.setCircle(
+      PLAYER.BOUNDINGSIZE,
+      PLAYER.XCENTER - PLAYER.BOUNDINGSIZE,
+      PLAYER.YCENTER - PLAYER.BOUNDINGSIZE,
+    );
+
     this.body.setCollideWorldBounds();
     scene.add.existing(this);
 
