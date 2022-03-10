@@ -27,6 +27,7 @@ import {
 } from '../utils/math';
 import {createLevelExits, createWinSwitch} from '../utils/setup';
 import {getTimeAwareOfPauses} from '../utils/time';
+import {createExpandingText} from '../utils/visuals';
 
 const immovableOptions = {
   createCallback: (p) => {
@@ -104,12 +105,14 @@ export class GameScene extends Phaser.Scene {
     // TODO: Figure out how to get the collision box to match angle
     this.physics.add.overlap(this.enemies, this.playerProjectiles, (enemy, projectile) => enemy.handleHit(projectile));
     this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
-    this.physics.add.overlap(this.boundaryWalls, this.projectiles, (walls, projectile) =>
-      this.removeProjectile(projectile),
-    );
-    this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (walls, projectile) =>
-      this.removePlayerProjectile(projectile),
-    );
+    this.physics.add.overlap(this.boundaryWalls, this.projectiles, (wall, projectile) => {
+      createExpandingText(this, wall.body.x, wall.body.y, '💥');
+      return this.removeProjectile(projectile);
+    });
+    this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (wall, projectile) => {
+      createExpandingText(this, wall.body.x, wall.body.y, '💥');
+      return this.removePlayerProjectile(projectile);
+    });
     this.physics.add.collider(this.player, this.boundaryWalls);
     this.physics.add.collider(this.player, this.enemies);
     this.physics.add.collider(this.enemies, this.boundaryWalls);
@@ -445,7 +448,7 @@ export class GameScene extends Phaser.Scene {
   addPlayer(startingInfo) {
     this.player = new Player({
       scene: this,
-      x: startingInfo?.startingPosition?.x || PLAY_AREA.width / 2 + 100,
+      x: startingInfo?.startingPosition?.x || PLAY_AREA.width / 2 + 200,
       y: startingInfo?.startingPosition?.y || 100,
       key: 'character',
       angle: startingInfo?.angle,

@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import {DEPTH, ENEMY, WALLS} from '../constants';
-import {createFloatingText} from '../utils/visuals';
+import {createExpandingText, createFloatingText} from '../utils/visuals';
 import {MoveTarget} from './MoveTarget';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
@@ -69,7 +69,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   }
 
   handleHit(projectile) {
-    createFloatingText(this.scene, this.x, this.y, 'ouch', 'red');
+    //TODO: Make this a blood splatter
+    createExpandingText(this.scene, this.x, this.y, '🩸');
     this.hp -= projectile.getDamage();
     this.scene.removePlayerProjectile(projectile);
     if (this.hp <= 0) {

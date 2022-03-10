@@ -4,5 +4,6 @@ export const DEPTH = {
   PLAYER: 2,
   PROJECTILE: 3,
   SHADOWS: 4,
-  HUD: 5,
+  EXPLOSION: 5,
+  HUD: 6,
 };
