@@ -491,8 +491,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   drawShadows() {
-    // this.drawObstacleShadows();
-    // this.drawPeripheralShadows();
+    if (!isDebug()) {
+      this.drawObstacleShadows();
+      this.drawPeripheralShadows();
+    }
   }
 
   drawObstacleShadows() {
