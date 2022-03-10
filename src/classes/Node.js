@@ -7,8 +7,8 @@ export class Node {
   door;
   neighbors = [];
 
-  constructor(room, polarPosition, door) {
-    this.id = uuidv4();
+  constructor({id, room, polarPosition, door}) {
+    this.id = id || uuidv4();
     this.room = room;
     this.door = door;
     this.polarPosition = polarPosition;

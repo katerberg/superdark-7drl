@@ -59,7 +59,7 @@ export class GameScene extends Phaser.Scene {
   levelKey;
   gameEndText;
   rooms;
-  paths;
+  nodes;
 
   constructor() {
     super({
@@ -94,7 +94,7 @@ export class GameScene extends Phaser.Scene {
     this.boundaryWalls = this.physics.add.group(immovableOptions);
     this.shadowWalls = [];
     this.shadows = [];
-    this.paths = [];
+    this.nodes = [];
     this.enemies = this.physics.add.group();
     this.projectiles = this.physics.add.group({runChildUpdate: true});
     this.playerProjectiles = this.physics.add.group({runChildUpdate: true});
@@ -203,7 +203,7 @@ export class GameScene extends Phaser.Scene {
       Object.entries(room.doors).forEach((doorEntry) => {
         const [position, door] = doorEntry;
         if (door) {
-          const node = new Node(room, {}, door);
+          const node = new Node({room, polarPosition: {}, door});
 
           if (position === 'left') {
             node.polarPosition.radius = (door[0] + door[1]) / 2;
@@ -229,19 +229,19 @@ export class GameScene extends Phaser.Scene {
         nodes.forEach((neighborNode, neighborIndex) => {
           if (nodeIndex !== neighborIndex) {
             node.neighbors.push({
-              number: this.paths.length + neighborIndex,
+              number: this.nodes.length + neighborIndex,
               distance: distance(node.polarPosition, neighborNode.polarPosition),
             });
           }
         });
       });
 
-      this.paths = [...this.paths, ...nodes];
-      // push to this.paths
+      this.nodes = [...this.nodes, ...nodes];
+      // push to this.nodes
     });
 
-    this.paths.forEach((node, nodeIndex) => {
-      this.paths.forEach((otherNode, otherNodeIndex) => {
+    this.nodes.forEach((node, nodeIndex) => {
+      this.nodes.forEach((otherNode, otherNodeIndex) => {
         // TODO: fix asap. dirtiest hack ever.
         if (nodeIndex !== otherNodeIndex && node.door[0] === otherNode.door[0] && node.door[1] === otherNode.door[1]) {
           node.neighbors.push({
@@ -258,7 +258,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   drawPaths() {
-    this.paths.forEach((node, nodeIndex) => {
+    this.nodes.forEach((node, nodeIndex) => {
       const position = polarToCartesian(node.polarPosition.angle, node.polarPosition.radius);
       const circle = new Phaser.Geom.Circle(position.x, position.y, 5);
       const graphics = this.add.graphics();
@@ -268,8 +268,8 @@ export class GameScene extends Phaser.Scene {
       this.add.text(position.x, position.y, `${nodeIndex}`);
       node.neighbors.forEach((neighborNode) => {
         const neighborPosition = polarToCartesian(
-          this.paths[neighborNode.number].polarPosition.angle,
-          this.paths[neighborNode.number].polarPosition.radius,
+          this.nodes[neighborNode.number].polarPosition.angle,
+          this.nodes[neighborNode.number].polarPosition.radius,
         );
         const line = new Phaser.Geom.Line(position.x, position.y, neighborPosition.x, neighborPosition.y);
         graphics.strokeLineShape(line);
@@ -288,7 +288,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   findPath(start, end) {
-    // find what rooms start and end are in and generate new paths array incorporating them
+    // find what rooms start and end are in and generate new nodes array incorporating them
     // (how do i generate if they're in a doorway?)
     const polarStart = cartesianToPolar(start.x, start.y);
     const polarEnd = cartesianToPolar(end.x, end.y);
@@ -306,23 +306,23 @@ export class GameScene extends Phaser.Scene {
       return [start, end];
     }
 
-    const newPaths = clone(this.paths);
-    const startIndex = newPaths.length;
-    const endIndex = newPaths.length + 1;
-    newPaths.push(new Node(startRoom, polarStart));
-    newPaths.push(new Node(endRoom, polarEnd));
+    const newNodes = clone(this.nodes);
+    const startIndex = newNodes.length;
+    const endIndex = newNodes.length + 1;
+    newNodes.push(new Node({room: startRoom, polarPosition: polarStart}));
+    newNodes.push(new Node({room: endRoom, polarPosition: polarEnd}));
 
-    newPaths.forEach((node, nodeIndex) => {
+    newNodes.forEach((node, nodeIndex) => {
       if (nodeIndex < startIndex) {
         if (node.room.id === startRoom.id) {
           const nodeDistance = distance(node.polarPosition, polarStart);
           node.neighbors.push({number: startIndex, distance: nodeDistance});
-          newPaths[startIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});
+          newNodes[startIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});
         }
         if (node.room.id === endRoom.id) {
           const nodeDistance = distance(node.polarPosition, polarEnd);
           node.neighbors.push({number: endIndex, distance: nodeDistance});
-          newPaths[endIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});
+          newNodes[endIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});
         }
       }
     });
@@ -338,14 +338,14 @@ export class GameScene extends Phaser.Scene {
       if (nodeIndex === endIndex) {
         break;
       }
-      newPaths[nodeIndex].neighbors.forEach((neighborNode) => {
+      newNodes[nodeIndex].neighbors.forEach((neighborNode) => {
         const neighborNodeIndex = neighborNode.number;
         const costToNeighbor =
-          costSoFar[nodeIndex] + distance(newPaths[nodeIndex].polarPosition, newPaths[neighborNodeIndex].polarPosition);
+          costSoFar[nodeIndex] + distance(newNodes[nodeIndex].polarPosition, newNodes[neighborNodeIndex].polarPosition);
         if (typeof costSoFar[neighborNodeIndex] === 'undefined' || costToNeighbor < costSoFar[neighborNodeIndex]) {
           costSoFar[neighborNodeIndex] = costToNeighbor;
           const priority =
-            costToNeighbor + distance(newPaths[neighborNodeIndex].polarPosition, newPaths[endIndex].polarPosition);
+            costToNeighbor + distance(newNodes[neighborNodeIndex].polarPosition, newNodes[endIndex].polarPosition);
           cameFrom[neighborNodeIndex] = nodeIndex;
           frontier.push({index: neighborNodeIndex, priority});
           frontier.sort((a, b) => b.priority - a.priority);
@@ -365,7 +365,7 @@ export class GameScene extends Phaser.Scene {
     const pointPath = [];
     nodeIndexPath.forEach((nodeIndex) => {
       pointPath.push(
-        polarToCartesian(newPaths[nodeIndex].polarPosition.angle, newPaths[nodeIndex].polarPosition.radius),
+        polarToCartesian(newNodes[nodeIndex].polarPosition.angle, newNodes[nodeIndex].polarPosition.radius),
       );
     });
     return pointPath;
