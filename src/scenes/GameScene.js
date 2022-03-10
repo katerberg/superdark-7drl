@@ -360,13 +360,12 @@ export class GameScene extends Phaser.Scene {
     }
 
     const nodeIndexPath = [endIndex];
-    while (true) {
-      const nextNodeIndex = nodeIndexPath[nodeIndexPath.length - 1];
-      if (cameFrom[nextNodeIndex] === -1) {
-        break;
-      }
+    let nextNodeIndex;
+    while (cameFrom[nextNodeIndex] !== -1) {
+      nextNodeIndex = nodeIndexPath[nodeIndexPath.length - 1];
       nodeIndexPath.push(cameFrom[nextNodeIndex]);
     }
+    nodeIndexPath.pop();
     nodeIndexPath.reverse();
 
     const pointPath = [];

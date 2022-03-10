@@ -39,8 +39,6 @@ export function cartesianToPolar(x, y) {
   const xNew = x - PLAY_AREA.width / 2;
   const yNew = y - PLAY_AREA.height / 2;
   const radius = Math.sqrt(Math.pow(xNew, 2) + Math.pow(yNew, 2));
-  console.log('xNew', xNew);
-  console.log('yNew', yNew);
   const angle = offsetRadToDeg(Math.atan(yNew / xNew)) + (xNew > 0 ? 0 : 180);
   return {angle, radius};
 }
