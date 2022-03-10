@@ -16,6 +16,7 @@ export class HudScene extends Phaser.Scene {
   playerKeys;
   inventoryImages; // image[]
   inventoryAmmoTexts; // text[]
+  pauseIndicator;
 
   constructor() {
     super({
@@ -61,6 +62,25 @@ export class HudScene extends Phaser.Scene {
     this.lastPause = 0;
     this.drawTimer(window.gameState.startTime);
     this.addInventory();
+    this.drawPauseIndicator();
+  }
+
+  drawPauseIndicator() {
+    const borderWidth = 10;
+    if (this.pauseIndicator) {
+      this.pauseIndicator.destroy();
+    }
+    this.pauseIndicator = this.add.graphics();
+    const opacity = window.gameState.paused ? 0.5 : 0;
+    this.pauseIndicator.fillStyle(0x999999, opacity);
+    let rect = new Phaser.Geom.Rectangle(0, 0, GAME.width, borderWidth);
+    this.pauseIndicator.fillRectShape(rect);
+    rect = new Phaser.Geom.Rectangle(0, GAME.height - borderWidth, GAME.width, borderWidth);
+    this.pauseIndicator.fillRectShape(rect);
+    rect = new Phaser.Geom.Rectangle(0, 0, borderWidth, GAME.height);
+    this.pauseIndicator.fillRectShape(rect);
+    rect = new Phaser.Geom.Rectangle(GAME.width - borderWidth, 0, borderWidth, GAME.height);
+    this.pauseIndicator.fillRectShape(rect);
   }
 
   getGameScene() {
@@ -170,7 +190,8 @@ export class HudScene extends Phaser.Scene {
   }
 
   update(time) {
-    this.cameras.main.setBackgroundColor(window.gameState.paused ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0)');
+    // this.cameras.main.setBackgroundColor(window.gameState.paused ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0)');
+    this.drawPauseIndicator();
     this.handleInput(time);
     this.updateTimer(time);
     this.updateInventory();
