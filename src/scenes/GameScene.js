@@ -10,6 +10,7 @@ import winSwitchImage from '../assets/winSwitch.png';
 import {BoundaryWall} from '../classes/BoundaryWall';
 import {Enemy} from '../classes/Enemy';
 import {Exit} from '../classes/Exit';
+import {Node} from '../classes/Node';
 import {Player} from '../classes/Player';
 import {Room} from '../classes/Room';
 import {WinSwitch} from '../classes/WinSwitch';
@@ -197,12 +198,12 @@ export class GameScene extends Phaser.Scene {
   //  door: [startValueOfDoor, endValueOfDoor] // curved wall are start and end angle, straight are radius from center
   // }}
   makePaths() {
-    this.rooms.forEach((room, roomIndex) => {
+    this.rooms.forEach((room) => {
       const nodes = [];
       Object.entries(room.doors).forEach((doorEntry) => {
         const [position, door] = doorEntry;
         if (door) {
-          const node = {roomNumber: roomIndex, door, polarPosition: {}};
+          const node = new Node(room, {}, door);
 
           if (position === 'left') {
             node.polarPosition.radius = (door[0] + door[1]) / 2;
@@ -235,7 +236,7 @@ export class GameScene extends Phaser.Scene {
         });
       });
 
-      this.paths = this.paths.concat(nodes);
+      this.paths = [...this.paths, ...nodes];
       // push to this.paths
     });
 
@@ -291,34 +292,34 @@ export class GameScene extends Phaser.Scene {
     // (how do i generate if they're in a doorway?)
     const polarStart = cartesianToPolar(start.x, start.y);
     const polarEnd = cartesianToPolar(end.x, end.y);
-    let startRoomIndex, endRoomIndex;
-    this.rooms.forEach((room, i) => {
+    let startRoom, endRoom;
+    this.rooms.forEach((room) => {
       if (room.isPointInRoom(start.x, start.y)) {
-        startRoomIndex = i;
+        startRoom = room;
       }
       if (room.isPointInRoom(end.x, end.y)) {
-        endRoomIndex = i;
+        endRoom = room;
       }
     });
 
-    if (startRoomIndex === endRoomIndex) {
+    if (startRoom === endRoom) {
       return [start, end];
     }
 
     const newPaths = clone(this.paths);
     const startIndex = newPaths.length;
     const endIndex = newPaths.length + 1;
-    newPaths.push({roomNumber: startRoomIndex, polarPosition: polarStart, neighbors: []});
-    newPaths.push({roomNumber: endRoomIndex, polarPosition: polarEnd, neighbors: []});
+    newPaths.push(new Node(startRoom, polarStart));
+    newPaths.push(new Node(endRoom, polarEnd));
 
     newPaths.forEach((node, nodeIndex) => {
       if (nodeIndex < startIndex) {
-        if (node.roomNumber === startRoomIndex) {
+        if (node.room.id === startRoom.id) {
           const nodeDistance = distance(node.polarPosition, polarStart);
           node.neighbors.push({number: startIndex, distance: nodeDistance});
           newPaths[startIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});
         }
-        if (node.roomNumber === endRoomIndex) {
+        if (node.room.id === endRoom.id) {
           const nodeDistance = distance(node.polarPosition, polarEnd);
           node.neighbors.push({number: endIndex, distance: nodeDistance});
           newPaths[endIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});

@@ -1,6 +1,8 @@
+import {v4 as uuidv4} from 'uuid';
 import {cartesianToPolar} from '../utils/math';
 
 export class Room {
+  id;
   angleBegin;
   angleEnd;
   radiusBegin;
@@ -8,6 +10,7 @@ export class Room {
   doors;
 
   constructor(angleBegin, angleEnd, radiusBegin, radiusEnd, doors) {
+    this.id = uuidv4();
     this.angleBegin = angleBegin;
     this.angleEnd = angleEnd;
     this.radiusBegin = radiusBegin;
