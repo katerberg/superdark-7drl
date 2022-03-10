@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import {WALLS} from '../constants';
 
-export class Wall extends Phaser.GameObjects.Ellipse {
+export class BoundaryWall extends Phaser.GameObjects.Ellipse {
   constructor({scene, x, y}) {
     super(scene, x, y, WALLS.nodeRadius * 2, WALLS.nodeRadius * 2, 0x000000, 1);
 

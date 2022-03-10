@@ -7,10 +7,10 @@ import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
+import {BoundaryWall} from '../classes/BoundaryWall';
 import {Enemy} from '../classes/Enemy';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
-import {Wall} from '../classes/Wall';
 import {WinSwitch} from '../classes/WinSwitch';
 import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES, WALLS, ROOMS} from '../constants';
 import {isDebug} from '../utils/environments';
@@ -89,7 +89,7 @@ export class GameScene extends Phaser.Scene {
 
     this.add.tileSprite(PLAY_AREA.width / 2, PLAY_AREA.height / 2, PLAY_AREA.width, PLAY_AREA.height, 'steel-tileset');
 
-    this.walls = this.physics.add.group(immovableOptions);
+    this.boundaryWalls = this.physics.add.group(immovableOptions);
     this.shadowWalls = [];
     this.shadows = [];
     this.paths = [];
@@ -110,13 +110,15 @@ export class GameScene extends Phaser.Scene {
     // TODO: Figure out how to get the collision box to match angle
     this.physics.add.overlap(this.enemies, this.playerProjectiles, (enemy, projectile) => enemy.handleHit(projectile));
     this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
-    this.physics.add.overlap(this.walls, this.projectiles, (walls, projectile) => this.removeProjectile(projectile));
-    this.physics.add.overlap(this.walls, this.playerProjectiles, (walls, projectile) =>
+    this.physics.add.overlap(this.boundaryWalls, this.projectiles, (walls, projectile) =>
+      this.removeProjectile(projectile),
+    );
+    this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (walls, projectile) =>
       this.removePlayerProjectile(projectile),
     );
-    this.physics.add.collider(this.player, this.walls);
+    this.physics.add.collider(this.player, this.boundaryWalls);
     this.physics.add.collider(this.player, this.enemies);
-    this.physics.add.collider(this.enemies, this.walls);
+    this.physics.add.collider(this.enemies, this.boundaryWalls);
     this.physics.add.collider(this.enemies, this.exits);
     this.cameras.main.startFollow(this.player);
   }
@@ -144,7 +146,7 @@ export class GameScene extends Phaser.Scene {
   handlePlayerExit(exit) {
     const goingUp = window.gameState.currentLevel === exit.end;
 
-    this.walls.add(new Wall({scene: this, x: 200, y: 400, width: 200, height: 80}));
+    this.boundaryWalls.add(new BoundaryWall({scene: this, x: 200, y: 400, width: 200, height: 80}));
     this.changeLevel(goingUp ? exit.start : exit.end);
   }
 
@@ -163,7 +165,7 @@ export class GameScene extends Phaser.Scene {
     const nodeDistanceX = xDistance / numberOfNodes;
     const nodeDistanceY = yDistance / numberOfNodes;
     for (let i = 0; i < numberOfNodes; i++) {
-      boundaryWalls.push(new Wall({scene: this, x: x1 + i * nodeDistanceX, y: y1 + i * nodeDistanceY}));
+      boundaryWalls.push(new BoundaryWall({scene: this, x: x1 + i * nodeDistanceX, y: y1 + i * nodeDistanceY}));
     }
     shadowWalls.push([x1, y1, x2, y2]);
     return {boundaryWalls, shadowWalls};
@@ -182,7 +184,7 @@ export class GameScene extends Phaser.Scene {
     for (let i = 1; i <= numberOfNodes; i++) {
       const newWallAngle = angleBegin + (i / numberOfNodes) * angleDiff;
       const newWallPosition = polarToCartesian(newWallAngle, radius);
-      boundaryWalls.push(new Wall({scene: this, x: wallPosition.x, y: wallPosition.y}));
+      boundaryWalls.push(new BoundaryWall({scene: this, x: wallPosition.x, y: wallPosition.y}));
       shadowWalls.push([wallPosition.x, wallPosition.y, newWallPosition.x, newWallPosition.y]);
       wallAngle = newWallAngle;
       wallPosition = newWallPosition;
@@ -658,7 +660,9 @@ export class GameScene extends Phaser.Scene {
       this.rooms = newRooms;
     } while (splittable);
 
-    // this.drawFloorplan();
+    if (isDebug()) {
+      this.drawFloorplan();
+    }
     this.addWalls();
   }
 
@@ -686,7 +690,7 @@ export class GameScene extends Phaser.Scene {
     const endWall = polarToCartesian(angle, radiusEnd);
     const walls = this.makeWalls(beginWall.x, beginWall.y, endWall.x, endWall.y);
     walls.boundaryWalls.forEach((w) => {
-      this.walls.add(w);
+      this.boundaryWalls.add(w);
     });
     walls.shadowWalls.forEach((w) => {
       this.shadowWalls.push(w);
@@ -696,7 +700,7 @@ export class GameScene extends Phaser.Scene {
   addCurvyWall(angleBegin, angleEnd, radius) {
     const walls = this.makeCurvyWalls(angleBegin, angleEnd, radius);
     walls.boundaryWalls.forEach((w) => {
-      this.walls.add(w);
+      this.boundaryWalls.add(w);
     });
     walls.shadowWalls.forEach((w) => {
       this.shadowWalls.push(w);

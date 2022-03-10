@@ -88,7 +88,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     }
 
     const line = new Phaser.Geom.Line(this.x, this.y, target.x, target.y);
-    return !this.scene.walls
+    return !this.scene.boundaryWalls
       .getChildren()
       .some((wall) =>
         Phaser.Geom.Intersects.LineToCircle(line, new Phaser.Geom.Circle(wall.x, wall.y, WALLS.nodeRadius)),
