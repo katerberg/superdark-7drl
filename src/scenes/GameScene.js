@@ -21,6 +21,7 @@ import {
   arcLengthToAngle,
   cartesianToPolar,
   distance,
+  getMidpoint,
   getNormalized,
   offsetDegToRad,
   polarToCartesian,
@@ -108,11 +109,13 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.enemies, this.playerProjectiles, (enemy, projectile) => enemy.handleHit(projectile));
     this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
     this.physics.add.overlap(this.boundaryWalls, this.projectiles, (wall, projectile) => {
-      createExpandingText(this, wall.body.x, wall.body.y, '💥');
+      const {x, y} = getMidpoint(wall.body, projectile.body);
+      createExpandingText(this, x, y, '💥');
       return this.removeProjectile(projectile);
     });
     this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (wall, projectile) => {
-      createExpandingText(this, wall.body.x, wall.body.y, '💥');
+      const {x, y} = getMidpoint(wall.body, projectile.body);
+      createExpandingText(this, x, y, '💥');
       return this.removePlayerProjectile(projectile);
     });
     this.physics.add.collider(this.player, this.boundaryWalls);

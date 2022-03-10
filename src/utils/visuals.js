@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser';
 import {DEPTH} from '../constants';
 
 export function createFloatingText(scene, x, y, message, color = '#fff') {
@@ -8,6 +9,31 @@ export function createFloatingText(scene, x, y, message, color = '#fff') {
     duration: 750,
     ease: 'Exponential.In',
     y: y - 50,
+
+    onComplete: () => {
+      animation.destroy();
+    },
+    callbackScope: scene,
+  });
+}
+
+export function drawTracer(scene, x, y, angle) {
+  const lineLength = 1000;
+  const animation = scene.add
+    .rectangle(x, y, 1, 1, 0xffffff, 1)
+    .setAngle(angle)
+    .setDepth(DEPTH.PROJECTILE)
+    .setOrigin(0);
+
+  scene.add.tween({
+    targets: animation,
+    ease: 'Exponential.In',
+    width: lineLength,
+    alpha: 0.2,
+    duration: 250,
+    onStart: () => {
+      animation.alpha = 1;
+    },
 
     onComplete: () => {
       animation.destroy();

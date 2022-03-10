@@ -58,3 +58,10 @@ export function distance(pointA, pointB) {
 
   return Math.sqrt(Math.pow(A.x - B.x, 2) + Math.pow(A.y - B.y, 2));
 }
+
+export function getMidpoint(point1, point2) {
+  return {
+    x: (point1.x + point2.x) / 2,
+    y: (point1.y + point2.y) / 2,
+  };
+}

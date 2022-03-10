@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import {DEPTH, EVENTS, GAME_STATUS, PLAYER, SCENES, WEAPON_EVENT} from '../constants';
 import {isDebug} from '../utils/environments';
 import {getNormalized} from '../utils/math';
-import {createExpandingText, createFloatingText} from '../utils/visuals';
+import {createExpandingText, createFloatingText, drawTracer} from '../utils/visuals';
 import {Inventory} from './Inventory';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
@@ -48,6 +48,7 @@ export class Player extends Phaser.GameObjects.Sprite {
       const result = this.inventory.getActiveWeapon().use(currentTime);
       if (result === WEAPON_EVENT.FIRED) {
         createFloatingText(this.scene, this.x, this.y, 'boom');
+        drawTracer(this.scene, this.x, this.y, this.angle);
         this.scene.addPlayerProjectile(
           new Projectile({
             scene: this.scene,
