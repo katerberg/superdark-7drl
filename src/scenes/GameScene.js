@@ -94,7 +94,9 @@ export class GameScene extends Phaser.Scene {
     this.addWinSwitch();
     this.addRooms();
     this.makePaths();
-    this.addEnemy();
+    for (let i = 0; i <= 10; i++) {
+      this.addEnemy();
+    }
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
 
@@ -242,12 +244,13 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
+    this.basePath = this.findPath({x: 1350, y: 100}, {x: 1150, y: 100});
     if (isDebug()) {
-      this.drawPaths();
+      this.drawBasePath();
     }
   }
 
-  drawPaths() {
+  drawBasePath() {
     this.nodes.forEach((node, nodeIndex) => {
       const position = polarToCartesian(node.polarPosition.angle, node.polarPosition.radius);
       const circle = new Phaser.Geom.Circle(position.x, position.y, 5);
@@ -266,12 +269,16 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
-    const testPath = this.findPath({x: 1350, y: 100}, {x: 1150, y: 100});
-    testPath.forEach((point, pointIndex) => {
-      if (pointIndex < testPath.length - 1) {
+    this.basePath.forEach((point, pointIndex) => {
+      if (pointIndex < this.basePath.length - 1) {
         const graphics = this.add.graphics();
         graphics.lineStyle(4, 0xff9999, 1);
-        const line = new Phaser.Geom.Line(point.x, point.y, testPath[pointIndex + 1].x, testPath[pointIndex + 1].y);
+        const line = new Phaser.Geom.Line(
+          point.x,
+          point.y,
+          this.basePath[pointIndex + 1].x,
+          this.basePath[pointIndex + 1].y,
+        );
         graphics.strokeLineShape(line);
       }
     });
@@ -397,9 +404,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   addEnemy() {
-    const x = PLAY_AREA.width / 2 + 100;
-    const y = 200;
-    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: ENEMY.HP});
+    // Disallow first 4 rooms, and ensure that there is some space to walk
+    const firstNode = Math.floor(Math.random() * (this.basePath.length - 8)) + 4;
+    const path = this.basePath.slice(firstNode, firstNode + 4);
+    const [{x, y}] = path;
+    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: ENEMY.HP, path});
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }
