@@ -616,7 +616,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   addRooms() {
-    this.rooms = generateRooms();
+    this.rooms = window.gameState.levels[window.gameState.currentLevel].rooms;
+    if (!this.rooms?.length) {
+      this.rooms = generateRooms();
+      window.gameState.levels[window.gameState.currentLevel].rooms = this.rooms;
+    }
 
     if (isDebug()) {
       this.drawFloorplan();
