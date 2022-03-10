@@ -203,7 +203,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   update(time) {
-    // this.cameras.main.setBackgroundColor(window.gameState.paused ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0)');
+    this.cameras.main.setBackgroundColor(window.gameState.gameEnded ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0)');
     this.drawPauseIndicator();
     this.handleInput(time);
     this.updateTimer(time);
