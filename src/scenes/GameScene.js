@@ -190,6 +190,9 @@ export class GameScene extends Phaser.Scene {
     return {boundaryWalls, shadowWalls};
   }
 
+  //{doorEntry: {
+  //  door: [startValueOfDoor, endValueOfDoor] // curved wall are start and end angle, straight are radius from center
+  // }}
   makePaths() {
     this.rooms.forEach((room, roomIndex) => {
       const nodes = [];
@@ -357,13 +360,12 @@ export class GameScene extends Phaser.Scene {
     }
 
     const nodeIndexPath = [endIndex];
-    while (true) {
-      const nextNodeIndex = nodeIndexPath[nodeIndexPath.length - 1];
-      if (cameFrom[nextNodeIndex] === -1) {
-        break;
-      }
+    let nextNodeIndex;
+    while (cameFrom[nextNodeIndex] !== -1) {
+      nextNodeIndex = nodeIndexPath[nodeIndexPath.length - 1];
       nodeIndexPath.push(cameFrom[nextNodeIndex]);
     }
+    nodeIndexPath.pop();
     nodeIndexPath.reverse();
 
     const pointPath = [];
