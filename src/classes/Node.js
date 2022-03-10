@@ -5,13 +5,14 @@ export class Node {
   room;
   polarPosition;
   door;
-  neighbors = [];
+  neighbors;
 
-  constructor({id, room, polarPosition, door}) {
+  constructor({id, room, polarPosition, door, neighbors}) {
     this.id = id || uuidv4();
     this.room = room;
     this.door = door;
     this.polarPosition = polarPosition;
+    this.neighbors = neighbors || [];
   }
 
   addNeighbor(neighbor) {

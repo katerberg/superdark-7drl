@@ -228,7 +228,7 @@ export class GameScene extends Phaser.Scene {
         node.neighbors = [];
         nodes.forEach((neighborNode, neighborIndex) => {
           if (nodeIndex !== neighborIndex) {
-            node.neighbors.push({
+            node.addNeighbor({
               number: this.nodes.length + neighborIndex,
               distance: distance(node.polarPosition, neighborNode.polarPosition),
             });
@@ -244,7 +244,7 @@ export class GameScene extends Phaser.Scene {
       this.nodes.forEach((otherNode, otherNodeIndex) => {
         // TODO: fix asap. dirtiest hack ever.
         if (nodeIndex !== otherNodeIndex && node.door[0] === otherNode.door[0] && node.door[1] === otherNode.door[1]) {
-          node.neighbors.push({
+          node.addNeighbor({
             number: otherNodeIndex,
             distance: distance(node.polarPosition, otherNode.polarPosition),
           });
@@ -306,7 +306,7 @@ export class GameScene extends Phaser.Scene {
       return [start, end];
     }
 
-    const newNodes = clone(this.nodes);
+    const newNodes = clone(this.nodes).map((n) => new Node(n));
     const startIndex = newNodes.length;
     const endIndex = newNodes.length + 1;
     newNodes.push(new Node({room: startRoom, polarPosition: polarStart}));
@@ -316,13 +316,13 @@ export class GameScene extends Phaser.Scene {
       if (nodeIndex < startIndex) {
         if (node.room.id === startRoom.id) {
           const nodeDistance = distance(node.polarPosition, polarStart);
-          node.neighbors.push({number: startIndex, distance: nodeDistance});
-          newNodes[startIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});
+          node.addNeighbor({number: startIndex, distance: nodeDistance});
+          newNodes[startIndex].addNeighbor({number: nodeIndex, distance: nodeDistance});
         }
         if (node.room.id === endRoom.id) {
           const nodeDistance = distance(node.polarPosition, polarEnd);
-          node.neighbors.push({number: endIndex, distance: nodeDistance});
-          newNodes[endIndex].neighbors.push({number: nodeIndex, distance: nodeDistance});
+          node.addNeighbor({number: endIndex, distance: nodeDistance});
+          newNodes[endIndex].addNeighbor({number: nodeIndex, distance: nodeDistance});
         }
       }
     });
