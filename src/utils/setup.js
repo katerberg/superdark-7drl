@@ -4,11 +4,13 @@ export function createLevelExits(level) {
   if (window.gameState.levels[level].exits.length) {
     return;
   }
+  const leftStairsX = 1180;
+  const stairsOffset = 140;
   if (level !== LEVELS.MIN_LEVEL) {
-    //add upstairs
+    //add up stairs
     const start = level - 1;
-    let x = Math.floor(Math.random() * GAME.width);
-    let y = Math.floor(Math.random() * GAME.height);
+    let x = (level % 2) * stairsOffset + leftStairsX;
+    let y = 100;
 
     const connectingExit = window.gameState.levels[start].exits.find((e) => e.end === level);
     if (connectingExit) {
@@ -25,10 +27,10 @@ export function createLevelExits(level) {
     });
   }
   if (level !== LEVELS.MAX_LEVEL) {
-    //add downstairs
+    //add down stairs
     const end = level + 1;
-    let x = Math.floor(Math.random() * GAME.width);
-    let y = Math.floor(Math.random() * GAME.height);
+    let x = ((level + 1) % 2) * stairsOffset + leftStairsX;
+    let y = 100;
 
     const connectingExit = window.gameState.levels[end].exits.find((e) => e.end === level);
     if (connectingExit) {
