@@ -43,19 +43,26 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.legs.play('walk');
   }
 
+  getProjectileStart() {
+    return {
+      x: 0.5 * PLAYER.BOUNDINGSIZE * Math.cos(Phaser.Math.DegToRad(this.angle)) + this.x,
+      y: 0.5 * PLAYER.BOUNDINGSIZE * Math.sin(Phaser.Math.DegToRad(this.angle)) + this.y,
+    };
+  }
+
   handleShoot(currentTime, keys) {
     if (keys.space.isDown) {
       const result = this.inventory.getActiveWeapon().use(currentTime);
       if (result === WEAPON_EVENT.FIRED) {
+        const projectileStartLocation = this.getProjectileStart();
         createFloatingText(this.scene, this.x, this.y, 'boom');
-        drawTracer(this.scene, this.x, this.y, this.angle);
+        drawTracer(this.scene, projectileStartLocation.x, projectileStartLocation.y, this.angle);
         this.scene.addPlayerProjectile(
           new Projectile({
             scene: this.scene,
-            x: this.x,
-            y: this.y,
             angle: this.angle,
             weapon: this.inventory.getActiveWeapon(),
+            ...projectileStartLocation,
           }),
         );
       } else if (result === WEAPON_EVENT.OUT_OF_AMMO) {

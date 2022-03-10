@@ -1,4 +1,3 @@
-import * as Phaser from 'phaser';
 import {DEPTH} from '../constants';
 
 export function createFloatingText(scene, x, y, message, color = '#fff') {
