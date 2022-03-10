@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import {DEPTH, ENEMY, WALLS} from '../constants';
 import {createFloatingText} from '../utils/visuals';
+import {MoveTarget} from './MoveTarget';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
 import {EnemyGun} from './Weapon';
@@ -13,6 +14,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   aimTarget;
   moveTarget;
   weapon;
+  path;
+  lastNode;
+  nodeIncrement = -1;
 
   constructor({scene, x, y, key, hp}) {
     super(scene, x, y, key);
@@ -20,6 +24,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.angle = 0;
     this.depth = DEPTH.ENEMY;
     this.weapon = new EnemyGun();
+    this.lastNode = 0;
+    this.path = this.scene.findPath({x, y}, {x: 1150, y: 100}).slice(0, 5);
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
     const xOrigin = 0.45;
@@ -51,7 +57,6 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   }
 
   shoot(time) {
-    console.log(this.getCurrentRoom());
     if (this.aimTarget && Math.abs(this.getGoalAngle(this.aimTarget) - this.angle) < 30) {
       this.lastShot = time;
       this.scene.addProjectile(
@@ -96,21 +101,33 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       );
   }
 
+  goToNode(nodeNumber) {
+    const nextPoint = this.path[nodeNumber];
+
+    this.setMoveTarget(new MoveTarget(nextPoint.x, nextPoint.y));
+  }
+
   moveTowardsMoveTarget() {
-    if (this.moveTarget) {
-      const goalAngle = this.getGoalAngle(this.moveTarget);
-      this.aimTowards(goalAngle);
-      if (this.isInFieldOfView(goalAngle)) {
-        const speedMagnitude = ENEMY.MOVE_SPEED;
-        this.body.setVelocity(
-          speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),
-          speedMagnitude * Math.sin(Phaser.Math.DegToRad(this.angle)),
-        );
+    // TODO: Handle getting trapped in corner when he turns around to go back
+    // TODO: Handle having to turn around after overshooting the other side of the door
+    if (!this.moveTarget || this.moveTarget.matches(this.x, this.y)) {
+      if (this.lastNode === this.path.length - 1 || this.lastNode === 0) {
+        console.log('reversing direction');
+        this.nodeIncrement *= -1;
       }
-      this.legs.setAngle(this.angle); //Where we're going, we don't need legs
-      this.legs.moveTo(this.body.x, this.body.y);
+      this.lastNode += this.nodeIncrement;
+      console.log(`going to step ${this.lastNode}`);
+      this.goToNode(this.lastNode);
     }
-    // TODO: Turn towards needed angle
+    const goalAngle = this.getGoalAngle(this.moveTarget);
+    this.aimTowards(goalAngle);
+    if (this.isInFieldOfView(goalAngle)) {
+      const speedMagnitude = ENEMY.MOVE_SPEED;
+      this.body.setVelocity(
+        speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),
+        speedMagnitude * Math.sin(Phaser.Math.DegToRad(this.angle)),
+      );
+    }
   }
 
   aimTowards(goalAngle) {
@@ -147,14 +164,21 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     if (time > this.lastShot + this.shotDelay) {
       this.shoot(time);
     }
+
     const canSeePlayer = this.isSeeing(this.scene.player);
-    if (!this.aimTarget && canSeePlayer) {
-      this.aimTarget = this.scene.player;
-      this.moveTarget = this.scene.player;
-    }
+
+    // const canSeePlayer = false;
+    // if (!this.aimTarget && canSeePlayer) {
+    //   this.aimTarget = this.scene.player;
+    //   this.moveTarget = this.scene.player;
+    // }
     if (!canSeePlayer) {
       this.moveTowardsMoveTarget();
+    } else {
+      this.aimTarget = this.scene.player;
+      this.aimTowardsAimTarget();
     }
-    this.aimTowardsAimTarget();
+    this.legs.setAngle(this.angle); //Where we're going, we don't need legs
+    this.legs.moveTo(this.body.x, this.body.y);
   }
 }

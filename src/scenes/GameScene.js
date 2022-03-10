@@ -100,11 +100,11 @@ export class GameScene extends Phaser.Scene {
     this.playerProjectiles = this.physics.add.group({runChildUpdate: true});
 
     this.addPlayer(startingInfo);
-    this.addEnemy();
     this.addExits();
     this.addWinSwitch();
     this.addRooms();
     this.makePaths();
+    this.addEnemy();
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
 
@@ -364,9 +364,10 @@ export class GameScene extends Phaser.Scene {
 
     const pointPath = [];
     nodeIndexPath.forEach((nodeIndex) => {
-      pointPath.push(
-        polarToCartesian(newNodes[nodeIndex].polarPosition.angle, newNodes[nodeIndex].polarPosition.radius),
-      );
+      pointPath.push({
+        ...polarToCartesian(newNodes[nodeIndex].polarPosition.angle, newNodes[nodeIndex].polarPosition.radius),
+        nodeIndex,
+      });
     });
     return pointPath;
 
@@ -408,7 +409,7 @@ export class GameScene extends Phaser.Scene {
   addEnemy() {
     const x = PLAY_AREA.width / 2 + 100;
     const y = 200;
-    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: 1});
+    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: ENEMY.HP});
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }

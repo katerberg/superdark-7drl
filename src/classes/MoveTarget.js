@@ -15,4 +15,8 @@ export class MoveTarget {
   hasAngle() {
     return typeof this.angle === 'number';
   }
+
+  matches(x, y) {
+    return Math.abs(this.x - x) < 10 && Math.abs(this.y - y) < 10;
+  }
 }

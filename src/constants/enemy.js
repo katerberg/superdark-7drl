@@ -2,6 +2,7 @@ export const ENEMY = {
   WIDTH: 313,
   HEIGHT: 206,
   SCALE: 0.25,
+  HP: 2,
   LEGS_WIDTH: 172,
   LEGS_HEIGHT: 124,
   SHOT_DELAY: 1000,

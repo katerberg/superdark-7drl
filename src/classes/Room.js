@@ -27,8 +27,4 @@ export class Room {
       polarStart.radius < this.radiusEnd
     );
   }
-
-  getNeighbors() {
-    return [];
-  }
 }
