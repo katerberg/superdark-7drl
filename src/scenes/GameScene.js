@@ -94,7 +94,7 @@ export class GameScene extends Phaser.Scene {
     this.addWinSwitch();
     this.addRooms();
     this.makePaths();
-    for (let i = 0; i <= 10; i++) {
+    for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
       this.addEnemy();
     }
 
