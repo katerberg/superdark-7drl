@@ -8,6 +8,7 @@ import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/tim
 export class HudScene extends Phaser.Scene {
   gameScene;
   levelText;
+  glowFilters;
   gameEndText;
   timerText;
   timerCsText;

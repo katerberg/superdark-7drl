@@ -48,7 +48,8 @@ export class GameScene extends Phaser.Scene {
   shadows;
   exits;
   winSwitch;
-  levelKey;
+  levelUpKey;
+  levelDownKey;
   gameEndText;
   rooms;
   nodes;
@@ -74,7 +75,8 @@ export class GameScene extends Phaser.Scene {
     this.load.image('exit-down', exitDownImage);
     this.load.image('winSwitch', winSwitchImage);
     const {KeyCodes} = Phaser.Input.Keyboard;
-    this.levelKey = this.input.keyboard.addKey(KeyCodes.L);
+    this.levelDownKey = this.input.keyboard.addKey(KeyCodes.L);
+    this.levelUpKey = this.input.keyboard.addKey(KeyCodes.O);
   }
 
   create(startingInfo) {
@@ -127,9 +129,13 @@ export class GameScene extends Phaser.Scene {
 
   handleInput() {
     if (isDebug()) {
-      if (this.levelKey.isDown) {
+      if (this.levelDownKey.isDown) {
         const {currentLevel} = window.gameState;
         this.changeLevel(currentLevel === LEVELS.MAX_LEVEL ? currentLevel - 1 : currentLevel + 1);
+      }
+      if (this.levelUpKey.isDown) {
+        const {currentLevel} = window.gameState;
+        this.changeLevel(currentLevel === LEVELS.MIN_LEVEL ? currentLevel + 1 : currentLevel - 1);
       }
     }
   }
