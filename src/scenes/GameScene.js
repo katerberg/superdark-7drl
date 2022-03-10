@@ -94,6 +94,8 @@ export class GameScene extends Phaser.Scene {
     this.addWinSwitch();
     this.addRooms();
     this.makePaths();
+
+    // this.addFixedEnemy(1450, 200);
     for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
       this.addEnemy();
     }
@@ -401,6 +403,12 @@ export class GameScene extends Phaser.Scene {
         }),
       );
     });
+  }
+  //doesn't work yet
+  addFixedEnemy(x, y) {
+    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: ENEMY.HP});
+    enemy.play('walkEnemy');
+    this.enemies.add(enemy);
   }
 
   addEnemy() {

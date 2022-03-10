@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import {DEPTH, EVENTS, GAME_STATUS, PLAYER, SCENES, WEAPON_EVENT} from '../constants';
 import {isDebug} from '../utils/environments';
+import {getNormalized} from '../utils/math';
 import {createFloatingText} from '../utils/visuals';
 import {Inventory} from './Inventory';
 import {PlayerLegs} from './PlayerLegs';
@@ -83,24 +84,30 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   handleMovement(keys) {
-    const {up, down, left, right, w, s, a, d} = keys;
-    if (up?.isDown || down?.isDown || w.isDown || s.isDown) {
-      const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : PLAYER.SPEED;
-      const speedMagnitude = up?.isDown || w.isDown ? moveSpeed : down?.isDown || s.isDown ? -moveSpeed : 0;
+    const {up, down, left, right, w, s, a, d, q, e} = keys;
 
-      this.body.setVelocity(
-        speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),
-        speedMagnitude * Math.sin(Phaser.Math.DegToRad(this.angle)),
-      );
-    } else {
-      this.body.setVelocity(0);
+    const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : PLAYER.SPEED;
+    const forwardMove = up.isDown || w.isDown;
+    const backwardMove = down.isDown || s.isDown;
+    const leftStrafe = q.isDown;
+    const rightStrafe = e.isDown;
+    const leftRotate = left.isDown || a.isDown;
+    const rightRotate = right.isDown || d.isDown;
+    let moveVector = {x: forwardMove ? 1 : backwardMove ? -1 : 0, y: leftStrafe ? -1 : rightStrafe ? 1 : 0};
+    if (moveVector.x || moveVector.y) {
+      moveVector = getNormalized(moveVector);
+      moveVector.x *= moveSpeed;
+      moveVector.y *= moveSpeed;
     }
-    if (left.isDown || right.isDown || a.isDown || d.isDown) {
-      this.body.setAngularVelocity(left.isDown || a.isDown ? -1 * PLAYER.ANGLE_SPEED : PLAYER.ANGLE_SPEED);
-    } else {
-      this.body.setAngularVelocity(0);
-    }
-    this.legs.setAngle(this.angle); //Where we're going, we don't need legs
+    const angularMultiplier = leftRotate ? -1 : rightRotate ? 1 : 0;
+    this.body.setVelocity(
+      moveVector.x * Math.cos(this.rotation) - moveVector.y * Math.sin(this.rotation),
+      moveVector.x * Math.sin(this.rotation) + moveVector.y * Math.cos(this.rotation),
+    );
+
+    this.body.setAngularVelocity(angularMultiplier * PLAYER.ANGLE_SPEED);
+
+    this.legs.setAngle(this.angle); //Where we're going, we don't need legs (⌐■_■)
     this.legs.moveTo(this.body.x, this.body.y);
   }
 

@@ -141,7 +141,11 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       }
     }
 
-    this.body.setAngularVelocity(a < b ? ENEMY.TURN_SPEED * -1 : ENEMY.TURN_SPEED);
+    const angleDiff = a - b;
+    const epsilon = 1;
+    this.body.setAngularVelocity(
+      angleDiff > epsilon ? ENEMY.TURN_SPEED : angleDiff < -epsilon ? ENEMY.TURN_SPEED * -1 : 0,
+    );
   }
 
   aimTowardsAimTarget() {
