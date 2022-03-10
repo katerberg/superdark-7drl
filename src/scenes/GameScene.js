@@ -11,6 +11,7 @@ import {BoundaryWall} from '../classes/BoundaryWall';
 import {Enemy} from '../classes/Enemy';
 import {Exit} from '../classes/Exit';
 import {Player} from '../classes/Player';
+import {Room} from '../classes/Room';
 import {WinSwitch} from '../classes/WinSwitch';
 import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES, WALLS, ROOMS} from '../constants';
 import {isDebug} from '../utils/environments';
@@ -580,9 +581,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   addRooms() {
-    this.rooms = [
-      {angleBegin: 0, angleEnd: 360, radiusBegin: ROOMS.minRadius, radiusEnd: ROOMS.maxRadius, doors: noDoors()},
-    ];
+    this.rooms = [new Room(0, 360, ROOMS.minRadius, ROOMS.maxRadius, noDoors())];
 
     let splittable;
     do {
@@ -612,20 +611,8 @@ export class GameScene extends Phaser.Scene {
           splitDoorSet.bottomRoomDoors.top = newDoor;
           splitDoorSet.topRoomDoors.bottom = newDoor;
 
-          newRooms.push({
-            angleBegin: r.angleBegin,
-            angleEnd: r.angleEnd,
-            radiusBegin: r.radiusBegin,
-            radiusEnd: newRadius,
-            doors: splitDoorSet.bottomRoomDoors,
-          });
-          newRooms.push({
-            angleBegin: r.angleBegin,
-            angleEnd: r.angleEnd,
-            radiusBegin: newRadius,
-            radiusEnd: r.radiusEnd,
-            doors: splitDoorSet.topRoomDoors,
-          });
+          newRooms.push(new Room(r.angleBegin, r.angleEnd, r.radiusBegin, newRadius, splitDoorSet.bottomRoomDoors));
+          newRooms.push(new Room(r.angleBegin, r.angleEnd, newRadius, r.radiusEnd, splitDoorSet.topRoomDoors));
         } else if (isVerticalWallPlaceable(r)) {
           // otherwise split it horizontally
           splittable = true;
@@ -638,20 +625,8 @@ export class GameScene extends Phaser.Scene {
           splitDoorSet.leftRoomDoors.right = newDoor;
           splitDoorSet.rightRoomDoors.left = newDoor;
 
-          newRooms.push({
-            angleBegin: r.angleBegin,
-            angleEnd: newAngle,
-            radiusBegin: r.radiusBegin,
-            radiusEnd: r.radiusEnd,
-            doors: splitDoorSet.leftRoomDoors,
-          });
-          newRooms.push({
-            angleBegin: newAngle,
-            angleEnd: r.angleEnd,
-            radiusBegin: r.radiusBegin,
-            radiusEnd: r.radiusEnd,
-            doors: splitDoorSet.rightRoomDoors,
-          });
+          newRooms.push(new Room(r.angleBegin, newAngle, r.radiusBegin, r.radiusEnd, splitDoorSet.leftRoomDoors));
+          newRooms.push(new Room(newAngle, r.angleEnd, r.radiusBegin, r.radiusEnd, splitDoorSet.rightRoomDoors));
         } else {
           // can't split room b/c of doors
           newRooms.push(r);
