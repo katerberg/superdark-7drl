@@ -68,21 +68,30 @@ export class HudScene extends Phaser.Scene {
   }
 
   drawPauseIndicator() {
-    const borderWidth = 10;
-    if (this.pauseIndicator) {
-      this.pauseIndicator.destroy();
+    if (window.gameState.paused) {
+      const glowOptions = {glowColor: 0xff3030, innerStrength: 1, outerStrength: 4};
+      if (!this.plugins.get('rexGlowFilterPipeline').get(this.timerText).length) {
+        this.glowFilters = [
+          this.plugins.get('rexGlowFilterPipeline').add(this.timerText, glowOptions),
+          this.plugins.get('rexGlowFilterPipeline').add(this.timerCsText, glowOptions),
+        ];
+      }
+      this.add.tween({
+        targets: this.glowFilters,
+        duration: 100,
+        ease: 'Exponential.In',
+        innerStrength: glowOptions.innerStrength,
+        outerStrength: glowOptions.outerStrength,
+      });
+    } else {
+      this.add.tween({
+        targets: this.glowFilters,
+        duration: 100,
+        ease: 'Exponential.In',
+        innerStrength: 0,
+        outerStrength: 0,
+      });
     }
-    this.pauseIndicator = this.add.graphics();
-    const opacity = window.gameState.paused ? 0.5 : 0;
-    this.pauseIndicator.fillStyle(0x999999, opacity);
-    let rect = new Phaser.Geom.Rectangle(0, 0, GAME.width, borderWidth);
-    this.pauseIndicator.fillRectShape(rect);
-    rect = new Phaser.Geom.Rectangle(0, GAME.height - borderWidth, GAME.width, borderWidth);
-    this.pauseIndicator.fillRectShape(rect);
-    rect = new Phaser.Geom.Rectangle(0, 0, borderWidth, GAME.height);
-    this.pauseIndicator.fillRectShape(rect);
-    rect = new Phaser.Geom.Rectangle(GAME.width - borderWidth, 0, borderWidth, GAME.height);
-    this.pauseIndicator.fillRectShape(rect);
   }
 
   getGameScene() {

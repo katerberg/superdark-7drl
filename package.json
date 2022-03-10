@@ -26,6 +26,7 @@
     "html-webpack-plugin": "^5.5.0",
     "just-clone": "^5.0.1",
     "phaser": "^3.55.2",
+    "phaser3-rex-plugins": "^1.1.67",
     "prettier": "^2.5.1",
     "regenerator-runtime": "^0.13.9",
     "sass-loader": "^12.6.0",

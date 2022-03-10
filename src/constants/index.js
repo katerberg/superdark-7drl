@@ -53,6 +53,12 @@ export const INVENTORY = {
   ITEM_WIDTH: 128,
 };
 
+export const EXITS = {
+  Y_OFFSET: 52,
+  LEFT_STAIRS_X_OFFSET: 1190,
+  DISTANCE_BETWEEN_STAIRS: 120,
+};
+
 export const WEAPON_EVENT = {
   OUT_OF_AMMO: 'click',
   FIRED: 'boom',

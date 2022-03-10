@@ -1,16 +1,14 @@
-import {LEVELS, GAME} from '../constants';
+import {LEVELS, GAME, EXITS} from '../constants';
 
 export function createLevelExits(level) {
   if (window.gameState.levels[level].exits.length) {
     return;
   }
-  const leftStairsX = 1180;
-  const stairsOffset = 140;
   if (level !== LEVELS.MIN_LEVEL) {
     //add up stairs
     const start = level - 1;
-    let x = (level % 2) * stairsOffset + leftStairsX;
-    let y = 100;
+    let x = (level % 2) * EXITS.DISTANCE_BETWEEN_STAIRS + EXITS.LEFT_STAIRS_X_OFFSET;
+    let y = EXITS.Y_OFFSET;
 
     const connectingExit = window.gameState.levels[start].exits.find((e) => e.end === level);
     if (connectingExit) {
@@ -29,8 +27,8 @@ export function createLevelExits(level) {
   if (level !== LEVELS.MAX_LEVEL) {
     //add down stairs
     const end = level + 1;
-    let x = ((level + 1) % 2) * stairsOffset + leftStairsX;
-    let y = 100;
+    let x = ((level + 1) % 2) * EXITS.DISTANCE_BETWEEN_STAIRS + EXITS.LEFT_STAIRS_X_OFFSET;
+    let y = EXITS.Y_OFFSET;
 
     const connectingExit = window.gameState.levels[end].exits.find((e) => e.end === level);
     if (connectingExit) {
