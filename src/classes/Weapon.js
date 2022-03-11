@@ -83,6 +83,6 @@ export class Revolver extends Weapon {
 
 export class EnemyGun extends Weapon {
   constructor() {
-    super('NEVER RENDER', false, 10_000, 20, 5);
+    super('NEVER RENDER', false, 100, 20, 5);
   }
 }

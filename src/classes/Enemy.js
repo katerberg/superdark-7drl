@@ -1,7 +1,8 @@
 import * as Phaser from 'phaser';
 import {DEPTH, ENEMY, WALLS} from '../constants';
+import {isDebug} from '../utils/environments';
+import {distance} from '../utils/math';
 import {createExpandingText, createFloatingText} from '../utils/visuals';
-import {MoveTarget} from './MoveTarget';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
 import {EnemyGun} from './Weapon';
@@ -11,21 +12,27 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   lastShot = 2000;
   shotDelay = ENEMY.SHOT_DELAY;
   shotDuration = ENEMY.PROJECTILE_DURATION;
-  aimTarget;
-  moveTarget;
   weapon;
+  patrolPath;
   path;
-  lastNode;
-  nodeIncrement = -1;
+  nextNodeIndex;
+  lastCheckedHp;
+  nodeIncrement = 1;
+  initialSweepAngle = null;
+  state;
+  investigatePosition;
 
   constructor({scene, x, y, key, hp, path}) {
     super(scene, x, y, key);
     this.hp = hp;
+    this.lastCheckedHp = hp;
     this.angle = 0;
     this.depth = DEPTH.ENEMY;
     this.weapon = new EnemyGun();
-    this.lastNode = 0;
+    this.state = ENEMY.STATE.PATROL;
+    this.patrolPath = path;
     this.path = path;
+    this.nextNodeIndex = 1;
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
     this.setOrigin(ENEMY.XCENTER / ENEMY.WIDTH, ENEMY.YCENTER / ENEMY.HEIGHT);
@@ -45,26 +52,16 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.legs.play('walk');
   }
 
-  setAimTarget(target) {
-    this.aimTarget = target;
-  }
-
-  setMoveTarget(target) {
-    this.moveTarget = target;
-  }
-
   shoot(time) {
-    if (this.aimTarget && Math.abs(this.getGoalAngle(this.aimTarget) - this.angle) < 30) {
-      this.lastShot = time;
-      this.scene.addProjectile(
-        new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, weapon: this.weapon}),
-      );
-      createFloatingText(this.scene, this.x, this.y, 'boom');
-    }
+    this.lastShot = time;
+    this.scene.addProjectile(
+      new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, weapon: this.weapon}),
+    );
+    createFloatingText(this.scene, this.x, this.y, 'boom');
   }
 
   handleDeath() {
-    this.legs.destroy();
+    this.legs.stop();
     this.destroy();
   }
 
@@ -99,34 +96,33 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       );
   }
 
-  goToNode(nodeNumber) {
-    const nextPoint = this.path[nodeNumber];
-
-    this.setMoveTarget(new MoveTarget(nextPoint.x, nextPoint.y));
-  }
-
-  moveTowardsMoveTarget() {
-    // TODO: Handle getting trapped in corner when he turns around to go back
-    // TODO: Handle having to turn around after overshooting the other side of the door
-    if (!this.moveTarget || this.moveTarget.matches(this.x, this.y)) {
-      if (this.lastNode === this.path.length - 1 || this.lastNode === 0) {
+  moveAlongPath() {
+    let nextNode = this.path[this.nextNodeIndex];
+    if (this.distanceTo(nextNode) < 10) {
+      this.nextNodeIndex += this.nodeIncrement;
+      nextNode = this.path[this.nextNodeIndex];
+      if (this.nextNodeIndex === 0 || this.nextNodeIndex === this.path.length - 1) {
         this.nodeIncrement *= -1;
       }
-      this.lastNode += this.nodeIncrement;
-      this.goToNode(this.lastNode);
     }
-    const goalAngle = this.getGoalAngle(this.moveTarget);
-    this.aimTowards(goalAngle);
-    if (Math.abs(goalAngle - this.angle) < 40) {
-      const speedMagnitude = ENEMY.MOVE_SPEED;
-      this.body.setVelocity(
-        speedMagnitude * Math.cos(Phaser.Math.DegToRad(this.angle)),
-        speedMagnitude * Math.sin(Phaser.Math.DegToRad(this.angle)),
-      );
+
+    this.aimTowards(nextNode);
+    const moveAngle = this.getGoalAngle(nextNode);
+    if (Math.abs(this.angle - moveAngle) < 40) {
+      this.moveTowards(nextNode);
     }
   }
 
-  aimTowards(goalAngle) {
+  moveTowards(position) {
+    const moveAngle = this.getGoalAngle(position);
+    this.body.setVelocity(
+      ENEMY.MOVE_SPEED * Math.cos(Phaser.Math.DegToRad(moveAngle)),
+      ENEMY.MOVE_SPEED * Math.sin(Phaser.Math.DegToRad(moveAngle)),
+    );
+  }
+
+  aimTowards(position) {
+    const goalAngle = this.getGoalAngle(position);
     // const absolute = abs(a-b)
     // if absolute is > 180
     //  subtract 360 from larger
@@ -149,36 +145,107 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     );
   }
 
-  aimTowardsAimTarget() {
-    if (this.aimTarget) {
-      const goalAngle = this.getGoalAngle(this.aimTarget);
-      this.aimTowards(goalAngle);
-    }
-  }
-
   getCurrentRoom() {
     return this.scene.rooms.find((r) => r.isPointInRoom(this.x, this.y));
   }
 
-  update(time) {
-    if (time > this.lastShot + this.shotDelay) {
-      this.shoot(time);
+  setState(newState) {
+    if (isDebug() && newState !== this.state) {
+      console.log(newState);
     }
+    this.state = newState;
+  }
+
+  setPath(newPath) {
+    this.path = newPath;
+    this.nextNodeIndex = 1;
+    this.nodeIncrement = 1;
+  }
+
+  distanceTo(position) {
+    return distance({x: this.x, y: this.y}, position);
+  }
+
+  inRange(position) {
+    return this.distanceTo(position) <= this.weapon.range;
+  }
+
+  isTargeted(position) {
+    const deadOnBallsAccurateAngle = this.getGoalAngle(position);
+    const epsilon = 1;
+    return Math.abs(this.angle - deadOnBallsAccurateAngle) < epsilon;
+  }
+
+  update(time) {
+    this.body.setAngularVelocity(0);
+    this.body.setVelocity(0);
 
     const canSeePlayer = this.isSeeing(this.scene.player);
+    const dearGodIveBeenShot = this.lastCheckedHp !== this.hp;
+    if (canSeePlayer) {
+      // "ja, i see him!"
+      this.setState(ENEMY.STATE.ENGAGE);
 
-    // const canSeePlayer = false;
-    // if (!this.aimTarget && canSeePlayer) {
-    //   this.aimTarget = this.scene.player;
-    //   this.moveTarget = this.scene.player;
-    // }
-    if (!canSeePlayer) {
-      this.moveTowardsMoveTarget();
-    } else {
-      this.aimTarget = this.scene.player;
-      this.aimTowardsAimTarget();
+      const playerPosition = {x: this.scene.player.x, y: this.scene.player.y};
+      this.investigatePosition = playerPosition;
+
+      const isPlayerTargeted = this.isTargeted(playerPosition);
+      const isPlayerInRange = this.inRange(playerPosition);
+      if (isPlayerTargeted && isPlayerInRange) {
+        if (time > this.lastShot + this.shotDelay) {
+          this.shoot(time);
+        }
+      } else {
+        if (!isPlayerTargeted) {
+          this.aimTowards(playerPosition);
+        }
+        if (!isPlayerInRange) {
+          this.moveTowards(playerPosition);
+        }
+      }
+    } else if (dearGodIveBeenShot) {
+      // "dear god! i've been shot! where did that come from?"
+      this.lastCheckedHp = this.hp;
+      this.setState(ENEMY.STATE.SWEEP);
+    } else if (this.state === ENEMY.STATE.ENGAGE) {
+      // "i can't see the player. time to check out the last place i saw him"
+      this.setState(ENEMY.STATE.INVESTIGATE);
+      this.setPath(this.scene.findPath({x: this.x, y: this.y}, this.investigatePosition));
+    } else if (this.state === ENEMY.STATE.INVESTIGATE) {
+      if (this.distanceTo(this.investigatePosition) < 10) {
+        this.setState(ENEMY.STATE.SWEEP);
+      } else {
+        this.moveAlongPath();
+      }
+    } else if (this.state === ENEMY.STATE.SWEEP) {
+      // cuteRotatingMilitarySeal.gif
+      if (!this.initialSweepAngle) {
+        this.initialSweepAngle = this.angle;
+      }
+
+      if ((this.angle - this.initialSweepAngle + 360) % 360 < 360 - ENEMY.VIEW_ANGLE) {
+        this.body.setAngularVelocity(ENEMY.TURN_SPEED);
+      } else {
+        this.initialSweepAngle = null;
+        this.setState(ENEMY.STATE.RETURN);
+        this.setPath(this.scene.findPath({x: this.x, y: this.y}, this.patrolPath[0]));
+      }
+    } else if (this.state === ENEMY.STATE.RETURN) {
+      // "back to the ol' patrol i suppose"
+      // eslint-disable-next-line prefer-destructuring
+      const patrolStart = this.patrolPath[0];
+      if (this.distanceTo(patrolStart) < 10) {
+        this.setState(ENEMY.STATE.PATROL);
+        this.setPath(this.patrolPath);
+      } else {
+        this.moveAlongPath();
+      }
+    } else if (this.state === ENEMY.STATE.PATROL) {
+      // "i'm walkin here"
+      this.moveAlongPath();
     }
-    this.legs.setAngle(this.angle); //Where we're going, we don't need legs
+
+    this.legs.setAngle(this.angle);
     this.legs.moveTo(this.body.x, this.body.y);
   }
 }
