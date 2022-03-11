@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import {DEPTH, ENEMY, WALLS} from '../../constants';
 import {isDebug} from '../../utils/environments';
 import {distance} from '../../utils/math';
-import {createExpandingText, createFloatingText} from '../../utils/visuals';
+import {createFloatingText, createSpinningExpandingText} from '../../utils/visuals';
 import {EnemyFieldOfVision} from '../EnemyFieldOfVision';
 import {PlayerLegs} from '../PlayerLegs';
 import {Projectile} from '../Projectile';
@@ -71,7 +71,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
   handleHit(projectile) {
     //TODO: Make this a blood splatter
-    createExpandingText(this.scene, this.x, this.y, '🩸');
+    createSpinningExpandingText(this.scene, this.x, this.y, '🩸');
     this.hp -= projectile.getDamage();
     this.scene.removePlayerProjectile(projectile);
     if (this.hp <= 0) {

@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import {DEPTH, EVENTS, GAME_STATUS, PLAYER, SCENES, WEAPON_EVENT} from '../constants';
 import {isDebug} from '../utils/environments';
 import {getNormalized} from '../utils/math';
-import {createExpandingText, createFloatingText, drawTracer} from '../utils/visuals';
+import {createFloatingText, createSpinningExpandingText} from '../utils/visuals';
 import {Inventory} from './Inventory';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
@@ -56,15 +56,9 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   handleShoot(currentTime, keys) {
     if (keys.space.isDown) {
-      const activeWeapon = this.inventory.getActiveWeapon();
-      if (!activeWeapon) {
-        return createFloatingText(this.scene, this.x, this.y, 'Still swapping!');
-      }
-      const result = activeWeapon.use(currentTime);
+      const result = this.inventory.getActiveWeapon()?.use(currentTime);
       if (result === WEAPON_EVENT.FIRED) {
         const projectileStartLocation = this.getProjectileStart();
-        createFloatingText(this.scene, this.x, this.y, 'boom');
-        drawTracer(this.scene, projectileStartLocation.x, projectileStartLocation.y, this.angle);
         this.scene.addPlayerProjectile(
           new Projectile({
             scene: this.scene,
@@ -81,7 +75,7 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   handleHit(projectile) {
     //TODO: Make this a blood splatter
-    createExpandingText(this.scene, this.x, this.y, '🩸');
+    createSpinningExpandingText(this.scene, this.x, this.y, '🩸');
     this.hp -= projectile.getDamage();
     this.scene.removeProjectile(projectile);
     if (this.hp <= 0) {

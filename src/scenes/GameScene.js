@@ -14,6 +14,7 @@ import {StabbingEnemy} from '../classes/enemies/StabbingEnemy';
 import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
 import {Player} from '../classes/Player';
+import {EnemyGun, Revolver} from '../classes/Weapon';
 import {WinSwitch} from '../classes/WinSwitch';
 import {
   COLORS,
@@ -133,12 +134,16 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
     this.physics.add.overlap(this.boundaryWalls, this.projectiles, (wall, projectile) => {
       const {x, y} = getMidpoint(wall.body, projectile.body);
-      createExpandingText(this, x, y, '💥');
+      if (projectile.weapon instanceof EnemyGun) {
+        createExpandingText(this, x, y, '💥');
+      }
       return this.removeProjectile(projectile);
     });
     this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (wall, projectile) => {
       const {x, y} = getMidpoint(wall.body, projectile.body);
-      createExpandingText(this, x, y, '💥');
+      if (projectile.weapon instanceof Revolver) {
+        createExpandingText(this, x, y, '💥');
+      }
       return this.removePlayerProjectile(projectile);
     });
     this.physics.add.collider(this.player, this.boundaryWalls);

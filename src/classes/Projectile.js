@@ -7,7 +7,7 @@ export class Projectile extends Phaser.GameObjects.Ellipse {
   weapon;
 
   constructor({scene, x, y, angle, weapon}) {
-    super(scene, x, y, 30, 30, undefined, 0);
+    super(scene, x, y, weapon.size, weapon.size, undefined, 0);
     this.shotTime = getTimeAwareOfPauses(scene.time.now);
     this.depth = DEPTH.PROJECTILE;
 
@@ -16,6 +16,7 @@ export class Projectile extends Phaser.GameObjects.Ellipse {
     this.setAngle(angle);
     this.weapon = weapon;
     scene.add.existing(this);
+    this.weapon.useAnimation(x, y, angle);
   }
 
   getDamage() {
