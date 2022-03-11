@@ -1,7 +1,6 @@
 import * as Phaser from 'phaser';
 import {DEPTH, WEAPON_EVENT} from '../constants';
 import {getRealTime} from '../utils/time';
-import {SoundWave} from './SoundWave';
 
 class Weapon {
   characterMoveAnimation;
@@ -75,14 +74,8 @@ class Weapon {
     }
     if (time > this.lastShot + this.useTime) {
       window.gameState.runUntil[getRealTime(this.useTime + time)] = 'item use';
-      this.scene.soundWaves.add(
-        new SoundWave({
-          scene: this.scene,
-          radius: this.soundRadiusOfUse,
-          duration: 100,
-          ...this.scene.player.getProjectileStart(),
-        }),
-      );
+      const {x, y} = this.scene.player.getProjectileStart();
+      this.scene.addSoundWave(x, y, this.soundRadiusOfUse);
       this.lastShot = time;
       if (this.currentAmmunition) {
         --this.currentAmmunition;
@@ -149,7 +142,7 @@ export class Knife extends Weapon {
 
 export class Revolver extends Weapon {
   constructor(scene, active) {
-    super(scene, 'weapon-revolver', active, 10_000, 10, 1, 5, 6);
+    super(scene, 'weapon-revolver', active, 10_000, 10, 1, 5, 6, undefined, undefined, undefined, 600);
     this.characterMoveAnimation = 'pistolMove';
   }
 

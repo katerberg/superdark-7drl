@@ -7,7 +7,6 @@ import {Inventory} from './Inventory';
 import {Legs} from './Legs';
 import {Projectile} from './Projectile';
 import {Reticle} from './Reticle';
-import {SoundWave} from './SoundWave';
 
 export class Player extends Phaser.GameObjects.Sprite {
   inventory;
@@ -126,14 +125,7 @@ export class Player extends Phaser.GameObjects.Sprite {
       moveVector.y *= moveSpeed;
       if (timeAwareOfPauses > this.lastStep + (isRunning ? PLAYER.RUN_SOUND_DELAY : PLAYER.WALK_SOUND_DELAY)) {
         this.lastStep = timeAwareOfPauses;
-        this.scene.soundWaves.add(
-          new SoundWave({
-            scene: this.scene,
-            x: this.x,
-            y: this.y,
-            radius: isRunning ? PLAYER.RUN_SOUND_RADIUS : PLAYER.WALK_SOUND_RADIUS,
-          }),
-        );
+        this.scene.addSoundWave(this.x, this.y, isRunning ? PLAYER.RUN_SOUND_RADIUS : PLAYER.WALK_SOUND_RADIUS);
       }
     }
     const angularMultiplier = leftRotate ? -1 : rightRotate ? 1 : 0;

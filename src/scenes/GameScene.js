@@ -17,6 +17,7 @@ import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
 import {MedKit} from '../classes/Pickup';
 import {Player} from '../classes/Player';
+import {SoundWave} from '../classes/SoundWave';
 import {EnemyGun, Revolver} from '../classes/Weapon';
 import {WinSwitch} from '../classes/WinSwitch';
 import {
@@ -468,6 +469,18 @@ export class GameScene extends Phaser.Scene {
     //!        priority = cost_to_neighbor + distance(neighbor, end)
     //!        add (neighbor, priority) to frontier
     //!        came_from[neighbor] = currentNode
+  }
+
+  addSoundWave(x, y, radius, color) {
+    this.soundWaves.add(
+      new SoundWave({
+        scene: this,
+        x,
+        y,
+        radius,
+        color,
+      }),
+    );
   }
 
   addExits() {
