@@ -7,6 +7,7 @@ import enemyKnifeMove from '../assets/enemy-knife-move.png';
 import enemyRifleMove from '../assets/enemy-rifle-move.png';
 import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
+import medKitImage from '../assets/medkit.png';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
 import {BoundaryWall} from '../classes/BoundaryWall';
@@ -100,6 +101,7 @@ export class GameScene extends Phaser.Scene {
       frameWidth: ENEMY_STAB.WIDTH,
       frameHeight: ENEMY_STAB.HEIGHT,
     });
+    this.load.image('pickup-medkit', medKitImage);
     this.load.image('exit-up', exitUpImage);
     this.load.image('exit-down', exitDownImage);
     this.load.image('winSwitch', winSwitchImage);
@@ -128,11 +130,7 @@ export class GameScene extends Phaser.Scene {
     this.addRooms();
     this.makePaths();
 
-    this.addStabbyEnemy();
-
-    for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
-      this.addEnemy();
-    }
+    this.addEnemies();
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
 
@@ -474,26 +472,27 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  addStabbyEnemy() {
-    const path = this.basePath.slice(this.basePath.length - 6, this.basePath.length - 2);
-    const enemy = new ShootingEnemy({
-      scene: this,
-      x: path[0].x,
-      y: path[0].y,
-      path,
-    });
-    enemy.play('walkEnemy');
-    this.enemies.add(enemy);
+  addEnemies() {
+    this.addShootingEnemy();
+    for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
+      this.addStabbingEnemy();
+    }
   }
 
-  addEnemy() {
+  addShootingEnemy() {
+    // Disallow first 4 rooms, and ensure that there is some space to walk
+    const firstNode = this.basePath.length - 8;
+    const path = this.basePath.slice(firstNode, firstNode + 4);
+    const [{x, y}] = path;
+    this.enemies.add(new ShootingEnemy({scene: this, x, y, path}));
+  }
+
+  addStabbingEnemy() {
     // Disallow first 4 rooms, and ensure that there is some space to walk
     const firstNode = Math.floor(Math.random() * (this.basePath.length - 8)) + 4;
     const path = this.basePath.slice(firstNode, firstNode + 4);
     const [{x, y}] = path;
-    const enemy = new StabbingEnemy({scene: this, x, y, path});
-    enemy.play('walkEnemy');
-    this.enemies.add(enemy);
+    this.enemies.add(new StabbingEnemy({scene: this, x, y, path}));
   }
 
   addProjectile(projectile) {

@@ -53,6 +53,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     });
     this.legs = new Legs({scene, x, y, player: this});
     this.legs.play('walk');
+    this.play('walkEnemy');
   }
 
   shoot(time) {

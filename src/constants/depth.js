@@ -1,5 +1,6 @@
 export const DEPTH = {
   DEFAULT: 0,
+  PICKUP: 5,
   ENEMY_FOV: 10,
   ENEMY: 20,
   PLAYER: 30,

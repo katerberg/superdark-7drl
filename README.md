@@ -25,3 +25,4 @@ npm build
 - divisionheaven.me for [Stairs](https://divisionheaven.me/2014/12/28/stairs-and-script/stairs-2/)
 - Pixabay for [Revolver](https://pixabay.com/vectors/gun-handgun-pistol-revolver-1297414/)
 - CC0 for [Knife](https://www.maxpixel.net/Army-Isolated-Knife-Hunting-Background-Military-1710292)
+- Knik1985 for [Medkit](https://opengameart.org/content/medkit-0)
