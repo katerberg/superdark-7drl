@@ -41,6 +41,8 @@ export class HudScene extends Phaser.Scene {
       r: KeyCodes.R, // reload
       q: KeyCodes.Q,
       e: KeyCodes.E,
+      f: KeyCodes.F,
+      shift: KeyCodes.SHIFT, // run
       space: KeyCodes.SPACE, // useEquippedItem
       up: KeyCodes.UP,
       down: KeyCodes.DOWN,

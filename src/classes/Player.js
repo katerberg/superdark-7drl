@@ -97,9 +97,9 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   handleMovement(keys) {
-    const {up, down, left, right, w, s, a, d, q, e} = keys;
+    const {up, down, left, right, w, s, a, d, q, e, f, shift} = keys;
 
-    const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : PLAYER.SPEED;
+    const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : shift.isDown ? PLAYER.RUN_SPEED : PLAYER.SPEED;
     const forwardMove = up.isDown || w.isDown;
     const backwardMove = down.isDown || s.isDown;
     const leftStrafe = q.isDown;
