@@ -24,7 +24,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   investigatePosition;
   fieldOfVision;
 
-  constructor({scene, x, y, key, hp, path}) {
+  constructor({scene, x, y, key, hp, path, width, height, xCenter, yCenter}) {
     super(scene, x, y, key);
     this.hp = hp;
     this.lastCheckedHp = hp;
@@ -37,12 +37,12 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.nextNodeIndex = 1;
     this.fieldOfVision = new EnemyFieldOfVision({scene, x, y, enemy: this});
 
-    this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
-    this.setOrigin(ENEMY.XCENTER / ENEMY.WIDTH, ENEMY.YCENTER / ENEMY.HEIGHT);
+    this.setDisplaySize(width * ENEMY.SCALE, height * ENEMY.SCALE);
+    this.setOrigin(xCenter / width, yCenter / height);
 
     scene.physics.world.enable(this);
     this.body.setCollideWorldBounds();
-    this.body.setCircle(ENEMY.BOUNDINGSIZE, ENEMY.XCENTER - ENEMY.BOUNDINGSIZE, ENEMY.YCENTER - ENEMY.BOUNDINGSIZE);
+    this.body.setCircle(ENEMY.BOUNDINGSIZE, xCenter - ENEMY.BOUNDINGSIZE, yCenter - ENEMY.BOUNDINGSIZE);
     scene.add.existing(this);
 
     this.anims.create({

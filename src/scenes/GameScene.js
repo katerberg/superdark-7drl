@@ -18,7 +18,6 @@ import {WinSwitch} from '../classes/WinSwitch';
 import {
   COLORS,
   DEPTH,
-  ENEMY,
   ENEMY_STAB,
   EVENTS,
   GAME_STATUS,
@@ -29,6 +28,7 @@ import {
   WALLS,
   ROOMS,
   GAME,
+  ENEMY_SHOOT,
 } from '../constants';
 import {isDebug} from '../utils/environments';
 import {generateRooms} from '../utils/maps';
@@ -84,8 +84,8 @@ export class GameScene extends Phaser.Scene {
       frameHeight: PLAYER.LEGS_HEIGHT,
     });
     this.load.spritesheet('enemy-rifle-move', enemyRifleMove, {
-      frameWidth: ENEMY.WIDTH,
-      frameHeight: ENEMY.HEIGHT,
+      frameWidth: ENEMY_SHOOT.WIDTH,
+      frameHeight: ENEMY_SHOOT.HEIGHT,
     });
     this.load.spritesheet('enemy-knife-move', enemyKnifeMove, {
       frameWidth: ENEMY_STAB.WIDTH,
