@@ -18,7 +18,7 @@ import {Node} from '../classes/Node';
 import {MedKit} from '../classes/Pickup';
 import {Player} from '../classes/Player';
 import {SoundWave} from '../classes/SoundWave';
-import {EnemyGun, Revolver} from '../classes/Weapon';
+import {EnemyGun} from '../classes/Weapon';
 import {WinSwitch} from '../classes/WinSwitch';
 import {
   COLORS,
@@ -154,9 +154,7 @@ export class GameScene extends Phaser.Scene {
     });
     this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (wall, projectile) => {
       const {x, y} = getMidpoint(wall.body, projectile.body);
-      if (projectile.weapon instanceof Revolver) {
-        createExpandingText(this, x, y, '💥');
-      }
+      this.addSoundWave(x, y, projectile.weapon.soundRadiusOfUse);
       return this.removePlayerProjectile(projectile);
     });
     this.physics.add.collider(this.player, this.boundaryWalls);
