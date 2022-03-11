@@ -9,12 +9,11 @@ import exitUpImage from '../assets/exit-up.png';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
 import {BoundaryWall} from '../classes/BoundaryWall';
-import {Enemy} from '../classes/Enemy';
+import {ShootingEnemy} from '../classes/enemies/ShootingEnemy';
+import {StabbingEnemy} from '../classes/enemies/StabbingEnemy';
 import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
 import {Player} from '../classes/Player';
-import {ShootingEnemy} from '../classes/ShootingEnemy';
-import {StabbingEnemy} from '../classes/StabbingEnemy';
 import {WinSwitch} from '../classes/WinSwitch';
 import {
   COLORS,
