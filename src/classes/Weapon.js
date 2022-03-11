@@ -143,7 +143,7 @@ export class Revolver extends Weapon {
   useAnimation(x, y, angle) {
     const lineLength = 1000;
     const animation = this.scene.add
-      .arc(x, y, 1, 1, 0xffffff, 1)
+      .rectangle(x, y, 1, 1, 0xffffff, 1)
       .setAngle(angle)
       .setDepth(DEPTH.PROJECTILE)
       .setOrigin(0);
