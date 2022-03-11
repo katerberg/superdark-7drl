@@ -24,3 +24,4 @@ npm build
 - textures.com for [Steel Floors](https://www.textures.com/download/MetalFloorsBare0026/13546)
 - divisionheaven.me for [Stairs](https://divisionheaven.me/2014/12/28/stairs-and-script/stairs-2/)
 - Pixabay for [Revolver](https://pixabay.com/vectors/gun-handgun-pistol-revolver-1297414/)
+- CC0 for [Knife](https://www.maxpixel.net/Army-Isolated-Knife-Hunting-Background-Military-1710292)
