@@ -64,13 +64,12 @@ export class Player extends Phaser.GameObjects.Sprite {
     if (keys.space.isDown) {
       const result = this.inventory.getActiveWeapon()?.use(currentTime);
       if (result === WEAPON_EVENT.FIRED) {
-        const projectileStartLocation = this.getProjectileStart();
         this.scene.addPlayerProjectile(
           new Projectile({
             scene: this.scene,
             angle: this.angle,
             weapon: this.inventory.getActiveWeapon(),
-            ...projectileStartLocation,
+            ...this.getProjectileStart(),
           }),
         );
       } else if (result === WEAPON_EVENT.OUT_OF_AMMO) {

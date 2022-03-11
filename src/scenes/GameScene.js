@@ -66,6 +66,7 @@ export class GameScene extends Phaser.Scene {
   walls;
   shadowWalls;
   shadows;
+  soundWaves;
   exits;
   winSwitch;
   levelUpKey;
@@ -121,6 +122,7 @@ export class GameScene extends Phaser.Scene {
     this.shadowWalls = [];
     this.shadows = [];
     this.nodes = [];
+    this.soundWaves = this.physics.add.group();
     this.enemies = this.physics.add.group();
     this.pickups = this.physics.add.group();
     this.projectiles = this.physics.add.group({runChildUpdate: true});
@@ -676,12 +678,6 @@ export class GameScene extends Phaser.Scene {
 
     graphics.closePath();
     graphics.fillPath();
-
-    // this.tweens.add({
-    //   targets: graphics,
-    //   alpha: 1,
-    //   duration: 300,
-    // });
   }
 
   addRooms() {
