@@ -29,7 +29,6 @@ import {
   WALLS,
   ROOMS,
   GAME,
-  ENEMY_SHOOT,
 } from '../constants';
 import {isDebug} from '../utils/environments';
 import {generateRooms} from '../utils/maps';
@@ -462,12 +461,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   addStabbyEnemy() {
-    const path = this.basePath.slice(1, 4);
-    const enemy = new StabbingEnemy({
+    const path = this.basePath.slice(this.basePath.length - 6, this.basePath.length - 2);
+    const enemy = new ShootingEnemy({
       scene: this,
-      x: this.player.x + 20,
-      y: this.player.y + 20,
-      hp: ENEMY_STAB.HP,
+      x: path[0].x,
+      y: path[0].y,
       path,
     });
     enemy.play('walkEnemy');
@@ -479,7 +477,7 @@ export class GameScene extends Phaser.Scene {
     const firstNode = Math.floor(Math.random() * (this.basePath.length - 8)) + 4;
     const path = this.basePath.slice(firstNode, firstNode + 4);
     const [{x, y}] = path;
-    const enemy = new ShootingEnemy({scene: this, x, y, hp: ENEMY_SHOOT.HP, path});
+    const enemy = new StabbingEnemy({scene: this, x, y, path});
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }
