@@ -19,7 +19,7 @@ export const PLAY_AREA = {
 
 export const LEVELS = {
   MIN_LEVEL: 1,
-  MAX_LEVEL: 10,
+  MAX_LEVEL: 5,
 };
 
 export const WALLS = {
