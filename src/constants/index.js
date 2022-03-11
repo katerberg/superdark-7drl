@@ -7,6 +7,7 @@ export {PLAYER} from './player';
 export const GAME = {
   width: 1200,
   height: 800,
+  maxDistance: 722,
 };
 
 export const PLAY_AREA = {

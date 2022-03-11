@@ -1,12 +1,13 @@
 import * as Phaser from 'phaser';
-import {DEPTH, PLAYER} from '../constants';
+import {DEPTH, GAME, PLAYER} from '../constants';
 
 export class Reticle extends Phaser.GameObjects.Text {
   player;
 
-  constructor({scene, x, y, player}) {
-    super(scene, x, y, '+');
+  constructor({scene, player}) {
+    super(scene, GAME.width / 2, GAME.height / 2, '+');
 
+    this.setScrollFactor(0);
     this.player = player;
     this.depth = DEPTH.HUD;
     this.setAlign('center');
@@ -16,9 +17,9 @@ export class Reticle extends Phaser.GameObjects.Text {
 
   update() {
     const x =
-      this.player.x + PLAYER.RETICLE_DISTANCE * Math.cos(Phaser.Math.DegToRad(this.player.angle)) - this.width / 2;
+      GAME.width / 2 + PLAYER.RETICLE_DISTANCE * Math.cos(Phaser.Math.DegToRad(this.player.angle)) - this.width / 2;
     const y =
-      this.player.y + PLAYER.RETICLE_DISTANCE * Math.sin(Phaser.Math.DegToRad(this.player.angle)) - this.height / 2;
+      GAME.height / 2 + PLAYER.RETICLE_DISTANCE * Math.sin(Phaser.Math.DegToRad(this.player.angle)) - this.height / 2;
     this.setPosition(x, y);
   }
 }

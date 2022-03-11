@@ -13,7 +13,20 @@ import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
 import {Player} from '../classes/Player';
 import {WinSwitch} from '../classes/WinSwitch';
-import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES, WALLS, ROOMS} from '../constants';
+import {
+  COLORS,
+  DEPTH,
+  ENEMY,
+  EVENTS,
+  GAME_STATUS,
+  LEVELS,
+  PLAYER,
+  PLAY_AREA,
+  SCENES,
+  WALLS,
+  ROOMS,
+  GAME,
+} from '../constants';
 import {isDebug} from '../utils/environments';
 import {generateRooms} from '../utils/maps';
 import {
@@ -579,9 +592,12 @@ export class GameScene extends Phaser.Scene {
 
   drawPeripheralShadows() {
     let graphics = this.shadows[this.shadows.length - 1];
-    if (this.shadows.length !== this.shadowWalls.length) {
+    if (this.shadows.length === this.shadowWalls.length) {
       graphics = this.add.graphics();
       this.shadows.push(graphics);
+      graphics.setScrollFactor(0);
+      const glowOptions = {glowColor: 0x000, innerStrength: 1, outerStrength: 4, quality: 0.1};
+      this.plugins.get('rexGlowFilterPipeline').add(graphics, glowOptions);
     }
     graphics.clear();
     graphics.fillStyle(COLORS.SHADOW);
@@ -589,8 +605,8 @@ export class GameScene extends Phaser.Scene {
     graphics.beginPath();
 
     graphics.arc(
-      this.player.x,
-      this.player.y,
+      GAME.width / 2,
+      GAME.height / 2,
       75,
       Phaser.Math.DegToRad(this.player.angle - 100),
       Phaser.Math.DegToRad(this.player.angle + 100),
@@ -598,9 +614,9 @@ export class GameScene extends Phaser.Scene {
     );
 
     graphics.arc(
-      this.player.x,
-      this.player.y,
-      5000,
+      GAME.width / 2,
+      GAME.height / 2,
+      GAME.maxDistance,
       Phaser.Math.DegToRad(this.player.angle + 100),
       Phaser.Math.DegToRad(this.player.angle - 100),
       false,
