@@ -51,7 +51,8 @@ export const SCENES = {
 };
 
 export const INVENTORY = {
-  ITEM_WIDTH: 128,
+  ITEM_WIDTH: 150,
+  ITEM_HEIGHT: 75,
 };
 
 export const EXITS = {

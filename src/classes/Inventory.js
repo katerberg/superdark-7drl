@@ -1,12 +1,11 @@
-import {Revolver} from './Weapon';
+import {Knife, Revolver} from './Weapon';
 
 export class Inventory {
   weaponSlots;
   gear;
 
   constructor() {
-    const weapon = new Revolver(true);
-    this.weaponSlots = [weapon]; //Weapon[]
+    this.weaponSlots = [new Revolver(true), new Knife()]; //Weapon[]
     this.gear = []; //Gear[]
   }
 

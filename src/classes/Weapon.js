@@ -50,6 +50,9 @@ class Weapon {
   }
 
   getAmmoText() {
+    if (this.currentAmmunition > 10_000) {
+      return '';
+    }
     return `${this.currentAmmunition}/${this.storedAmmunition > 100_000 ? '∞' : this.storedAmmunition}`;
   }
 
@@ -72,6 +75,12 @@ class Weapon {
       window.gameState.runUntil[getRealTime(this.reloadTime + currentTime)] = 'reload';
       this.lastReload = currentTime;
     }
+  }
+}
+
+export class Knife extends Weapon {
+  constructor() {
+    super('weapon-knife', false, 50, 50, 3, undefined, undefined, undefined, undefined, 0);
   }
 }
 

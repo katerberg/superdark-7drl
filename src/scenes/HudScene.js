@@ -1,6 +1,8 @@
 import * as Phaser from 'phaser';
+import knifeSilhouette from '../assets/weapons/knife-silhouette.png';
 import revolverSilhouette from '../assets/weapons/revolver-silhouette.png';
 import {Text} from '../classes/Text';
+import {WeaponSelection} from '../classes/WeaponSelection';
 import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, SCENES} from '../constants';
 import {isDebug} from '../utils/environments';
 import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
@@ -8,7 +10,8 @@ import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/tim
 export class HudScene extends Phaser.Scene {
   gameScene;
   levelText;
-  glowFilters;
+  timerGlow;
+  weaponSelection;
   gameEndText;
   timerText;
   timerCsText;
@@ -27,6 +30,7 @@ export class HudScene extends Phaser.Scene {
 
   preload() {
     this.load.image('weapon-revolver', revolverSilhouette);
+    this.load.image('weapon-knife', knifeSilhouette);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.restartKey = this.input.keyboard.addKey(KeyCodes.ENTER);
     this.playerKeys = this.input.keyboard.addKeys({
@@ -72,13 +76,13 @@ export class HudScene extends Phaser.Scene {
     if (window.gameState.paused) {
       const glowOptions = {glowColor: 0xff3030, innerStrength: 1, outerStrength: 4};
       if (!this.plugins.get('rexGlowFilterPipeline').get(this.timerText).length) {
-        this.glowFilters = [
+        this.timerGlow = [
           this.plugins.get('rexGlowFilterPipeline').add(this.timerText, glowOptions),
           this.plugins.get('rexGlowFilterPipeline').add(this.timerCsText, glowOptions),
         ];
       }
       this.add.tween({
-        targets: this.glowFilters,
+        targets: this.timerGlow,
         duration: 100,
         ease: 'Exponential.In',
         innerStrength: glowOptions.innerStrength,
@@ -86,7 +90,7 @@ export class HudScene extends Phaser.Scene {
       });
     } else {
       this.add.tween({
-        targets: this.glowFilters,
+        targets: this.timerGlow,
         duration: 100,
         ease: 'Exponential.In',
         innerStrength: 0,
@@ -101,14 +105,19 @@ export class HudScene extends Phaser.Scene {
 
   addInventory(gameScene) {
     if (gameScene?.player?.inventory?.weaponSlots) {
-      this.inventoryImages = gameScene.player.inventory.weaponSlots.map((slot, i) =>
-        this.add
-          .image(250 + i * INVENTORY.ITEM_WIDTH, GAME.height, slot.image)
+      this.inventoryImages = gameScene.player.inventory.weaponSlots.map((slot, i) => {
+        const x = 250 + i * INVENTORY.ITEM_WIDTH;
+        const image = this.add
+          .image(x, GAME.height - 20, slot.image)
           .setOrigin(0, 1)
-          .setScale(0.1),
-      );
+          .setScale(0.1);
+        if (slot.active) {
+          this.weaponSelection = new WeaponSelection({scene: this, x});
+        }
+        return image;
+      });
       this.inventoryAmmoTexts = gameScene.player.inventory.weaponSlots.map((slot, i) =>
-        this.add.text(300 + i * INVENTORY.ITEM_WIDTH, GAME.height, slot.getAmmoText()).setOrigin(0, 1),
+        this.add.text(300 + i * INVENTORY.ITEM_WIDTH, GAME.height - 20, slot.getAmmoText()).setOrigin(0, 1),
       );
     }
   }
