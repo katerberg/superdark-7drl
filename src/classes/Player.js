@@ -12,12 +12,13 @@ export class Player extends Phaser.GameObjects.Sprite {
   inventory;
   legs;
   cursors;
-  hp = isDebug() ? PLAYER.MAX_HP_DEBUG : PLAYER.MAX_HP;
+  hp;
 
-  constructor({scene, x, y, key, angle}) {
+  constructor({scene, x, y, key, angle, hp}) {
     super(scene, x, y, key);
 
     this.inventory = new Inventory();
+    this.hp = hp;
     this.angle = angle || 0;
     this.depth = DEPTH.PLAYER;
     this.setDisplaySize(PLAYER.HEIGHT * PLAYER.SCALE, PLAYER.WIDTH * PLAYER.SCALE);

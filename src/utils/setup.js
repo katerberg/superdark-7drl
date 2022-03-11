@@ -1,4 +1,5 @@
-import {LEVELS, GAME, EXITS} from '../constants';
+import {LEVELS, GAME, EXITS, PLAYER} from '../constants';
+import {isDebug} from './environments';
 
 export function createLevelExits(level) {
   if (window.gameState.levels[level].exits.length) {
@@ -55,4 +56,12 @@ export function createWinSwitch() {
 
   window.gameState.winSwitch.x = x;
   window.gameState.winSwitch.y = y;
+}
+
+export function getCurrentHp(startingInfo) {
+  let hp = startingInfo?.hp;
+  if (!hp) {
+    hp = isDebug() ? PLAYER.MAX_HP_DEBUG : PLAYER.MAX_HP;
+  }
+  return hp;
 }

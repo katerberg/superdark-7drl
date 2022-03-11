@@ -42,7 +42,7 @@ import {
   offsetDegToRad,
   polarToCartesian,
 } from '../utils/math';
-import {createLevelExits, createWinSwitch} from '../utils/setup';
+import {createLevelExits, createWinSwitch, getCurrentHp} from '../utils/setup';
 import {getTimeAwareOfPauses} from '../utils/time';
 import {createExpandingText} from '../utils/visuals';
 
@@ -168,6 +168,7 @@ export class GameScene extends Phaser.Scene {
         x: this.player.body.x + PLAYER.WIDTH * PLAYER.SCALE,
         y: this.player.body.y + PLAYER.WIDTH * PLAYER.SCALE,
       },
+      hp: this.hp,
       angle: this.player.angle,
     });
   }
@@ -516,6 +517,7 @@ export class GameScene extends Phaser.Scene {
       scene: this,
       x: startingInfo?.startingPosition?.x || PLAY_AREA.width / 2 + 200,
       y: startingInfo?.startingPosition?.y || 100,
+      hp: getCurrentHp(startingInfo),
       key: 'character',
       angle: startingInfo?.angle,
     });
