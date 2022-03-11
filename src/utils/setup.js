@@ -1,6 +1,13 @@
 import {LEVELS, GAME, EXITS, PLAYER} from '../constants';
 import {isDebug} from './environments';
 
+export function getBottomOfStairs(level, isGoingUp) {
+  return {
+    x: ((level + (isGoingUp ? 1 : 0)) % 2) * EXITS.DISTANCE_BETWEEN_STAIRS + EXITS.LEFT_STAIRS_X_OFFSET,
+    y: EXITS.HEIGHT + PLAYER.HEIGHT * PLAYER.SCALE,
+  };
+}
+
 export function createLevelExits(level) {
   if (window.gameState.levels[level].exits.length) {
     return;

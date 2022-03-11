@@ -46,7 +46,7 @@ import {
   offsetDegToRad,
   polarToCartesian,
 } from '../utils/math';
-import {createLevelExits, createWinSwitch, getCurrentHp} from '../utils/setup';
+import {createLevelExits, createWinSwitch, getBottomOfStairs, getCurrentHp} from '../utils/setup';
 import {getTimeAwareOfPauses} from '../utils/time';
 import {createExpandingText} from '../utils/visuals';
 
@@ -167,24 +167,33 @@ export class GameScene extends Phaser.Scene {
     if (isDebug()) {
       if (this.levelDownKey.isDown) {
         const {currentLevel} = window.gameState;
-        this.changeLevel(currentLevel === LEVELS.MAX_LEVEL ? currentLevel - 1 : currentLevel + 1);
+        this.changeLevel(
+          currentLevel === LEVELS.MAX_LEVEL ? currentLevel - 1 : currentLevel + 1,
+          currentLevel === LEVELS.MAX_LEVEL,
+          true,
+        );
       }
       if (this.levelUpKey.isDown) {
         const {currentLevel} = window.gameState;
-        this.changeLevel(currentLevel === LEVELS.MIN_LEVEL ? currentLevel + 1 : currentLevel - 1);
+        this.changeLevel(
+          currentLevel === LEVELS.MIN_LEVEL ? currentLevel + 1 : currentLevel - 1,
+          currentLevel === LEVELS.MIN_LEVEL,
+          true,
+        );
       }
     }
   }
 
-  changeLevel(level) {
+  changeLevel(level, isGoingUp, holdPosition) {
     window.gameState.currentLevel = level;
+    const {x, y} = getBottomOfStairs(level, isGoingUp);
     this.scene.start(SCENES.GAME, {
       startingPosition: {
-        x: this.player.body.x + PLAYER.WIDTH * PLAYER.SCALE,
-        y: this.player.body.y + PLAYER.WIDTH * PLAYER.SCALE,
+        x: holdPosition ? this.player.body.x : x,
+        y: holdPosition ? this.player.body.y : y,
       },
       hp: this.hp,
-      angle: this.player.angle,
+      angle: 90,
     });
   }
 
@@ -192,7 +201,7 @@ export class GameScene extends Phaser.Scene {
     const goingUp = window.gameState.currentLevel === exit.end;
 
     this.boundaryWalls.add(new BoundaryWall({scene: this, x: 200, y: 400, width: 200, height: 80}));
-    this.changeLevel(goingUp ? exit.start : exit.end);
+    this.changeLevel(goingUp ? exit.start : exit.end, goingUp);
   }
 
   handlePlayerWinSwitch() {
@@ -483,7 +492,7 @@ export class GameScene extends Phaser.Scene {
 
     // Add medkit to a random room that isn't the startin two or ending two
     this.pickups.add(
-      new MedKit({scene: this, ...this.rooms[Math.floor(Math.random() * this.rooms.length - 4) + 2].getCenterish()}),
+      new MedKit({scene: this, ...this.rooms[Math.floor(Math.random() * (this.rooms.length - 4)) + 2].getCenterish()}),
     );
   }
 

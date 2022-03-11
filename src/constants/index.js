@@ -56,6 +56,7 @@ export const INVENTORY = {
 };
 
 export const EXITS = {
+  HEIGHT: 103,
   Y_OFFSET: 52,
   LEFT_STAIRS_X_OFFSET: 1190,
   DISTANCE_BETWEEN_STAIRS: 120,
