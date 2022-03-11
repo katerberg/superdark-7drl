@@ -41,8 +41,13 @@ export class HudScene extends Phaser.Scene {
       r: KeyCodes.R, // reload
       q: KeyCodes.Q,
       e: KeyCodes.E,
-      f: KeyCodes.F,
+      f: KeyCodes.F, // wait
       shift: KeyCodes.SHIFT, // run
+      1: KeyCodes.ONE,
+      2: KeyCodes.TWO,
+      3: KeyCodes.THREE,
+      4: KeyCodes.FOUR,
+      5: KeyCodes.FIVE,
       space: KeyCodes.SPACE, // useEquippedItem
       up: KeyCodes.UP,
       down: KeyCodes.DOWN,
@@ -112,9 +117,9 @@ export class HudScene extends Phaser.Scene {
         const image = this.add
           .image(x, GAME.height - 20, slot.image)
           .setOrigin(0, 1)
-          .setScale(0.1);
+          .setScale(0.1333333);
         if (slot.active) {
-          this.weaponSelection = new WeaponSelection({scene: this, x});
+          this.weaponSelection = new WeaponSelection({scene: this, slot: 1});
         }
         return image;
       });
@@ -127,10 +132,15 @@ export class HudScene extends Phaser.Scene {
   initListeners() {
     this.game.events.on(EVENTS.LEVEL_CHANGE, this.handleLevelChange, this);
     this.game.events.on(EVENTS.GAME_END, this.handleGameEnd, this);
+    this.game.events.on(EVENTS.SWAPPING_START, this.handleSwapStart, this);
   }
 
   handleLevelChange() {
     this.levelText.setText(`Level ${window.gameState.currentLevel}`);
+  }
+
+  handleSwapStart(newSlot) {
+    this.weaponSelection.select(newSlot);
   }
 
   handleGameEnd(status) {
@@ -157,6 +167,7 @@ export class HudScene extends Phaser.Scene {
       if (this.restartKey.isDown) {
         this.game.events.off(EVENTS.GAME_END, this.handleGameEnd);
         this.game.events.off(EVENTS.LEVEL_CHANGE, this.handleLevelChange);
+        this.game.events.off(EVENTS.SWAPPING_START, this.handleSwapStart);
         this.scene.start(SCENES.LOADING);
       }
       return;

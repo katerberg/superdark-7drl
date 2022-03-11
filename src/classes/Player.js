@@ -17,7 +17,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   constructor({scene, x, y, key, angle, hp}) {
     super(scene, x, y, key);
 
-    this.inventory = new Inventory();
+    this.inventory = new Inventory(scene);
     this.hp = hp;
     this.angle = angle || 0;
     this.depth = DEPTH.PLAYER;
@@ -56,7 +56,11 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   handleShoot(currentTime, keys) {
     if (keys.space.isDown) {
-      const result = this.inventory.getActiveWeapon().use(currentTime);
+      const activeWeapon = this.inventory.getActiveWeapon();
+      if (!activeWeapon) {
+        createFloatingText(this.scene, this.x, this.y, 'Still swapping!');
+      }
+      const result = activeWeapon.use(currentTime);
       if (result === WEAPON_EVENT.FIRED) {
         const projectileStartLocation = this.getProjectileStart();
         createFloatingText(this.scene, this.x, this.y, 'boom');
@@ -126,6 +130,7 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   handleInput(currentTime) {
     const keys = this.scene.scene.get(SCENES.HUD).playerKeys;
+    this.inventory.update(currentTime, keys);
     this.handleMovement(keys);
     this.handleActions(currentTime, keys);
   }
