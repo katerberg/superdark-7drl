@@ -17,3 +17,15 @@ export const ENEMY = {
   PROJECTILE_DAMAGE: 5,
   STATE: {PATROL: 'PATROL', ENGAGE: 'ENGAGE', INVESTIGATE: 'INVESTIGATE', SWEEP: 'SWEEP', RETURN: 'RETURN'},
 };
+
+export const ENEMY_SHOOT = {
+  HP: 2,
+};
+
+export const ENEMY_STAB = {
+  WIDTH: 279,
+  HEIGHT: 219,
+  HP: 1,
+  XCENTER: 108,
+  YCENTER: 114,
+};

@@ -48,7 +48,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.anims.create({
       key: 'walkEnemy',
       frameRate: 20,
-      frames: this.anims.generateFrameNumbers('enemy-rifle-move', {start: 0, end: 19}),
+      frames: this.anims.generateFrameNumbers(key, {start: 0, end: 19}),
       repeat: -1,
     });
     this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, player: this});

@@ -2,6 +2,7 @@ import clone from 'just-clone';
 import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterMove from '../assets/character-move.png';
+import enemyKnifeMove from '../assets/enemy-knife-move.png';
 import enemyRifleMove from '../assets/enemy-rifle-move.png';
 import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
@@ -12,11 +13,14 @@ import {Enemy} from '../classes/Enemy';
 import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
 import {Player} from '../classes/Player';
+import {ShootingEnemy} from '../classes/ShootingEnemy';
+import {StabbingEnemy} from '../classes/StabbingEnemy';
 import {WinSwitch} from '../classes/WinSwitch';
 import {
   COLORS,
   DEPTH,
   ENEMY,
+  ENEMY_STAB,
   EVENTS,
   GAME_STATUS,
   LEVELS,
@@ -26,6 +30,7 @@ import {
   WALLS,
   ROOMS,
   GAME,
+  ENEMY_SHOOT,
 } from '../constants';
 import {isDebug} from '../utils/environments';
 import {generateRooms} from '../utils/maps';
@@ -84,6 +89,10 @@ export class GameScene extends Phaser.Scene {
       frameWidth: ENEMY.WIDTH,
       frameHeight: ENEMY.HEIGHT,
     });
+    this.load.spritesheet('enemy-knife-move', enemyKnifeMove, {
+      frameWidth: ENEMY_STAB.WIDTH,
+      frameHeight: ENEMY_STAB.HEIGHT,
+    });
     this.load.image('exit-up', exitUpImage);
     this.load.image('exit-down', exitDownImage);
     this.load.image('winSwitch', winSwitchImage);
@@ -112,7 +121,8 @@ export class GameScene extends Phaser.Scene {
     this.addRooms();
     this.makePaths();
 
-    this.addEnemy(this.player.x + 10, this.player.y + 10);
+    this.addStabbyEnemy();
+
     for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
       this.addEnemy();
     }
@@ -452,12 +462,25 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  addEnemy(startX, startY) {
+  addStabbyEnemy() {
+    const path = this.basePath.slice(1, 4);
+    const enemy = new StabbingEnemy({
+      scene: this,
+      x: this.player.x + 20,
+      y: this.player.y + 20,
+      hp: ENEMY_STAB.HP,
+      path,
+    });
+    enemy.play('walkEnemy');
+    this.enemies.add(enemy);
+  }
+
+  addEnemy() {
     // Disallow first 4 rooms, and ensure that there is some space to walk
     const firstNode = Math.floor(Math.random() * (this.basePath.length - 8)) + 4;
     const path = this.basePath.slice(firstNode, firstNode + 4);
     const [{x, y}] = path;
-    const enemy = new Enemy({scene: this, x: startX || x, y: startY || y, key: 'enemy-rifle-move', hp: ENEMY.HP, path});
+    const enemy = new ShootingEnemy({scene: this, x, y, hp: ENEMY_SHOOT.HP, path});
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }

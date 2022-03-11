@@ -1,7 +1,7 @@
 export {COLORS} from './colors';
 export {EVENTS} from './events';
 export {DEPTH} from './depth';
-export {ENEMY} from './enemy';
+export {ENEMY, ENEMY_STAB, ENEMY_SHOOT} from './enemy';
 export {PLAYER} from './player';
 
 export const GAME = {
