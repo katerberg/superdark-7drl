@@ -58,7 +58,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     if (keys.space.isDown) {
       const activeWeapon = this.inventory.getActiveWeapon();
       if (!activeWeapon) {
-        createFloatingText(this.scene, this.x, this.y, 'Still swapping!');
+        return createFloatingText(this.scene, this.x, this.y, 'Still swapping!');
       }
       const result = activeWeapon.use(currentTime);
       if (result === WEAPON_EVENT.FIRED) {
@@ -91,7 +91,7 @@ export class Player extends Phaser.GameObjects.Sprite {
 
   handleReload(currentTime, keys) {
     if (keys.r.isDown) {
-      this.inventory.getActiveWeapon().reload(currentTime);
+      this.inventory.getActiveWeapon()?.reload(currentTime);
     }
   }
 
@@ -128,15 +128,15 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.legs.moveTo(this.body.x, this.body.y);
   }
 
-  handleInput(currentTime) {
+  handleInput(timeAwareOfPauses) {
     const keys = this.scene.scene.get(SCENES.HUD).playerKeys;
-    this.inventory.update(currentTime, keys);
+    this.inventory.update(timeAwareOfPauses, keys);
     this.handleMovement(keys);
-    this.handleActions(currentTime, keys);
+    this.handleActions(timeAwareOfPauses, keys);
   }
 
-  update(currentTime) {
-    this.handleInput(currentTime);
+  update(timeAwareOfPauses) {
+    this.handleInput(timeAwareOfPauses);
     this.reticle.update();
   }
 }

@@ -27,6 +27,7 @@ class Weapon {
     useTime = 1000,
     reloadTime = 1000,
     soundRadiusOfUse = 300,
+    swapTime = 500,
   ) {
     this.image = image;
     this.active = active;
@@ -39,6 +40,7 @@ class Weapon {
     this.useTime = useTime;
     this.reloadTime = reloadTime;
     this.soundRadiusOfUse = soundRadiusOfUse;
+    this.swapTime = swapTime;
   }
 
   setActive() {
@@ -57,6 +59,9 @@ class Weapon {
   }
 
   use(time) {
+    if (time < this.lastReload + this.reloadTime) {
+      return WEAPON_EVENT.NOT_READY;
+    }
     if (time > this.lastShot + this.useTime) {
       window.gameState.runUntil[getRealTime(this.useTime + time)] = 'item use';
       this.lastShot = time;
