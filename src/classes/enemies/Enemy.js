@@ -4,7 +4,7 @@ import {isDebug} from '../../utils/environments';
 import {distance} from '../../utils/math';
 import {createFloatingText, createSpinningExpandingText} from '../../utils/visuals';
 import {EnemyFieldOfVision} from '../EnemyFieldOfVision';
-import {PlayerLegs} from '../PlayerLegs';
+import {Legs} from '../Legs';
 import {Projectile} from '../Projectile';
 import {EnemyGun} from '../Weapon';
 
@@ -51,7 +51,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       frames: this.anims.generateFrameNumbers(key, {start: 0, end: 19}),
       repeat: -1,
     });
-    this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, player: this});
+    this.legs = new Legs({scene, x, y, player: this});
     this.legs.play('walk');
   }
 

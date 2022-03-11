@@ -1,7 +1,7 @@
 import clone from 'just-clone';
 import * as Phaser from 'phaser';
 import characterLegsWalk from '../assets/character-legs-walk.png';
-import characterMove from '../assets/character-move.png';
+import characterPistolMove from '../assets/character-pistol-move.png';
 import enemyKnifeMove from '../assets/enemy-knife-move.png';
 import enemyRifleMove from '../assets/enemy-rifle-move.png';
 import exitDownImage from '../assets/exit-down.png';
@@ -79,7 +79,10 @@ export class GameScene extends Phaser.Scene {
 
   preload() {
     this.load.image('steel-tileset', steelTileset);
-    this.load.spritesheet('character', characterMove, {frameWidth: PLAYER.WIDTH, frameHeight: PLAYER.HEIGHT});
+    this.load.spritesheet('characterPistolMove', characterPistolMove, {
+      frameWidth: PLAYER.WIDTH,
+      frameHeight: PLAYER.HEIGHT,
+    });
     this.load.spritesheet('characterLegsWalk', characterLegsWalk, {
       frameWidth: PLAYER.LEGS_WIDTH,
       frameHeight: PLAYER.LEGS_HEIGHT,
@@ -523,7 +526,7 @@ export class GameScene extends Phaser.Scene {
       x: startingInfo?.startingPosition?.x || PLAY_AREA.width / 2 + 200,
       y: startingInfo?.startingPosition?.y || 100,
       hp: getCurrentHp(startingInfo),
-      key: 'character',
+      key: 'characterPistolMove',
       angle: startingInfo?.angle,
     });
     this.player.play('walk');

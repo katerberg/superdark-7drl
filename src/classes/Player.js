@@ -4,7 +4,7 @@ import {isDebug} from '../utils/environments';
 import {getNormalized} from '../utils/math';
 import {createFloatingText, createSpinningExpandingText} from '../utils/visuals';
 import {Inventory} from './Inventory';
-import {PlayerLegs} from './PlayerLegs';
+import {Legs} from './Legs';
 import {Projectile} from './Projectile';
 import {Reticle} from './Reticle';
 
@@ -14,8 +14,8 @@ export class Player extends Phaser.GameObjects.Sprite {
   cursors;
   hp;
 
-  constructor({scene, x, y, key, angle, hp}) {
-    super(scene, x, y, key);
+  constructor({scene, x, y, angle, hp}) {
+    super(scene, x, y, 'characterPistolMove');
 
     this.inventory = new Inventory(scene);
     this.hp = hp;
@@ -38,10 +38,10 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.anims.create({
       key: 'walk',
       frameRate: 20,
-      frames: this.anims.generateFrameNumbers('character', {start: 0, end: 19}),
+      frames: this.anims.generateFrameNumbers('characterPistolMove', {start: 0, end: 19}),
       repeat: -1,
     });
-    this.legs = new PlayerLegs({scene, x, y, key: `${key}legs`, player: this});
+    this.legs = new Legs({scene, x, y, player: this});
     this.legs.play('walk');
 
     this.reticle = new Reticle({scene, x, y, player: this});
