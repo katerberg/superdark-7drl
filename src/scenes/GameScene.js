@@ -13,7 +13,20 @@ import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
 import {Player} from '../classes/Player';
 import {WinSwitch} from '../classes/WinSwitch';
-import {COLORS, DEPTH, ENEMY, EVENTS, GAME_STATUS, LEVELS, PLAYER, PLAY_AREA, SCENES, WALLS, ROOMS} from '../constants';
+import {
+  COLORS,
+  DEPTH,
+  ENEMY,
+  EVENTS,
+  GAME_STATUS,
+  LEVELS,
+  PLAYER,
+  PLAY_AREA,
+  SCENES,
+  WALLS,
+  ROOMS,
+  GAME,
+} from '../constants';
 import {isDebug} from '../utils/environments';
 import {generateRooms} from '../utils/maps';
 import {
@@ -48,7 +61,8 @@ export class GameScene extends Phaser.Scene {
   shadows;
   exits;
   winSwitch;
-  levelKey;
+  levelUpKey;
+  levelDownKey;
   gameEndText;
   rooms;
   nodes;
@@ -74,7 +88,8 @@ export class GameScene extends Phaser.Scene {
     this.load.image('exit-down', exitDownImage);
     this.load.image('winSwitch', winSwitchImage);
     const {KeyCodes} = Phaser.Input.Keyboard;
-    this.levelKey = this.input.keyboard.addKey(KeyCodes.L);
+    this.levelDownKey = this.input.keyboard.addKey(KeyCodes.L);
+    this.levelUpKey = this.input.keyboard.addKey(KeyCodes.O);
   }
 
   create(startingInfo) {
@@ -127,9 +142,13 @@ export class GameScene extends Phaser.Scene {
 
   handleInput() {
     if (isDebug()) {
-      if (this.levelKey.isDown) {
+      if (this.levelDownKey.isDown) {
         const {currentLevel} = window.gameState;
         this.changeLevel(currentLevel === LEVELS.MAX_LEVEL ? currentLevel - 1 : currentLevel + 1);
+      }
+      if (this.levelUpKey.isDown) {
+        const {currentLevel} = window.gameState;
+        this.changeLevel(currentLevel === LEVELS.MIN_LEVEL ? currentLevel + 1 : currentLevel - 1);
       }
     }
   }
@@ -501,7 +520,7 @@ export class GameScene extends Phaser.Scene {
       enemy.update(timeAwareOfPauses);
     });
     this.handleInput();
-    this.clearShadows();
+    // this.clearShadows();
     this.drawShadows();
     this.removeExtraProjectiles(timeAwareOfPauses);
   }
@@ -537,7 +556,8 @@ export class GameScene extends Phaser.Scene {
     const p = {x: this.player.x, y: this.player.y};
     const dirtyMultiplier = 10000;
 
-    this.shadowWalls.forEach((wall) => {
+    // set of two points
+    this.shadowWalls.forEach((wall, i) => {
       const w1 = {
         x: wall[0],
         y: wall[1],
@@ -550,7 +570,12 @@ export class GameScene extends Phaser.Scene {
       };
       const m2 = getNormalized({x: w2.x - p.x, y: w2.y - p.y});
 
-      const graphics = this.add.graphics();
+      let graphics = this.shadows[i];
+      if (!graphics) {
+        graphics = this.add.graphics();
+        this.shadows.push(graphics);
+      }
+      graphics.clear();
       graphics.fillStyle(COLORS.SHADOW);
       graphics.setDepth(DEPTH.SHADOWS);
       graphics.beginPath();
@@ -562,26 +587,26 @@ export class GameScene extends Phaser.Scene {
 
       graphics.closePath();
       graphics.fillPath();
-
-      // this.tweens.add({
-      //   targets: graphics,
-      //   alpha: 1,
-      //   duration: 300,
-      // });
-
-      this.shadows.push(graphics);
     });
   }
 
   drawPeripheralShadows() {
-    const graphics = this.add.graphics();
+    let graphics = this.shadows[this.shadows.length - 1];
+    if (this.shadows.length === this.shadowWalls.length) {
+      graphics = this.add.graphics();
+      this.shadows.push(graphics);
+      graphics.setScrollFactor(0);
+      const glowOptions = {glowColor: 0x000, innerStrength: 1, outerStrength: 4, quality: 0.1};
+      this.plugins.get('rexGlowFilterPipeline').add(graphics, glowOptions);
+    }
+    graphics.clear();
     graphics.fillStyle(COLORS.SHADOW);
     graphics.setDepth(DEPTH.SHADOWS);
     graphics.beginPath();
 
     graphics.arc(
-      this.player.x,
-      this.player.y,
+      GAME.width / 2,
+      GAME.height / 2,
       75,
       Phaser.Math.DegToRad(this.player.angle - 100),
       Phaser.Math.DegToRad(this.player.angle + 100),
@@ -589,9 +614,9 @@ export class GameScene extends Phaser.Scene {
     );
 
     graphics.arc(
-      this.player.x,
-      this.player.y,
-      5000,
+      GAME.width / 2,
+      GAME.height / 2,
+      GAME.maxDistance,
       Phaser.Math.DegToRad(this.player.angle + 100),
       Phaser.Math.DegToRad(this.player.angle - 100),
       false,
@@ -605,12 +630,14 @@ export class GameScene extends Phaser.Scene {
     //   alpha: 1,
     //   duration: 300,
     // });
-
-    this.shadows.push(graphics);
   }
 
   addRooms() {
-    this.rooms = generateRooms();
+    this.rooms = window.gameState.levels[window.gameState.currentLevel].rooms;
+    if (!this.rooms?.length) {
+      this.rooms = generateRooms();
+      window.gameState.levels[window.gameState.currentLevel].rooms = this.rooms;
+    }
 
     if (isDebug()) {
       this.drawFloorplan();
@@ -646,6 +673,7 @@ export class GameScene extends Phaser.Scene {
       this.boundaryWalls.add(w);
     });
     walls.shadowWalls.forEach((w) => {
+      // [x1, y1, x2, y2]
       this.shadowWalls.push(w);
     });
   }

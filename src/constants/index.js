@@ -7,6 +7,7 @@ export {PLAYER} from './player';
 export const GAME = {
   width: 1200,
   height: 800,
+  maxDistance: 722,
 };
 
 export const PLAY_AREA = {
@@ -18,7 +19,7 @@ export const PLAY_AREA = {
 
 export const LEVELS = {
   MIN_LEVEL: 1,
-  MAX_LEVEL: 10,
+  MAX_LEVEL: 5,
 };
 
 export const WALLS = {
@@ -51,6 +52,12 @@ export const SCENES = {
 
 export const INVENTORY = {
   ITEM_WIDTH: 128,
+};
+
+export const EXITS = {
+  Y_OFFSET: 52,
+  LEFT_STAIRS_X_OFFSET: 1190,
+  DISTANCE_BETWEEN_STAIRS: 120,
 };
 
 export const WEAPON_EVENT = {
