@@ -6,4 +6,5 @@ export const COLORS = {
   TIMER_NORMAL: '#FFFFFF',
   TIMER_DANGER: '#F32013',
   ENEMY_GUN_FIRE: 0xff0000,
+  PLAYER_SOUND: 0x00ffff,
 };
