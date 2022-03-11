@@ -3,6 +3,7 @@ import {DEPTH, WEAPON_EVENT} from '../constants';
 import {getRealTime} from '../utils/time';
 
 class Weapon {
+  characterMoveAnimation;
   range;
   size;
   damage;
@@ -31,6 +32,7 @@ class Weapon {
     soundRadiusOfUse = 300,
     swapTime = 500,
   ) {
+    this.characterMoveAnimation = 'pistolMove';
     this.scene = scene;
     this.image = image;
     this.active = active;
@@ -94,6 +96,7 @@ class Weapon {
 export class Knife extends Weapon {
   constructor(scene, active) {
     super(scene, 'weapon-knife', active, 30, 30, 3, undefined, undefined, undefined, undefined, 0);
+    this.characterMoveAnimation = 'knifeMove';
   }
 
   useAnimation(x, y, angle) {
@@ -138,6 +141,7 @@ export class Knife extends Weapon {
 export class Revolver extends Weapon {
   constructor(scene, active) {
     super(scene, 'weapon-revolver', active, 10_000, 10, 1, 5, 6);
+    this.characterMoveAnimation = 'pistolMove';
   }
 
   useAnimation(x, y, angle) {

@@ -1,5 +1,6 @@
 import clone from 'just-clone';
 import * as Phaser from 'phaser';
+import characterKnifeMove from '../assets/character-knife-move.png';
 import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterPistolMove from '../assets/character-pistol-move.png';
 import enemyKnifeMove from '../assets/enemy-knife-move.png';
@@ -82,6 +83,10 @@ export class GameScene extends Phaser.Scene {
     this.load.spritesheet('characterPistolMove', characterPistolMove, {
       frameWidth: PLAYER.WIDTH,
       frameHeight: PLAYER.HEIGHT,
+    });
+    this.load.spritesheet('characterKnifeMove', characterKnifeMove, {
+      frameWidth: PLAYER.KNIFE_WIDTH,
+      frameHeight: PLAYER.KNIFE_HEIGHT,
     });
     this.load.spritesheet('characterLegsWalk', characterLegsWalk, {
       frameWidth: PLAYER.LEGS_WIDTH,
@@ -529,7 +534,7 @@ export class GameScene extends Phaser.Scene {
       key: 'characterPistolMove',
       angle: startingInfo?.angle,
     });
-    this.player.play('walk');
+    this.player.play('knifeMove');
   }
 
   update(time) {

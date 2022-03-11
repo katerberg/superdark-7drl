@@ -36,9 +36,15 @@ export class Player extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
 
     this.anims.create({
-      key: 'walk',
+      key: 'pistolMove',
       frameRate: 20,
       frames: this.anims.generateFrameNumbers('characterPistolMove', {start: 0, end: 19}),
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'knifeMove',
+      frameRate: 20,
+      frames: this.anims.generateFrameNumbers('characterKnifeMove', {start: 0, end: 19}),
       repeat: -1,
     });
     this.legs = new Legs({scene, x, y, player: this});
