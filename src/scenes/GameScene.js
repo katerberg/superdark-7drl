@@ -477,7 +477,14 @@ export class GameScene extends Phaser.Scene {
   }
 
   addPickups() {
-    this.pickups.add(new MedKit({scene: this, x: 1350, y: 150}));
+    if (isDebug()) {
+      this.pickups.add(new MedKit({scene: this, x: 1350, y: 150}));
+    }
+
+    // Add medkit to a random room that isn't the startin two or ending two
+    this.pickups.add(
+      new MedKit({scene: this, ...this.rooms[Math.floor(Math.random() * this.rooms.length - 4) + 2].getCenterish()}),
+    );
   }
 
   addEnemies() {
@@ -535,11 +542,11 @@ export class GameScene extends Phaser.Scene {
   addPlayer(startingInfo) {
     this.player = new Player({
       scene: this,
-      x: startingInfo?.startingPosition?.x || PLAY_AREA.width / 2 + 200,
-      y: startingInfo?.startingPosition?.y || 100,
+      x: startingInfo?.startingPosition?.x || PLAY_AREA.width / 2 + 50,
+      y: startingInfo?.startingPosition?.y || 50,
       hp: getCurrentHp(startingInfo),
       key: 'characterPistolMove',
-      angle: startingInfo?.angle,
+      angle: startingInfo?.angle || 60,
     });
     this.player.play('knifeMove');
   }
