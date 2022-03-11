@@ -7,12 +7,14 @@ import {Inventory} from './Inventory';
 import {Legs} from './Legs';
 import {Projectile} from './Projectile';
 import {Reticle} from './Reticle';
+import {SoundWave} from './SoundWave';
 
 export class Player extends Phaser.GameObjects.Sprite {
   inventory;
   legs;
   cursors;
   hp;
+  lastStep = -2000;
 
   constructor({scene, x, y, angle, hp}) {
     super(scene, x, y, 'characterPistolMove');
@@ -106,10 +108,11 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.handleShoot(currentTime, keys);
   }
 
-  handleMovement(keys) {
+  handleMovement(timeAwareOfPauses, keys) {
     const {up, down, left, right, w, s, a, d, q, e, shift} = keys;
+    const isRunning = shift.isDown;
 
-    const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : shift.isDown ? PLAYER.RUN_SPEED : PLAYER.SPEED;
+    const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : isRunning ? PLAYER.RUN_SPEED : PLAYER.SPEED;
     const forwardMove = up.isDown || w.isDown;
     const backwardMove = down.isDown || s.isDown;
     const leftStrafe = q.isDown;
@@ -121,6 +124,17 @@ export class Player extends Phaser.GameObjects.Sprite {
       moveVector = getNormalized(moveVector);
       moveVector.x *= moveSpeed;
       moveVector.y *= moveSpeed;
+      if (timeAwareOfPauses > this.lastStep + (isRunning ? PLAYER.RUN_SOUND_DELAY : PLAYER.WALK_SOUND_DELAY)) {
+        this.lastStep = timeAwareOfPauses;
+        this.scene.soundWaves.add(
+          new SoundWave({
+            scene: this.scene,
+            x: this.x,
+            y: this.y,
+            radius: isRunning ? PLAYER.RUN_SOUND_RADIUS : PLAYER.WALK_SOUND_RADIUS,
+          }),
+        );
+      }
     }
     const angularMultiplier = leftRotate ? -1 : rightRotate ? 1 : 0;
     this.body.setVelocity(
@@ -137,7 +151,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   handleInput(timeAwareOfPauses) {
     const keys = this.scene.scene.get(SCENES.HUD).playerKeys;
     this.inventory.update(timeAwareOfPauses, keys);
-    this.handleMovement(keys);
+    this.handleMovement(timeAwareOfPauses, keys);
     this.handleActions(timeAwareOfPauses, keys);
   }
 

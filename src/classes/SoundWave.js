@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import {DEPTH} from '../constants';
 
 export class SoundWave extends Phaser.GameObjects.Arc {
-  constructor({scene, x, y, radius, duration}) {
+  constructor({scene, x, y, radius, duration = 100}) {
     super(scene, x, y, 0);
     this.depth = DEPTH.SOUND;
     this.setClosePath(false);
