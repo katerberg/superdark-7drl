@@ -3,6 +3,7 @@ import {DEPTH, ENEMY, WALLS} from '../constants';
 import {isDebug} from '../utils/environments';
 import {distance} from '../utils/math';
 import {createExpandingText, createFloatingText} from '../utils/visuals';
+import {EnemyFieldOfVision} from './EnemyFieldOfVision';
 import {PlayerLegs} from './PlayerLegs';
 import {Projectile} from './Projectile';
 import {EnemyGun} from './Weapon';
@@ -21,6 +22,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   initialSweepAngle = null;
   state;
   investigatePosition;
+  fieldOfVision;
 
   constructor({scene, x, y, key, hp, path}) {
     super(scene, x, y, key);
@@ -33,6 +35,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.patrolPath = path;
     this.path = path;
     this.nextNodeIndex = 1;
+    this.fieldOfVision = new EnemyFieldOfVision({scene, x, y, enemy: this});
 
     this.setDisplaySize(ENEMY.WIDTH * ENEMY.SCALE, ENEMY.HEIGHT * ENEMY.SCALE);
     this.setOrigin(ENEMY.XCENTER / ENEMY.WIDTH, ENEMY.YCENTER / ENEMY.HEIGHT);
@@ -62,6 +65,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
   handleDeath() {
     this.legs.stop();
+    this.fieldOfVision.destroy();
     this.destroy();
   }
 
@@ -245,6 +249,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       this.moveAlongPath();
     }
 
+    this.fieldOfVision.update();
     this.legs.setAngle(this.angle);
     this.legs.moveTo(this.body.x, this.body.y);
   }

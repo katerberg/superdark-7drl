@@ -112,7 +112,7 @@ export class GameScene extends Phaser.Scene {
     this.addRooms();
     this.makePaths();
 
-    // this.addEnemy();
+    this.addEnemy(this.player.x + 10, this.player.y + 10);
     for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
       this.addEnemy();
     }
@@ -451,19 +451,13 @@ export class GameScene extends Phaser.Scene {
       );
     });
   }
-  //doesn't work yet
-  addFixedEnemy(x, y) {
-    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: ENEMY.HP});
-    enemy.play('walkEnemy');
-    this.enemies.add(enemy);
-  }
 
-  addEnemy() {
+  addEnemy(startX, startY) {
     // Disallow first 4 rooms, and ensure that there is some space to walk
     const firstNode = Math.floor(Math.random() * (this.basePath.length - 8)) + 4;
     const path = this.basePath.slice(firstNode, firstNode + 4);
     const [{x, y}] = path;
-    const enemy = new Enemy({scene: this, x, y, key: 'enemy-rifle-move', hp: ENEMY.HP, path});
+    const enemy = new Enemy({scene: this, x: startX || x, y: startY || y, key: 'enemy-rifle-move', hp: ENEMY.HP, path});
     enemy.play('walkEnemy');
     this.enemies.add(enemy);
   }

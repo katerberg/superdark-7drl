@@ -1,9 +1,10 @@
 export const DEPTH = {
   DEFAULT: 0,
-  ENEMY: 1,
-  PLAYER: 2,
-  PROJECTILE: 3,
-  SHADOWS: 4,
-  EXPLOSION: 5,
-  HUD: 6,
+  ENEMY_FOV: 10,
+  ENEMY: 20,
+  PLAYER: 30,
+  PROJECTILE: 40,
+  SHADOWS: 50,
+  EXPLOSION: 60,
+  HUD: 70,
 };
