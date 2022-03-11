@@ -5,4 +5,5 @@ export const COLORS = {
   MESSAGE_LOSE: '#ff0000',
   TIMER_NORMAL: '#FFFFFF',
   TIMER_DANGER: '#F32013',
+  ENEMY_GUN_FIRE: 0xff0000,
 };

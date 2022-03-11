@@ -1,6 +1,4 @@
 import {ENEMY_STAB} from '../../constants';
-import {createFloatingText} from '../../utils/visuals';
-import {Projectile} from '../Projectile';
 import {EnemyKnife} from '../Weapon';
 import {Enemy} from './Enemy';
 
@@ -19,13 +17,5 @@ export class StabbingEnemy extends Enemy {
       yCenter: ENEMY_STAB.Y_CENTER,
     });
     this.weapon = new EnemyKnife();
-  }
-
-  shoot(time) {
-    this.lastShot = time;
-    this.scene.addProjectile(
-      new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, weapon: this.weapon}),
-    );
-    createFloatingText(this.scene, this.x, this.y, 'stab');
   }
 }

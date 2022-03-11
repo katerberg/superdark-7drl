@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser';
-import {DEPTH, ENEMY, WALLS} from '../../constants';
+import {COLORS, DEPTH, ENEMY, WALLS} from '../../constants';
 import {isDebug} from '../../utils/environments';
 import {distance} from '../../utils/math';
-import {createFloatingText, createSpinningExpandingText} from '../../utils/visuals';
+import {createSpinningExpandingText} from '../../utils/visuals';
 import {EnemyFieldOfVision} from '../EnemyFieldOfVision';
 import {Legs} from '../Legs';
 import {Projectile} from '../Projectile';
@@ -61,7 +61,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.scene.addProjectile(
       new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, weapon: this.weapon}),
     );
-    createFloatingText(this.scene, this.x, this.y, 'boom');
+
+    this.scene.addSoundWave(this.x, this.y, this.weapon.soundRadiusOfUse, COLORS.ENEMY_GUN_FIRE);
   }
 
   handleDeath() {

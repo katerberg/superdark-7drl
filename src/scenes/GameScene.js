@@ -18,7 +18,6 @@ import {Node} from '../classes/Node';
 import {MedKit} from '../classes/Pickup';
 import {Player} from '../classes/Player';
 import {SoundWave} from '../classes/SoundWave';
-import {EnemyGun} from '../classes/Weapon';
 import {WinSwitch} from '../classes/WinSwitch';
 import {
   COLORS,
@@ -49,7 +48,6 @@ import {
 } from '../utils/math';
 import {createLevelExits, createWinSwitch, getBottomOfStairs, getCurrentHp} from '../utils/setup';
 import {getTimeAwareOfPauses} from '../utils/time';
-import {createExpandingText} from '../utils/visuals';
 
 const immovableOptions = {
   createCallback: (p) => {
@@ -147,9 +145,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.pickups, (player, pickup) => pickup.pickup(player));
     this.physics.add.overlap(this.boundaryWalls, this.projectiles, (wall, projectile) => {
       const {x, y} = getMidpoint(wall.body, projectile.body);
-      if (projectile.weapon instanceof EnemyGun) {
-        createExpandingText(this, x, y, '💥');
-      }
+      this.addSoundWave(x, y, projectile.weapon.soundRadiusOfUse, COLORS.ENEMY_GUN_FIRE);
       return this.removeProjectile(projectile);
     });
     this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (wall, projectile) => {
