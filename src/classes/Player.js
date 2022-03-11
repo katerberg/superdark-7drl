@@ -79,6 +79,13 @@ export class Player extends Phaser.GameObjects.Sprite {
     }
   }
 
+  heal(amount) {
+    this.hp += amount;
+    if (this.hp > PLAYER.MAX_HP) {
+      this.hp = PLAYER.MAX_HP;
+    }
+  }
+
   handleHit(projectile) {
     //TODO: Make this a blood splatter
     createSpinningExpandingText(this.scene, this.x, this.y, '🩸');

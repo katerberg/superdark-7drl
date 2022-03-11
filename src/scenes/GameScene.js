@@ -15,6 +15,7 @@ import {ShootingEnemy} from '../classes/enemies/ShootingEnemy';
 import {StabbingEnemy} from '../classes/enemies/StabbingEnemy';
 import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
+import {MedKit} from '../classes/Pickup';
 import {Player} from '../classes/Player';
 import {EnemyGun, Revolver} from '../classes/Weapon';
 import {WinSwitch} from '../classes/WinSwitch';
@@ -121,6 +122,7 @@ export class GameScene extends Phaser.Scene {
     this.shadows = [];
     this.nodes = [];
     this.enemies = this.physics.add.group();
+    this.pickups = this.physics.add.group();
     this.projectiles = this.physics.add.group({runChildUpdate: true});
     this.playerProjectiles = this.physics.add.group({runChildUpdate: true});
 
@@ -131,6 +133,7 @@ export class GameScene extends Phaser.Scene {
     this.makePaths();
 
     this.addEnemies();
+    this.addPickups();
 
     this.game.events.emit(EVENTS.LEVEL_CHANGE);
 
@@ -138,6 +141,7 @@ export class GameScene extends Phaser.Scene {
     // TODO: Figure out how to get the collision box to match angle
     this.physics.add.overlap(this.enemies, this.playerProjectiles, (enemy, projectile) => enemy.handleHit(projectile));
     this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => player.handleHit(projectile));
+    this.physics.add.overlap(this.player, this.pickups, (player, pickup) => pickup.pickup(player));
     this.physics.add.overlap(this.boundaryWalls, this.projectiles, (wall, projectile) => {
       const {x, y} = getMidpoint(wall.body, projectile.body);
       if (projectile.weapon instanceof EnemyGun) {
@@ -470,6 +474,10 @@ export class GameScene extends Phaser.Scene {
         }),
       );
     });
+  }
+
+  addPickups() {
+    this.pickups.add(new MedKit({scene: this, x: 1350, y: 150}));
   }
 
   addEnemies() {

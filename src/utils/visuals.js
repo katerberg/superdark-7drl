@@ -1,10 +1,28 @@
 import {DEPTH} from '../constants';
 
-export function createFloatingText(scene, x, y, message, color = '#fff') {
+export function createFloatingText(scene, x, y, message, color = '#fff', delay = 0, slide = 0) {
   const animation = scene.add.text(x, y, message, {color});
+
+  if (slide) {
+    scene.add.tween({
+      loop: 6,
+      targets: animation,
+      delay,
+      duration: 125,
+      ease: 'Linear',
+      yoyo: true,
+      x: x + slide,
+
+      onComplete: () => {
+        animation.destroy();
+      },
+      callbackScope: scene,
+    });
+  }
 
   scene.add.tween({
     targets: animation,
+    delay,
     duration: 750,
     ease: 'Exponential.In',
     y: y - 50,
