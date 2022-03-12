@@ -21,6 +21,7 @@ export class HudScene extends Phaser.Scene {
   inventoryImages; // image[]
   inventoryAmmoTexts; // text[]
   pauseIndicator;
+  runWalkIndicator;
 
   constructor() {
     super({
@@ -58,9 +59,9 @@ export class HudScene extends Phaser.Scene {
 
   create() {
     this.initListeners();
-    this.levelText = new Text({scene: this, x: 0, y: GAME.height, text: `Level ${window.gameState.currentLevel}`})
-      .setFontSize('36px')
-      .setOrigin(0, 1)
+    this.levelText = new Text({scene: this, x: GAME.width, y: 20, text: `Level ${window.gameState.currentLevel}`})
+      .setFontSize('18px')
+      .setOrigin(1, 0)
       .setDepth(DEPTH.HUD);
     this.timerText = new Text({scene: this, x: GAME.width - 50, y: GAME.height, text: getTimeDisplayMain(0)})
       .setFontSize('36px')
@@ -76,6 +77,7 @@ export class HudScene extends Phaser.Scene {
     this.lastPause = 0;
     this.drawTimer(window.gameState.startTime);
     this.addInventory();
+    this.addRunWalkIndicator();
     this.drawPauseIndicator();
   }
 
@@ -108,6 +110,35 @@ export class HudScene extends Phaser.Scene {
 
   getGameScene() {
     return this.game.scene.getScene(SCENES.GAME);
+  }
+
+  addRunWalkIndicator() {
+    this.runWalkIndicator = [];
+    const color = 0xffffff;
+    // const testColor = 0xff0000;
+    const alpha = 1;
+    const headX = 100;
+    const headY = GAME.height - 100;
+    const headRadius = 10;
+    const bodyLength = 50;
+    const head = this.add.circle(headX, headY, 10, color, alpha);
+    const bodyX = headX - (Math.sin(Phaser.Math.DegToRad(20)) * bodyLength) / 2;
+    const body = this.add
+      .line(
+        bodyX,
+        headY + headRadius + Math.cos(Phaser.Math.DegToRad(20)) * (bodyLength / 2) - 5,
+        0,
+        0,
+        0,
+        bodyLength,
+        color,
+        alpha,
+      )
+      .setLineWidth(2)
+      .setAngle(20);
+
+    this.runWalkIndicator.push(head);
+    this.runWalkIndicator.push(body);
   }
 
   addInventory(gameScene) {
@@ -241,6 +272,22 @@ export class HudScene extends Phaser.Scene {
       });
     }
   }
+  updateRunWalk() {
+    const [head, body] = this.runWalkIndicator;
+    this.add.tween({
+      targets: head,
+      duration: 100,
+      ease: 'Exponential.In',
+      x: this.playerKeys.shift.isDown ? 90 : 100,
+    });
+    this.add.tween({
+      targets: body,
+      duration: 100,
+      ease: 'Exponential.In',
+      x: this.playerKeys.shift.isDown ? 80 : 100,
+      angle: this.playerKeys.shift.isDown ? 20 : 0,
+    });
+  }
 
   update(time) {
     this.cameras.main.setBackgroundColor(window.gameState.gameEnded ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0)');
@@ -248,5 +295,6 @@ export class HudScene extends Phaser.Scene {
     this.handleInput(time);
     this.updateTimer(time);
     this.updateInventory();
+    this.updateRunWalk();
   }
 }
