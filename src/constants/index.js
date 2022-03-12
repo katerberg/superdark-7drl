@@ -49,6 +49,7 @@ export const SCENES = {
   HUD: 'HudScene',
   GAME: 'GameScene',
   LOADING: 'LoadingScene',
+  MENU: 'MenuScene',
 };
 
 export const INVENTORY = {
