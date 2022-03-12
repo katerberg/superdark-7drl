@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime';
 import * as Phaser from 'phaser';
 import GlowFilterPipelinePlugin from 'phaser3-rex-plugins/plugins/glowfilter2pipeline-plugin.js';
-import {GAME, LEVELS} from './constants';
+import {GAME, LEVELS, RUN_WALK} from './constants';
 import {HudScene, GameScene, LoadingScene} from './scenes';
 import {isDebug} from './utils/environments';
 

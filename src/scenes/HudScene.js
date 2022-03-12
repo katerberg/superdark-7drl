@@ -141,6 +141,7 @@ export class HudScene extends Phaser.Scene {
     this.game.events.on(EVENTS.GAME_END, this.handleGameEnd, this);
     this.game.events.on(EVENTS.SWAPPING_START, this.handleSwapStart, this);
     this.game.events.on(EVENTS.SWAPPING_FINISH, this.handleSwapFinish, this);
+    this.game.events.on(EVENTS.RUN_WALK_CHANGE, this.handleRunWalkToggle, this);
   }
 
   handleLevelChange() {
@@ -153,6 +154,10 @@ export class HudScene extends Phaser.Scene {
 
   handleSwapFinish(newSlot) {
     this.weaponSelection.select(newSlot, true);
+  }
+
+  handleRunWalkToggle(newState) {
+    this.runWalkIndicator.update(newState);
   }
 
   handleGameEnd(status) {
@@ -181,6 +186,7 @@ export class HudScene extends Phaser.Scene {
         this.game.events.off(EVENTS.LEVEL_CHANGE, this.handleLevelChange);
         this.game.events.off(EVENTS.SWAPPING_START, this.handleSwapStart);
         this.game.events.off(EVENTS.SWAPPING_FINISH, this.handleSwapFinish);
+        this.game.events.off(EVENTS.RUN_WALK_CHANGE, this.handleRunWalkToggle);
         this.scene.start(SCENES.LOADING);
       }
       return;
@@ -255,6 +261,5 @@ export class HudScene extends Phaser.Scene {
     this.handleInput(time);
     this.updateTimer(time);
     this.updateInventory();
-    this.runWalkIndicator.update(this.playerKeys.shift.isDown);
   }
 }

@@ -26,7 +26,9 @@ export class RunWalkIndicator {
 
   createBody() {
     const bodyLength = 50;
-    const bodyX = this.head.x - (Math.sin(Phaser.Math.DegToRad(20)) * bodyLength) / 2;
+    // const bodyX = this.head.x - (Math.sin(Phaser.Math.DegToRad(20)) * bodyLength) / 2;
+    const bodyX = 100;
+
     this.body = this.scene.add
       .line(
         bodyX,
@@ -39,22 +41,23 @@ export class RunWalkIndicator {
         this.alpha,
       )
       .setLineWidth(2)
-      .setAngle(20);
+      .setAngle(0);
   }
 
-  update(isShiftDown) {
+  update(state) {
+    const isRunning = RUN_WALK.STATE.RUNNING === state;
     this.scene.add.tween({
       targets: this.head,
       duration: RUN_WALK.DURATION,
       ease: 'Exponential.In',
-      x: isShiftDown ? 90 : 100,
+      x: isRunning ? 90 : 100,
     });
     this.scene.add.tween({
       targets: this.body,
       duration: RUN_WALK.DURATION,
       ease: 'Exponential.In',
-      x: isShiftDown ? 80 : 100,
-      angle: isShiftDown ? 20 : 0,
+      x: isRunning ? 80 : 100,
+      angle: isRunning ? 20 : 0,
     });
   }
 }

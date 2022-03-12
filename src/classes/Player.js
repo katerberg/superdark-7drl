@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {DEPTH, EVENTS, GAME_STATUS, PLAYER, SCENES, WEAPON_EVENT} from '../constants';
+import {DEPTH, EVENTS, GAME_STATUS, PLAYER, RUN_WALK, SCENES, WEAPON_EVENT} from '../constants';
 import {isDebug} from '../utils/environments';
 import {getNormalized} from '../utils/math';
 import {createFloatingText, createSpinningExpandingText} from '../utils/visuals';
@@ -14,6 +14,8 @@ export class Player extends Phaser.GameObjects.Sprite {
   cursors;
   hp;
   lastStep = -2000;
+  lastRunChange = -2000;
+  runWalk = RUN_WALK.STATE.WALKING;
 
   constructor({scene, x, y, angle, hp}) {
     super(scene, x, y, 'characterPistolMove');
@@ -107,9 +109,17 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.handleShoot(currentTime, keys);
   }
 
+  handleRunWalkChange(currentTime, keys) {
+    if (keys.shift.isDown && currentTime > this.lastRunChange + 1000) {
+      this.lastRunChange = currentTime;
+      this.runWalk = this.runWalk === RUN_WALK.STATE.RUNNING ? RUN_WALK.STATE.WALKING : RUN_WALK.STATE.RUNNING;
+      this.scene.game.events.emit(EVENTS.RUN_WALK_CHANGE, this.runWalk);
+    }
+  }
+
   handleMovement(timeAwareOfPauses, keys) {
-    const {up, down, left, right, w, s, a, d, q, e, shift} = keys;
-    const isRunning = shift.isDown;
+    const {up, down, left, right, w, s, a, d, q, e} = keys;
+    const isRunning = this.runWalk === RUN_WALK.STATE.RUNNING;
 
     const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : isRunning ? PLAYER.RUN_SPEED : PLAYER.SPEED;
     const forwardMove = up.isDown || w.isDown;
@@ -128,13 +138,14 @@ export class Player extends Phaser.GameObjects.Sprite {
         this.scene.addSoundWave(this.x, this.y, isRunning ? PLAYER.RUN_SOUND_RADIUS : PLAYER.WALK_SOUND_RADIUS);
       }
     }
+    const runWalkMultiplier = isRunning ? 1.75 : 1;
     const angularMultiplier = leftRotate ? -1 : rightRotate ? 1 : 0;
     this.body.setVelocity(
       moveVector.x * Math.cos(this.rotation) - moveVector.y * Math.sin(this.rotation),
       moveVector.x * Math.sin(this.rotation) + moveVector.y * Math.cos(this.rotation),
     );
 
-    this.body.setAngularVelocity(angularMultiplier * PLAYER.ANGLE_SPEED);
+    this.body.setAngularVelocity(angularMultiplier * PLAYER.ANGLE_SPEED * runWalkMultiplier);
 
     this.legs.setAngle(this.angle); //Where we're going, we don't need legs (⌐■_■)
     this.legs.moveTo(this.body.x, this.body.y);
@@ -143,6 +154,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   handleInput(timeAwareOfPauses) {
     const keys = this.scene.scene.get(SCENES.HUD).playerKeys;
     this.inventory.update(timeAwareOfPauses, keys);
+    this.handleRunWalkChange(timeAwareOfPauses, keys);
     this.handleMovement(timeAwareOfPauses, keys);
     this.handleActions(timeAwareOfPauses, keys);
   }
