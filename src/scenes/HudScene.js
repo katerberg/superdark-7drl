@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import knifeSilhouette from '../assets/weapons/knife-silhouette.png';
 import revolverSilhouette from '../assets/weapons/revolver-silhouette.png';
+import {RunWalkIndicator} from '../classes/RunWalkIndicator';
 import {Text} from '../classes/Text';
 import {WeaponSelection} from '../classes/WeaponSelection';
 import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, SCENES} from '../constants';
@@ -113,32 +114,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   addRunWalkIndicator() {
-    this.runWalkIndicator = [];
-    const color = 0xffffff;
-    // const testColor = 0xff0000;
-    const alpha = 1;
-    const headX = 100;
-    const headY = GAME.height - 100;
-    const headRadius = 10;
-    const bodyLength = 50;
-    const head = this.add.circle(headX, headY, 10, color, alpha);
-    const bodyX = headX - (Math.sin(Phaser.Math.DegToRad(20)) * bodyLength) / 2;
-    const body = this.add
-      .line(
-        bodyX,
-        headY + headRadius + Math.cos(Phaser.Math.DegToRad(20)) * (bodyLength / 2) - 5,
-        0,
-        0,
-        0,
-        bodyLength,
-        color,
-        alpha,
-      )
-      .setLineWidth(2)
-      .setAngle(20);
-
-    this.runWalkIndicator.push(head);
-    this.runWalkIndicator.push(body);
+    this.runWalkIndicator = new RunWalkIndicator({scene: this});
   }
 
   addInventory(gameScene) {
@@ -272,22 +248,6 @@ export class HudScene extends Phaser.Scene {
       });
     }
   }
-  updateRunWalk() {
-    const [head, body] = this.runWalkIndicator;
-    this.add.tween({
-      targets: head,
-      duration: 100,
-      ease: 'Exponential.In',
-      x: this.playerKeys.shift.isDown ? 90 : 100,
-    });
-    this.add.tween({
-      targets: body,
-      duration: 100,
-      ease: 'Exponential.In',
-      x: this.playerKeys.shift.isDown ? 80 : 100,
-      angle: this.playerKeys.shift.isDown ? 20 : 0,
-    });
-  }
 
   update(time) {
     this.cameras.main.setBackgroundColor(window.gameState.gameEnded ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0)');
@@ -295,6 +255,6 @@ export class HudScene extends Phaser.Scene {
     this.handleInput(time);
     this.updateTimer(time);
     this.updateInventory();
-    this.updateRunWalk();
+    this.runWalkIndicator.update(this.playerKeys.shift.isDown);
   }
 }
