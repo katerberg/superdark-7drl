@@ -81,6 +81,14 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     }
   }
 
+  handleSoundWave(soundWave) {
+    if (!this.isSeeing(soundWave) && this.state <= ENEMY.STATE.INVESTIGATE) {
+      this.setState(ENEMY.STATE.INVESTIGATE);
+      this.investigatePosition = soundWave;
+      this.setPath(this.scene.findPath({x: this.x, y: this.y}, soundWave));
+    }
+  }
+
   getGoalAngle(target) {
     return Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.x, this.y, target.x, target.y));
   }
