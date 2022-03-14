@@ -1,9 +1,8 @@
 import * as Phaser from 'phaser';
-import logoImage from '../assets/logo.png';
 import splash1 from '../assets/splash1.png';
 import splash2 from '../assets/splash2.png';
 
-import {COLORS, GAME, SCENES} from '../constants';
+import {COLORS, SCENES} from '../constants';
 import {isDebug, skipMenu} from '../utils/environments';
 
 export class MenuScene extends Phaser.Scene {
