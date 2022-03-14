@@ -7,6 +7,7 @@ module.exports = () => ({
       hash: true,
       template: './src/index.html',
       bodyHtmlSnippet: '<div class="contents"></div>',
+      favicon: './src/assets/favicon.ico',
       title: 'Superdark',
     }),
   ],
