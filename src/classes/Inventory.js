@@ -1,6 +1,6 @@
 import {EVENTS} from '../constants';
 import {getRealTime} from '../utils/time';
-import {Knife, Revolver} from './Weapon';
+import {Knife, Revolver, Smg} from './Weapon';
 
 export class Inventory {
   scene;
@@ -10,7 +10,7 @@ export class Inventory {
 
   constructor(scene) {
     this.scene = scene;
-    this.weaponSlots = [new Knife(scene, true), new Revolver(scene)]; //Weapon[]
+    this.weaponSlots = [new Knife(scene, true), new Revolver(scene), new Smg(scene)]; //Weapon[]
     this.gear = []; //Gear[]
   }
 

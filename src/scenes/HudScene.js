@@ -4,6 +4,7 @@ import runwalkRunning from '../assets/runwalk-running.png';
 import runwalkWalking from '../assets/runwalk-walking.png';
 import knifeSilhouette from '../assets/weapons/knife-silhouette.png';
 import revolverSilhouette from '../assets/weapons/revolver-silhouette.png';
+import smgSilhouette from '../assets/weapons/smg-silhouette.png';
 import {RunWalkIndicator} from '../classes/RunWalkIndicator';
 import {Text} from '../classes/Text';
 import {WeaponSelection} from '../classes/WeaponSelection';
@@ -37,6 +38,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('weapon-smg', smgSilhouette);
     this.load.image('weapon-revolver', revolverSilhouette);
     this.load.image('weapon-knife', knifeSilhouette);
     this.load.image('runwalk-running', runwalkRunning);
