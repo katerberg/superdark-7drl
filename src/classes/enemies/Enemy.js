@@ -24,7 +24,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   investigatePosition;
   fieldOfVision;
 
-  constructor({scene, x, y, key, hp, path, width, height, xCenter, yCenter}) {
+  constructor({scene, x, y, key, hp, path, width, height, xCenter, yCenter, moveSpeed}) {
     super(scene, x, y, key);
     this.hp = hp;
     this.lastCheckedHp = hp;
@@ -34,6 +34,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.state = ENEMY.STATE.PATROL;
     this.patrolPath = path;
     this.path = path;
+    this.moveSpeed = moveSpeed;
     this.nextNodeIndex = 1;
     this.fieldOfVision = new EnemyFieldOfVision({scene, x, y, enemy: this});
 
@@ -136,8 +137,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   moveTowards(position) {
     const moveAngle = this.getGoalAngle(position);
     this.body.setVelocity(
-      ENEMY.MOVE_SPEED * Math.cos(Phaser.Math.DegToRad(moveAngle)),
-      ENEMY.MOVE_SPEED * Math.sin(Phaser.Math.DegToRad(moveAngle)),
+      this.moveSpeed * Math.cos(Phaser.Math.DegToRad(moveAngle)),
+      this.moveSpeed * Math.sin(Phaser.Math.DegToRad(moveAngle)),
     );
   }
 

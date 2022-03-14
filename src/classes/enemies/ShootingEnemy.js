@@ -15,6 +15,7 @@ export class ShootingEnemy extends Enemy {
       height: ENEMY_SHOOT.HEIGHT,
       xCenter: ENEMY_SHOOT.X_CENTER,
       yCenter: ENEMY_SHOOT.Y_CENTER,
+      moveSpeed: ENEMY_SHOOT.MOVE_SPEED,
     });
     this.weapon = new EnemyGun();
   }

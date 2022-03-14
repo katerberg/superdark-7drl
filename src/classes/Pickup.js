@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import {DEPTH} from '../constants';
 import {createFloatingText} from '../utils/visuals';
+import {Smg} from './Weapon';
 
 export class Pickup extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, key) {
@@ -34,6 +35,18 @@ export class MedKit extends Pickup {
   pickup(player) {
     player.heal(this.amount);
     this.pickupAnimation();
+    this.destroy();
+  }
+}
+
+export class FloorSmg extends Pickup {
+  constructor({scene, x, y}) {
+    super(scene, x, y, 'pickup-smg');
+    this.scale = 0.1;
+  }
+
+  pickup(player) {
+    player.inventory.pickupWeapon(new Smg(this.scene), Smg);
     this.destroy();
   }
 }

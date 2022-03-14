@@ -186,7 +186,7 @@ export class HudScene extends Phaser.Scene {
           .setDepth(DEPTH.HUD)
           .setOrigin(0, 1)
           .setScale(0.1333333);
-        if (slot.active) {
+        if (slot.active && !this.weaponSelection) {
           this.weaponSelection = new WeaponSelection({scene: this, slot: 1});
         }
         return image;
@@ -309,6 +309,9 @@ export class HudScene extends Phaser.Scene {
 
   updateInventory() {
     const gameScene = this.getGameScene();
+    if (gameScene?.player?.inventory?.weaponSlots?.length !== this.inventoryImages?.length) {
+      this.clearDrawnInventory();
+    }
     if (!this.inventoryImages?.some((i) => i.active)) {
       this.addInventory(gameScene);
     }
