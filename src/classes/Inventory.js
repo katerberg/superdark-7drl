@@ -10,7 +10,9 @@ export class Inventory {
 
   constructor(scene) {
     this.scene = scene;
-    this.weaponSlots = [new Knife(scene, true), new Revolver(scene)]; //Weapon[]
+    const gun = new Revolver(scene);
+    gun.storedAmmunition = 0;
+    this.weaponSlots = [new Knife(scene, true), gun]; //Weapon[]
     this.gear = []; //Gear[]
   }
 
