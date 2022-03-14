@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import fade from '../assets/fade.png';
+import reticle from '../assets/reticle.png';
 import runwalkRunning from '../assets/runwalk-running.png';
 import runwalkWalking from '../assets/runwalk-walking.png';
 import knifeSilhouette from '../assets/weapons/knife-silhouette.png';
@@ -30,6 +31,7 @@ export class HudScene extends Phaser.Scene {
   pauseIndicator;
   runWalkIndicator;
   fade;
+  reticle;
 
   constructor() {
     super({
@@ -44,6 +46,7 @@ export class HudScene extends Phaser.Scene {
     this.load.image('runwalk-running', runwalkRunning);
     this.load.image('runwalk-walking', runwalkWalking);
     this.load.image('fade', fade);
+    this.load.image('reticle', reticle);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.restartKey = this.input.keyboard.addKey(KeyCodes.ENTER);
     this.playerKeys = this.input.keyboard.addKeys({
@@ -91,6 +94,7 @@ export class HudScene extends Phaser.Scene {
     this.addInventory();
     this.addRunWalkIndicator();
     this.drawPauseIndicator();
+    this.addReticle();
     if(!isDebug()) {
       this.addFade();
       this.addPeripheralShadows();
@@ -133,6 +137,12 @@ export class HudScene extends Phaser.Scene {
     this.runWalkIndicator = new RunWalkIndicator({scene: this, x: RUN_WALK.X, y: RUN_WALK.Y});
   }
 
+  addReticle() {
+    this.reticle = this.add.image(GAME.width * GAME.cameraWidthRatio, GAME.height * GAME.cameraHeightRatio - 100, 'reticle');
+    this.reticle.setScale(0.5);
+    this.reticle.setDepth(DEPTH.FADE);
+  }
+
   addFade() {
     this.fade = this.add.image(GAME.width * GAME.cameraWidthRatio, GAME.height * GAME.cameraHeightRatio, 'fade');
 
@@ -141,9 +151,8 @@ export class HudScene extends Phaser.Scene {
 
   addPeripheralShadows() {
     let graphics = this.add.graphics();
-    
     graphics.fillStyle(COLORS.SHADOW);
-    graphics.setDepth(DEPTH.SHADOWS);
+    graphics.setDepth(DEPTH.FADE);
     graphics.beginPath();
 
     graphics.arc(       
