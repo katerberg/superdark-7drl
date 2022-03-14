@@ -89,8 +89,11 @@ export class HudScene extends Phaser.Scene {
     this.addInventory();
     this.addRunWalkIndicator();
     this.drawPauseIndicator();
-    this.addFade();
-    this.addPeripheralShadows();
+    if(!isDebug()) {
+      this.addFade();
+      this.addPeripheralShadows();
+    }
+    
   }
 
   drawPauseIndicator() {
