@@ -516,7 +516,7 @@ export class GameScene extends Phaser.Scene {
     // Disallow first 4 rooms, and ensure that there is some space to walk
     const path = this.basePath.slice(1, 4);
     const [{x, y}] = path;
-    // this.enemies.add(new Chameleon({scene: this, x, y, path}));
+    this.enemies.add(new Chameleon({scene: this, x, y, path}));
   }
 
   addShootingEnemy() {
