@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import {DEPTH, EVENTS, GAME_STATUS, PLAYER, RUN_WALK, SCENES, WEAPON_EVENT} from '../constants';
 import {isDebug} from '../utils/environments';
 import {getNormalized} from '../utils/math';
+import {getRealTime} from '../utils/time';
 import {createFloatingText, createSpinningExpandingText} from '../utils/visuals';
 import {Inventory} from './Inventory';
 import {Legs} from './Legs';
@@ -110,8 +111,8 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   handleRunWalkChange(currentTime, keys) {
-    if (keys.shift.isDown && currentTime > this.lastRunChange + 1000) {
-      this.lastRunChange = currentTime;
+    if (keys.shift.isDown && getRealTime(currentTime) > this.lastRunChange + 400) {
+      this.lastRunChange = getRealTime(currentTime);
       this.runWalk = this.runWalk === RUN_WALK.STATE.RUNNING ? RUN_WALK.STATE.WALKING : RUN_WALK.STATE.RUNNING;
       this.scene.game.events.emit(EVENTS.RUN_WALK_CHANGE, this.runWalk);
     }
