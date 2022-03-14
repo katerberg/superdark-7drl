@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import logoImage from '../assets/logo.png';
 import {COLORS, GAME, SCENES} from '../constants';
-import {isDebug} from '../utils/environments';
+import {isDebug, skipMenu} from '../utils/environments';
 
 export class MenuScene extends Phaser.Scene {
   restartKey;
@@ -73,7 +73,8 @@ export class MenuScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(COLORS.SHADOW);
     this.handleInput(time);
 
-    if (isDebug()) {
+    console.log(skipMenu());
+    if (isDebug() || skipMenu()) {
       this.startGame(time);
     }
   }

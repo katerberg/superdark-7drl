@@ -667,8 +667,8 @@ export class GameScene extends Phaser.Scene {
       GAME.width / 2,
       GAME.height / 2,
       75,
-      Phaser.Math.DegToRad(this.player.angle - 100),
-      Phaser.Math.DegToRad(this.player.angle + 100),
+      Phaser.Math.DegToRad(this.player.angle - PLAYER.VISION_ANGLE / 2),
+      Phaser.Math.DegToRad(this.player.angle + PLAYER.VISION_ANGLE / 2),
       true,
     );
 

@@ -32,11 +32,14 @@ class RunWalkUnhealthyIndicator extends Phaser.GameObjects.Image {
     this.setDepth(DEPTH.RUNWALK_HEALTHY);
     this.setOrigin(0, 1);
     this.setScale(RUN_WALK.SCALE);
+    this.setTint(0xff0000);
+    this.setCrop(0, RUN_WALK.HEIGHT, RUN_WALK.WIDTH, 0);
     this.hp = PLAYER.MAX_HP;
     scene.add.existing(this);
   }
 
   updateHp(hp) {
+    this.hp = hp;
     const damagePercentage = (PLAYER.MAX_HP - hp) / PLAYER.MAX_HP;
     this.setCrop(0, RUN_WALK.HEIGHT * (1 - damagePercentage), RUN_WALK.WIDTH, RUN_WALK.HEIGHT * damagePercentage);
   }
