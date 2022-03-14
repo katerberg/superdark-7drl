@@ -9,6 +9,7 @@ import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
 import floorSmg from '../assets/floor-weapons/smg.png';
 import medKitImage from '../assets/medkit.png';
+import gunshotSound from '../assets/sounds/gunshot.mp3';
 import heartbeatSound from '../assets/sounds/heartbeat.wav';
 import footstepsSound from '../assets/sounds/heavy_footsteps.wav';
 import steelTileset from '../assets/steel-tileset.jpg';
@@ -89,6 +90,7 @@ export class GameScene extends Phaser.Scene {
   preload() {
     this.load.audio('heartbeat', heartbeatSound);
     this.load.audio('footsteps', footstepsSound);
+    this.load.audio('gunshot', gunshotSound);
 
     this.load.image('steel-tileset', steelTileset);
     this.load.spritesheet('characterPistolMove', characterPistolMove, {
