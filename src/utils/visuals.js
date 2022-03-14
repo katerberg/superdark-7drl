@@ -1,31 +1,22 @@
+import * as Phaser from 'phaser';
 import {DEPTH} from '../constants';
 
-export function createFloatingText(scene, x, y, message, color = '#fff', delay = 0, slide = 0) {
+export function createFloatingText(scene, x, y, message, color = '#fff', delay = 0, angleOffset = 0) {
   const animation = scene.add.text(x, y, message, {color});
+  const rotationAngle = scene.player.angle + 90 + angleOffset;
+  animation.setAngle(rotationAngle);
 
-  if (slide) {
-    scene.add.tween({
-      loop: 6,
-      targets: animation,
-      delay,
-      duration: 125,
-      ease: 'Linear',
-      yoyo: true,
-      x: x + slide,
-
-      onComplete: () => {
-        animation.destroy();
-      },
-      callbackScope: scene,
-    });
-  }
+  const floatAmount = 50;
+  const xTween = Math.cos(Phaser.Math.DegToRad(rotationAngle + 90)) * floatAmount;
+  const yTween = Math.sin(Phaser.Math.DegToRad(rotationAngle + 90)) * floatAmount;
 
   scene.add.tween({
     targets: animation,
     delay,
     duration: 750,
     ease: 'Exponential.In',
-    y: y - 50,
+    x: x - xTween,
+    y: y - yTween,
 
     onComplete: () => {
       animation.destroy();
@@ -34,22 +25,7 @@ export function createFloatingText(scene, x, y, message, color = '#fff', delay =
   });
 }
 
-export function createExpandingText(scene, x, y, message, color = '#fff') {
-  const animation = scene.add.text(x, y, message, {color}).setOrigin(0.5).setDepth(DEPTH.EXPLOSION);
 
-  scene.add.tween({
-    targets: animation,
-    duration: 250,
-    ease: 'Exponential.In',
-    scale: 5,
-    alpha: 0,
-
-    onComplete: () => {
-      animation.destroy();
-    },
-    callbackScope: scene,
-  });
-}
 
 export function createSpinningExpandingText(scene, x, y, message, color = '#fff') {
   const animation = scene.add.text(x, y, message, {color}).setOrigin(0.5).setDepth(DEPTH.EXPLOSION);

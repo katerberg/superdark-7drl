@@ -26,9 +26,9 @@ export class MedKit extends Pickup {
 
   pickupAnimation() {
     createFloatingText(this.scene, this.x, this.y, '❤️‍🩹', undefined, 0, 20);
-    createFloatingText(this.scene, this.x, this.y, '❤️‍🩹', undefined, 100, 20);
-    createFloatingText(this.scene, this.x, this.y, '❤️‍🩹', undefined, 200, 20);
-    createFloatingText(this.scene, this.x, this.y, '❤️‍🩹', undefined, 300, 20);
+    createFloatingText(this.scene, this.x, this.y, '❤️‍🩹', undefined, 0, 40);
+    createFloatingText(this.scene, this.x, this.y, '❤️‍🩹', undefined, 0, 60);
+    createFloatingText(this.scene, this.x, this.y, '❤️‍🩹', undefined, 0, 80);
   }
 
   pickup(player) {
