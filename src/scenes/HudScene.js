@@ -197,7 +197,10 @@ export class HudScene extends Phaser.Scene {
         return image;
       });
       this.inventoryAmmoTexts = gameScene.player.inventory.weaponSlots.map((slot, i) =>
-        this.add.text(300 + i * INVENTORY.ITEM_WIDTH, GAME.height - 20, slot.getAmmoText()).setOrigin(0, 1),
+        this.add
+          .text(300 + i * INVENTORY.ITEM_WIDTH, GAME.height - 20, slot.getAmmoText())
+          .setOrigin(0, 1)
+          .setDepth(DEPTH.HUD),
       );
     }
   }
