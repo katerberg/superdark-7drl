@@ -87,12 +87,14 @@ export class Player extends Phaser.GameObjects.Sprite {
     if (this.hp > PLAYER.MAX_HP) {
       this.hp = PLAYER.MAX_HP;
     }
+    this.scene.game.events.emit(EVENTS.HP_CHANGE, this.hp);
   }
 
   handleHit(projectile) {
     //TODO: Make this a blood splatter
     createSpinningExpandingText(this.scene, this.x, this.y, '🩸');
     this.hp -= projectile.getDamage();
+    this.scene.game.events.emit(EVENTS.HP_CHANGE, this.hp);
     this.scene.removeProjectile(projectile);
     if (this.hp <= 0) {
       this.scene.game.events.emit(EVENTS.GAME_END, GAME_STATUS.LOSE);

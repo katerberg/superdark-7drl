@@ -4,4 +4,5 @@ export const EVENTS = {
   SWAPPING_START: 'swapping start',
   SWAPPING_FINISH: 'swapping finish',
   RUN_WALK_CHANGE: 'run walk toggle',
+  HP_CHANGE: 'hp change',
 };
