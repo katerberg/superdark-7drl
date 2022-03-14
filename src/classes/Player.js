@@ -71,7 +71,7 @@ export class Player extends Phaser.GameObjects.Sprite {
         this.scene.addPlayerProjectile(
           new Projectile({
             scene: this.scene,
-            angle: this.angle,
+            angle: this.angle + this.inventory.getActiveWeapon().getAngleModifier(),
             weapon: this.inventory.getActiveWeapon(),
             ...this.getProjectileStart(),
           }),

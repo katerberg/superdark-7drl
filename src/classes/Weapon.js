@@ -64,6 +64,11 @@ class Weapon {
   }
 
   // eslint-disable-next-line no-unused-vars,class-methods-use-this
+  getAngleModifier() {
+    return 0;
+  }
+
+  // eslint-disable-next-line no-unused-vars,class-methods-use-this
   useAnimation(x, y, angle) {
     // meant to be overriden
   }
@@ -151,6 +156,43 @@ export class Revolver extends Weapon {
     const animation = this.scene.add
       .rectangle(x, y, 1, 1, 0xffffff, 1)
       .setAngle(angle)
+      .setDepth(DEPTH.PROJECTILE)
+      .setOrigin(0);
+
+    this.scene.add.tween({
+      targets: animation,
+      ease: 'Exponential.In',
+      width: lineLength,
+      alpha: 0.2,
+      duration: 250,
+      onStart: () => {
+        animation.alpha = 1;
+      },
+
+      onComplete: () => {
+        animation.destroy();
+      },
+      callbackScope: this.scene,
+    });
+  }
+}
+
+export class Smg extends Weapon {
+  constructor(scene, active) {
+    super(scene, 'weapon-revolver', active, 10_000, 10, 1, 100, 100, 100, 10, undefined, 600);
+    this.characterMoveAnimation = 'pistolMove';
+  }
+
+  // eslint-disable-next-line no-unused-vars,class-methods-use-this
+  getAngleModifier() {
+    return Math.random() * 10 - 5;
+  }
+
+  useAnimation(x, y, angle) {
+    const lineLength = 1000;
+    const animation = this.scene.add
+      .rectangle(x, y, 1, 1, 0xffffff, 1)
+      .setAngle(angle + Math.random() * 10 - 5)
       .setDepth(DEPTH.PROJECTILE)
       .setOrigin(0);
 
