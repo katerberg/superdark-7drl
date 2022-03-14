@@ -9,6 +9,8 @@ import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
 import floorSmg from '../assets/floor-weapons/smg.png';
 import medKitImage from '../assets/medkit.png';
+import heartbeatSound from '../assets/sounds/heartbeat.wav';
+import footstepsSound from '../assets/sounds/heavy_footsteps.wav';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
 import {BoundaryWall} from '../classes/BoundaryWall';
@@ -35,6 +37,7 @@ import {
   ROOMS,
   GAME,
   ENEMY_SHOOT,
+  SOUND,
 } from '../constants';
 import {isDebug} from '../utils/environments';
 import {generateRooms} from '../utils/maps';
@@ -75,6 +78,7 @@ export class GameScene extends Phaser.Scene {
   gameEndText;
   rooms;
   nodes;
+  backgroundSound;
 
   constructor() {
     super({
@@ -83,6 +87,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.audio('heartbeat', heartbeatSound);
+    this.load.audio('footsteps', footstepsSound);
+
     this.load.image('steel-tileset', steelTileset);
     this.load.spritesheet('characterPistolMove', characterPistolMove, {
       frameWidth: PLAYER.WIDTH,
@@ -159,6 +166,14 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.boundaryWalls);
     this.physics.add.collider(this.enemies, this.exits);
     this.cameras.main.startFollow(this.player).setOrigin(GAME.cameraWidthRatio, GAME.cameraHeightRatio);
+    if (!this.backgroundSound) {
+      this.backgroundSound = this.sound.play('heartbeat', {
+        loop: true,
+        volume: SOUND.VOLUME_WALKING,
+        rate: SOUND.RATE_WALKING,
+        detune: SOUND.DETUNE_WALKING,
+      });
+    }
   }
 
   handleInput() {

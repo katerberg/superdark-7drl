@@ -191,7 +191,7 @@ export class HudScene extends Phaser.Scene {
           .setDepth(DEPTH.HUD)
           .setOrigin(0, 1)
           .setScale(0.1333333);
-        if (slot.active && !this.weaponSelection) {
+        if (slot.active && !this.weaponSelection?.active) {
           this.weaponSelection = new WeaponSelection({scene: this, slot: 1});
         }
         return image;

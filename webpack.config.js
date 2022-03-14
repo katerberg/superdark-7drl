@@ -36,7 +36,7 @@ module.exports = () => ({
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(eot|otf|ttf|woff|woff2)$/,
+        test: /\.(eot|otf|ttf|woff|woff2|wav)$/,
         use: 'file-loader',
       },
     ],

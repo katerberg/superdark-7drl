@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import {DEPTH, EVENTS, GAME_STATUS, PLAYER, RUN_WALK, SCENES, WEAPON_EVENT} from '../constants';
+import {DEPTH, EVENTS, GAME_STATUS, PLAYER, RUN_WALK, SCENES, SOUND, WEAPON_EVENT} from '../constants';
 import {isDebug} from '../utils/environments';
 import {getNormalized} from '../utils/math';
 import {getRealTime} from '../utils/time';
@@ -112,8 +112,13 @@ export class Player extends Phaser.GameObjects.Sprite {
   handleRunWalkChange(currentTime, keys) {
     if (keys.shift.isDown && getRealTime(currentTime) > this.lastRunChange + 400) {
       this.lastRunChange = getRealTime(currentTime);
-      this.runWalk = this.runWalk === RUN_WALK.STATE.RUNNING ? RUN_WALK.STATE.WALKING : RUN_WALK.STATE.RUNNING;
+      const wasRunning = this.runWalk === RUN_WALK.STATE.RUNNING;
+      this.runWalk = wasRunning ? RUN_WALK.STATE.WALKING : RUN_WALK.STATE.RUNNING;
       this.scene.game.events.emit(EVENTS.RUN_WALK_CHANGE, this.runWalk);
+      const heartbeat = this.scene.sound.get('heartbeat');
+      heartbeat.setVolume(!wasRunning ? SOUND.VOLUME_RUNNING : SOUND.VOLUME_WALKING);
+      heartbeat.setRate(!wasRunning ? SOUND.RATE_RUNNING : SOUND.RATE_WALKING);
+      heartbeat.setDetune(!wasRunning ? SOUND.DETUNE_RUNNING : SOUND.DETUNE_WALKING);
     }
   }
 
@@ -130,6 +135,13 @@ export class Player extends Phaser.GameObjects.Sprite {
     const rightRotate = right.isDown || d.isDown;
     let moveVector = {x: forwardMove ? 1 : backwardMove ? -1 : 0, y: leftStrafe ? -1 : rightStrafe ? 1 : 0};
     if (moveVector.x || moveVector.y) {
+      if (isRunning && !this.footstepsSound) {
+        this.footstepsSound = this.scene.sound.play('footsteps', {rate: 3, loop: true});
+      }
+      if (!isRunning && this.footstepsSound) {
+        this.scene.sound.stopByKey('footsteps');
+        this.footstepsSound = null;
+      }
       moveVector = getNormalized(moveVector);
       moveVector.x *= moveSpeed;
       moveVector.y *= moveSpeed;
@@ -137,6 +149,9 @@ export class Player extends Phaser.GameObjects.Sprite {
         this.lastStep = timeAwareOfPauses;
         this.scene.addSoundWave(this.x, this.y, isRunning ? PLAYER.RUN_SOUND_RADIUS : PLAYER.WALK_SOUND_RADIUS);
       }
+    } else if (this.footstepsSound) {
+      this.scene.sound.stopByKey('footsteps');
+      this.footstepsSound = null;
     }
     const runWalkMultiplier = isRunning ? 1.75 : 1;
     const angularMultiplier = leftRotate ? -1 : rightRotate ? 1 : 0;
