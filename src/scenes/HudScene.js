@@ -8,7 +8,9 @@ import {RunWalkIndicator} from '../classes/RunWalkIndicator';
 import {Text} from '../classes/Text';
 import {WeaponSelection} from '../classes/WeaponSelection';
 import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, RUN_WALK, SCENES} from '../constants';
+import {PLAYER} from '../constants/player'
 import {isDebug} from '../utils/environments';
+import { offsetDegToRad } from '../utils/math';
 import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
 
 export class HudScene extends Phaser.Scene {
@@ -88,6 +90,7 @@ export class HudScene extends Phaser.Scene {
     this.addRunWalkIndicator();
     this.drawPauseIndicator();
     this.addFade();
+    this.addPeripheralShadows();
   }
 
   drawPauseIndicator() {
@@ -129,6 +132,35 @@ export class HudScene extends Phaser.Scene {
     this.fade = this.add.image(GAME.width * GAME.cameraWidthRatio, GAME.height * GAME.cameraHeightRatio, 'fade');
 
     this.fade.setDepth(DEPTH.FADE);
+  }
+
+  addPeripheralShadows() {
+    let graphics = this.add.graphics();
+    
+    graphics.fillStyle(COLORS.SHADOW);
+    graphics.setDepth(DEPTH.SHADOWS);
+    graphics.beginPath();
+
+    graphics.arc(       
+      GAME.width * GAME.cameraWidthRatio,
+      GAME.height * GAME.cameraHeightRatio,
+      75,
+      offsetDegToRad(-PLAYER.VISION_ANGLE / 2),
+      offsetDegToRad(PLAYER.VISION_ANGLE / 2),
+      true,
+    );
+
+    graphics.arc(
+      GAME.width * GAME.cameraWidthRatio,
+      GAME.height * GAME.cameraHeightRatio,
+      GAME.maxDistance,
+      offsetDegToRad(PLAYER.VISION_ANGLE / 2),
+      offsetDegToRad(-PLAYER.VISION_ANGLE / 2),
+      false,
+    );
+
+    graphics.closePath();
+    graphics.fillPath();
   }
 
   addInventory(gameScene) {
