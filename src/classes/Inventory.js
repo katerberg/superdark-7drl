@@ -24,6 +24,7 @@ export class Inventory {
       this.handleSwapStart(timeAwareOfPauses, Number.parseInt(inventoryKey, 10) - 1);
     }
   }
+
   handleSwapStart(timeAwareOfPauses, newActiveSlotNumber) {
     this.weaponSlots.forEach((s, i) => {
       s.activating = false;

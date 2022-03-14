@@ -193,6 +193,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   update(time) {
     this.body.setAngularVelocity(0);
     this.body.setVelocity(0);
+    if (this.enemySpecificUpdate) {
+      this.enemySpecificUpdate(time);
+    }
 
     const canSeePlayer = this.isSeeing(this.scene.player);
     const dearGodIveBeenShot = this.lastCheckedHp !== this.hp;

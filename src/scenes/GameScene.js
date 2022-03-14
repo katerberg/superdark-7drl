@@ -11,6 +11,7 @@ import medKitImage from '../assets/medkit.png';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
 import {BoundaryWall} from '../classes/BoundaryWall';
+import {Chameleon} from '../classes/enemies/Chameleon';
 import {ShootingEnemy} from '../classes/enemies/ShootingEnemy';
 import {StabbingEnemy} from '../classes/enemies/StabbingEnemy';
 import {Exit} from '../classes/Exit';
@@ -155,7 +156,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.enemies);
     this.physics.add.collider(this.enemies, this.boundaryWalls);
     this.physics.add.collider(this.enemies, this.exits);
-    this.cameras.main.startFollow(this.player);
+    this.cameras.main.startFollow(this.player).setOrigin(0.5, 0.8);
   }
 
   handleInput() {
@@ -505,9 +506,17 @@ export class GameScene extends Phaser.Scene {
 
   addEnemies() {
     this.addShootingEnemy();
+    this.addChameleon();
     for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
       this.addStabbingEnemy();
     }
+  }
+
+  addChameleon() {
+    // Disallow first 4 rooms, and ensure that there is some space to walk
+    const path = this.basePath.slice(1, 4);
+    const [{x, y}] = path;
+    // this.enemies.add(new Chameleon({scene: this, x, y, path}));
   }
 
   addShootingEnemy() {
@@ -569,6 +578,8 @@ export class GameScene extends Phaser.Scene {
 
   update(time) {
     if (window.gameState.paused) {
+      console.log(this.enemies);
+      this.enemies.children.iterate((e) => e.setAlpha(1));
       this.scene.pause();
     }
     const timeAwareOfPauses = getTimeAwareOfPauses(time);
@@ -607,7 +618,7 @@ export class GameScene extends Phaser.Scene {
   drawShadows() {
     if (!isDebug()) {
       this.drawObstacleShadows();
-      this.drawPeripheralShadows();
+      // this.drawPeripheralShadows();
     }
   }
 
