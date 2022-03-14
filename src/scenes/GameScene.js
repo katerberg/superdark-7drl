@@ -11,6 +11,7 @@ import exitUpImage from '../assets/exit-up.png';
 import floorRevolver from '../assets/floor-weapons/revolver.png';
 import floorSmg from '../assets/floor-weapons/smg.png';
 import medKitImage from '../assets/medkit.png';
+import neemImage from '../assets/neem.png';
 import gunshotSound from '../assets/sounds/gunshot.mp3';
 import heartbeatSound from '../assets/sounds/heartbeat.wav';
 import footstepsSound from '../assets/sounds/heavy_footsteps.wav';
@@ -47,7 +48,7 @@ import {
 } from '../constants';
 import {ENEMY_SHIELD} from '../constants/enemy';
 import {isDebug} from '../utils/environments';
-import {generateRooms} from '../utils/maps';
+import {generateRooms, getRandomRoom} from '../utils/maps';
 import {
   angleToArcLength,
   arcLengthToAngle,
@@ -58,7 +59,7 @@ import {
   offsetDegToRad,
   polarToCartesian,
 } from '../utils/math';
-import {createLevelExits, createWinSwitch, getBottomOfStairs, getCurrentHp} from '../utils/setup';
+import {createLevelExits, getBottomOfStairs, getCurrentHp} from '../utils/setup';
 import {getTimeAwareOfPauses} from '../utils/time';
 
 const immovableOptions = {
@@ -125,6 +126,7 @@ export class GameScene extends Phaser.Scene {
       frameHeight: ENEMY_SHIELD.HEIGHT,
     });
     this.load.image('pickup-medkit', medKitImage);
+    this.load.image('neem', neemImage);
     this.load.image('exit-up', exitUpImage);
     this.load.image('exit-down', exitDownImage);
     this.load.image('winSwitch', winSwitchImage);
@@ -155,9 +157,10 @@ export class GameScene extends Phaser.Scene {
 
     this.addPlayer(startingInfo);
     this.addExits();
-    this.addWinSwitch();
     this.addRooms();
     this.makePaths();
+    this.addWinSwitch();
+    this.addNeem();
 
     this.addEnemies();
     this.addPickups();
@@ -533,9 +536,7 @@ export class GameScene extends Phaser.Scene {
     this.pickups.add(new FloorRevolver({scene: this, x: 1350, y: 150}));
 
     // Add medkit to a random room that isn't the startin two or ending two
-    this.pickups.add(
-      new MedKit({scene: this, ...this.rooms[Math.floor(Math.random() * (this.rooms.length - 4)) + 2].getCenterish()}),
-    );
+    this.pickups.add(new MedKit({scene: this, ...getRandomRoom(this.rooms, 2).getCenterish()}));
   }
 
   addEnemies() {
@@ -637,11 +638,22 @@ export class GameScene extends Phaser.Scene {
     this.removeExtraProjectiles(timeAwareOfPauses);
   }
 
-  addWinSwitch() {
-    if (window.gameState.currentLevel !== LEVELS.MAX_LEVEL) {
+  addNeem() {
+    if (window.gameState.currentLevel !== LEVELS.MAX_LEVEL - 1) {
       return;
     }
-    createWinSwitch();
+    const {x, y} = getRandomRoom(this.rooms, 1).getCenterish();
+    this.add.image(x, y, 'neem').setScale(0.25);
+  }
+
+  addWinSwitch() {
+    if (window.gameState.currentLevel !== LEVELS.MAX_LEVEL || window.gameState.winSwitch.x) {
+      return;
+    }
+    const {x, y} = getRandomRoom(this.rooms, 0, true).getCenterish();
+
+    window.gameState.winSwitch.x = x;
+    window.gameState.winSwitch.y = y;
     this.winSwitch = new WinSwitch({scene: this, x: window.gameState.winSwitch.x, y: window.gameState.winSwitch.y});
 
     this.physics.add.overlap(this.player, this.winSwitch, () => this.handlePlayerWinSwitch());

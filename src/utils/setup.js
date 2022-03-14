@@ -1,4 +1,4 @@
-import {LEVELS, GAME, EXITS, PLAYER} from '../constants';
+import {LEVELS, EXITS, PLAYER} from '../constants';
 import {isDebug} from './environments';
 
 export function getBottomOfStairs(level, isGoingUp) {
@@ -52,17 +52,6 @@ export function createLevelExits(level) {
       direction: 'down',
     });
   }
-}
-
-export function createWinSwitch() {
-  if (window.gameState.winSwitch.x) {
-    return;
-  }
-  const x = Math.floor(Math.random() * GAME.width);
-  const y = Math.floor(Math.random() * GAME.height);
-
-  window.gameState.winSwitch.x = x;
-  window.gameState.winSwitch.y = y;
 }
 
 export function getCurrentHp(startingInfo) {

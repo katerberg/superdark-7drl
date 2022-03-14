@@ -143,6 +143,21 @@ function noDoors() {
   return {left: null, right: null, bottom: null, top: null};
 }
 
+function getCompletelyRandomRoom(rooms, excludeSides = 2) {
+  return rooms[Math.floor(Math.random() * (rooms.length - excludeSides * 2)) + excludeSides];
+}
+
+export function getRandomRoom(rooms, excludeSides = 2, onlySecondHalf) {
+  let room;
+  while (!room) {
+    room = getCompletelyRandomRoom(rooms, excludeSides);
+    if (onlySecondHalf && room.angleBegin < 180) {
+      room = undefined;
+    }
+  }
+  return room;
+}
+
 export function generateRooms() {
   let rooms = [new Room(0, 360, ROOMS.minRadius, ROOMS.maxRadius, noDoors())];
 

@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import {DEPTH, COLORS} from '../constants';
+import {isDebug} from '../utils/environments';
 
 export class SoundWave extends Phaser.GameObjects.Arc {
   constructor({scene, x, y, radius, color = COLORS.PLAYER_SOUND, duration = 100}) {
@@ -9,7 +10,9 @@ export class SoundWave extends Phaser.GameObjects.Arc {
     const lineWidth = radius < 50 ? 2 : 4;
     this.setStrokeStyle(radius < 50 ? 2 : 40, color, radius < 50 ? 0.2 : 0.2);
     scene.physics.world.enable(this);
-    scene.add.existing(this);
+    if (!isDebug()) {
+      scene.add.existing(this);
+    }
 
     this.scene.add.tween({
       targets: this,
