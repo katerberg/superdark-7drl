@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import {DEPTH, EVENTS, GAME_STATUS, PLAYER, RUN_WALK, SCENES, SOUND, WEAPON_EVENT} from '../constants';
-import {isDebug} from '../utils/environments';
 import {getNormalized} from '../utils/math';
 import {getRealTime} from '../utils/time';
 import {createFloatingText, createSpinningExpandingText} from '../utils/visuals';
@@ -130,7 +129,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     const {up, down, left, right, w, s, a, d, q, e} = keys;
     const isRunning = this.runWalk === RUN_WALK.STATE.RUNNING;
 
-    const moveSpeed = isDebug() ? PLAYER.SPEED_DEBUG : isRunning ? PLAYER.RUN_SPEED : PLAYER.SPEED;
+    const moveSpeed = isRunning ? PLAYER.RUN_SPEED : PLAYER.SPEED;
     const forwardMove = up.isDown || w.isDown;
     const backwardMove = down.isDown || s.isDown;
     const leftStrafe = q.isDown;
