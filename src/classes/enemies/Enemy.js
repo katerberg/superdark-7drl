@@ -119,7 +119,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   }
 
   isSeeing(target) {
-    if (!this.isInFieldOfView(this.getGoalAngle(target))) {
+    if (target.invisible || !this.isInFieldOfView(this.getGoalAngle(target))) {
       return false;
     }
 
