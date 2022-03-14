@@ -5,6 +5,7 @@ import characterLegsWalk from '../assets/character-legs-walk.png';
 import characterPistolMove from '../assets/character-pistol-move.png';
 import enemyKnifeMove from '../assets/enemy-knife-move.png';
 import enemyRifleMove from '../assets/enemy-rifle-move.png';
+import enemyShieldMove from '../assets/enemy-shield-move.png';
 import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
 import floorRevolver from '../assets/floor-weapons/revolver.png';
@@ -18,6 +19,7 @@ import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
 import {BoundaryWall} from '../classes/BoundaryWall';
 import {Chameleon} from '../classes/enemies/Chameleon';
+import {ShieldEnemy} from '../classes/enemies/ShieldEnemy';
 import {ShootingEnemy} from '../classes/enemies/ShootingEnemy';
 import {StabbingEnemy} from '../classes/enemies/StabbingEnemy';
 import {Exit} from '../classes/Exit';
@@ -42,6 +44,7 @@ import {
   ENEMY_SHOOT,
   SOUND,
 } from '../constants';
+import {ENEMY_SHIELD} from '../constants/enemy';
 import {isDebug} from '../utils/environments';
 import {generateRooms} from '../utils/maps';
 import {
@@ -116,6 +119,10 @@ export class GameScene extends Phaser.Scene {
       frameWidth: ENEMY_STAB.WIDTH,
       frameHeight: ENEMY_STAB.HEIGHT,
     });
+    this.load.spritesheet('enemy-shield-move', enemyShieldMove, {
+      frameWidth: ENEMY_SHIELD.WIDTH,
+      frameHeight: ENEMY_SHIELD.HEIGHT,
+    });
     this.load.image('pickup-medkit', medKitImage);
     this.load.image('exit-up', exitUpImage);
     this.load.image('exit-down', exitDownImage);
@@ -131,7 +138,9 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(COLORS.SHADOW);
     this.physics.world.setBounds(PLAY_AREA.xOffset, PLAY_AREA.yOffset, PLAY_AREA.width, PLAY_AREA.height);
 
-    this.add.tileSprite(PLAY_AREA.width / 2, PLAY_AREA.height / 2, PLAY_AREA.width, PLAY_AREA.height, 'steel-tileset');
+    this.add
+      .tileSprite(PLAY_AREA.width / 2, PLAY_AREA.height / 2, PLAY_AREA.width, PLAY_AREA.height, 'steel-tileset')
+      .setTint(0xff0000);
 
     this.boundaryWalls = this.physics.add.group(immovableOptions);
     this.shadowWalls = [];
@@ -529,6 +538,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   addEnemies() {
+    this.addShieldEnemy();
     this.addShootingEnemy();
     this.addChameleon();
     for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
@@ -546,9 +556,17 @@ export class GameScene extends Phaser.Scene {
 
   addShootingEnemy() {
     // Disallow first 4 rooms, and ensure that there is some space to walk
-    const path = this.basePath.slice(1, 4);
+    const firstNode = this.basePath.length - 8;
+    const path = this.basePath.slice(firstNode, firstNode + 4);
     const [{x, y}] = path;
     this.enemies.add(new ShootingEnemy({scene: this, x, y, path}));
+  }
+
+  addShieldEnemy() {
+    //Only first room
+    const path = this.basePath.slice(1, 4);
+    const [{x, y}] = path;
+    this.enemies.add(new ShieldEnemy({scene: this, x, y, path}));
   }
 
   addStabbingEnemy() {

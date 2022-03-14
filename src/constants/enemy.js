@@ -38,3 +38,12 @@ export const ENEMY_STAB = {
   X_CENTER: 108,
   Y_CENTER: 114,
 };
+
+export const ENEMY_SHIELD = {
+  WIDTH: 253,
+  HEIGHT: 216,
+  HP: 3,
+  MOVE_SPEED: 60,
+  X_CENTER: 108,
+  Y_CENTER: 114,
+};
