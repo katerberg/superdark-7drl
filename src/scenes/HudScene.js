@@ -178,6 +178,8 @@ export class HudScene extends Phaser.Scene {
 
     graphics.closePath();
     graphics.fillPath();
+    const glowOptions = {glowColor: 0x000, innerStrength: 1, outerStrength: 4, quality: 0.1};
+    this.plugins.get('rexGlowFilterPipeline').add(graphics, glowOptions);
   }
 
   addInventory(gameScene) {
