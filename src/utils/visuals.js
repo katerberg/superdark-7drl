@@ -25,8 +25,6 @@ export function createFloatingText(scene, x, y, message, color = '#fff', delay =
   });
 }
 
-
-
 export function createSpinningExpandingText(scene, x, y, message, color = '#fff') {
   const animation = scene.add.text(x, y, message, {color}).setOrigin(0.5).setDepth(DEPTH.EXPLOSION);
 
