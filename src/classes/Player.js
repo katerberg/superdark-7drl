@@ -7,6 +7,7 @@ import {createFloatingText, createSpinningExpandingText} from '../utils/visuals'
 import {Inventory} from './Inventory';
 import {Legs} from './Legs';
 import {Projectile} from './Projectile';
+import {EnemyKnife} from './Weapon';
 
 export class Player extends Phaser.GameObjects.Sprite {
   inventory;
@@ -90,6 +91,9 @@ export class Player extends Phaser.GameObjects.Sprite {
   handleHit(projectile) {
     //TODO: Make this a blood splatter
     createSpinningExpandingText(this.scene, this.x, this.y, '🩸');
+    if (projectile.weapon instanceof EnemyKnife) {
+      this.scene.sound.play('knife', {rate: 1.5, seek: 0.2});
+    }
     this.hp -= projectile.getDamage();
     this.scene.game.events.emit(EVENTS.HP_CHANGE, this.hp);
     this.scene.removeProjectile(projectile);

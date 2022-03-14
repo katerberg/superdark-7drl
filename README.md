@@ -29,5 +29,4 @@ npm build
 - Pixabay for [Stick](https://cdn.pixabay.com/photo/2014/03/25/16/31/stick-man-297255_1280.png) [Figures](https://pixabay.com/vectors/stick-man-runner-silhouette-figure-295293/)
 - Septianbkp for [SMG](https://freesvg.org/1549921445)
 - SpriteAttack for  [Ground guns](https://opengameart.org/content/gun-construction-kit)
-- [Heartbeat sound](https://gamesounds.xyz/?dir=Sound%20Effects/Heartbeat)
-- [Footsteps sound](https://gamesounds.xyz/?dir=Sound%20Effects/Footsteps)
+- [Sounds](https://gamesounds.xyz)

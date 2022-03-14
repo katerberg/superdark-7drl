@@ -19,4 +19,9 @@ export class ShootingEnemy extends Enemy {
     });
     this.weapon = new EnemyGun();
   }
+
+  // eslint-disable-next-line no-unused-vars,class-methods-use-this
+  playUseSound() {
+    this.scene.sound.play('gunshot', {volume: 0.6, rate: 0.7});
+  }
 }

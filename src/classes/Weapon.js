@@ -163,7 +163,7 @@ export class Revolver extends Weapon {
   }
 
   playUseSound() {
-    this.scene.sound.play('gunshot');
+    this.scene.sound.play('gunshot', {volume: 0.8});
   }
 
   useAnimation(x, y, angle) {

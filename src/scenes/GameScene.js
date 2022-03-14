@@ -12,6 +12,7 @@ import medKitImage from '../assets/medkit.png';
 import gunshotSound from '../assets/sounds/gunshot.mp3';
 import heartbeatSound from '../assets/sounds/heartbeat.wav';
 import footstepsSound from '../assets/sounds/heavy_footsteps.wav';
+import knifeSound from '../assets/sounds/knife.wav';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
 import {BoundaryWall} from '../classes/BoundaryWall';
@@ -91,6 +92,7 @@ export class GameScene extends Phaser.Scene {
     this.load.audio('heartbeat', heartbeatSound);
     this.load.audio('footsteps', footstepsSound);
     this.load.audio('gunshot', gunshotSound);
+    this.load.audio('knife', knifeSound);
 
     this.load.image('steel-tileset', steelTileset);
     this.load.spritesheet('characterPistolMove', characterPistolMove, {

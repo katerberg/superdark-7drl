@@ -6,7 +6,7 @@ import {createSpinningExpandingText} from '../../utils/visuals';
 import {EnemyFieldOfVision} from '../EnemyFieldOfVision';
 import {Legs} from '../Legs';
 import {Projectile} from '../Projectile';
-import {EnemyGun} from '../Weapon';
+import {EnemyGun, Knife} from '../Weapon';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
   hp;
@@ -57,11 +57,17 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.play('walkEnemy');
   }
 
+  // eslint-disable-next-line no-unused-vars,class-methods-use-this
+  playUseSound() {
+    // Meant to be overwritten
+  }
+
   shoot(time) {
     this.lastShot = time;
     this.scene.addProjectile(
       new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, weapon: this.weapon}),
     );
+    this.playUseSound();
 
     this.scene.addSoundWave(this.x, this.y, this.weapon.soundRadiusOfUse, COLORS.ENEMY_GUN_FIRE);
   }
@@ -83,6 +89,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     createSpinningExpandingText(this.scene, this.x, this.y, '🩸');
     this.hp -= projectile.getDamage();
     this.scene.removePlayerProjectile(projectile);
+    if (projectile.weapon instanceof Knife) {
+      this.scene.sound.play('knife', {rate: 1.5, seek: 0.2});
+    }
     if (this.hp <= 0) {
       this.handleDeath();
     }
