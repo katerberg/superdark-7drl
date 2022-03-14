@@ -12,8 +12,6 @@ export class Legs extends Phaser.GameObjects.Sprite {
     this.setDisplayOrigin(xOrigin, yOrigin);
     this.setOrigin(xOrigin, yOrigin);
     this.player = player;
-    // scene.physics.world.enable(this);
-    // this.body.setCollideWorldBounds();
     scene.add.existing(this);
 
     this.anims.create({

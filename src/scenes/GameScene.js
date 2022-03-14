@@ -538,15 +538,15 @@ export class GameScene extends Phaser.Scene {
 
   addChameleon() {
     // Disallow first 4 rooms, and ensure that there is some space to walk
-    const path = this.basePath.slice(1, 4);
+    const firstNode = this.basePath.length - 8;
+    const path = this.basePath.slice(firstNode, firstNode + 4);
     const [{x, y}] = path;
     this.enemies.add(new Chameleon({scene: this, x, y, path}));
   }
 
   addShootingEnemy() {
     // Disallow first 4 rooms, and ensure that there is some space to walk
-    const firstNode = this.basePath.length - 8;
-    const path = this.basePath.slice(firstNode, firstNode + 4);
+    const path = this.basePath.slice(1, 4);
     const [{x, y}] = path;
     this.enemies.add(new ShootingEnemy({scene: this, x, y, path}));
   }

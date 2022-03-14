@@ -1,4 +1,5 @@
 import {ENEMY_SHOOT} from '../../constants';
+import {FloorRevolver} from '../Pickup';
 import {EnemyGun} from '../Weapon';
 import {Enemy} from './Enemy';
 
@@ -18,6 +19,10 @@ export class ShootingEnemy extends Enemy {
       moveSpeed: ENEMY_SHOOT.MOVE_SPEED,
     });
     this.weapon = new EnemyGun();
+  }
+
+  enemySpecificDeath() {
+    this.scene.pickups.add(new FloorRevolver({scene: this.scene, x: this.x, y: this.y}));
   }
 
   // eslint-disable-next-line no-unused-vars,class-methods-use-this
