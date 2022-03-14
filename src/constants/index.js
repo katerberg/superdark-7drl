@@ -76,9 +76,9 @@ export const SOUND = {
 };
 
 export const LEVEL_COLOR = {
-  1: 0xcccccc,
-  2: 0x000000,
-  3: 0x000000,
-  4: 0x000000,
-  5: 0xff0000,
+  1: 0x999999,
+  2: 0xcc954e,
+  3: 0x66cc66,
+  4: 0x6666cc,
+  5: 0xcc6666,
 };
