@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import runwalkRunning from '../assets/runwalk-running.png';
 import runwalkWalking from '../assets/runwalk-walking.png';
+import fade from '../assets/fade.png';
 import knifeSilhouette from '../assets/weapons/knife-silhouette.png';
 import revolverSilhouette from '../assets/weapons/revolver-silhouette.png';
 import {RunWalkIndicator} from '../classes/RunWalkIndicator';
@@ -25,6 +26,7 @@ export class HudScene extends Phaser.Scene {
   inventoryAmmoTexts; // text[]
   pauseIndicator;
   runWalkIndicator;
+  fade;
 
   constructor() {
     super({
@@ -37,6 +39,7 @@ export class HudScene extends Phaser.Scene {
     this.load.image('weapon-knife', knifeSilhouette);
     this.load.image('runwalk-running', runwalkRunning);
     this.load.image('runwalk-walking', runwalkWalking);
+    this.load.image('fade', fade);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.restartKey = this.input.keyboard.addKey(KeyCodes.ENTER);
     this.playerKeys = this.input.keyboard.addKeys({
@@ -84,6 +87,7 @@ export class HudScene extends Phaser.Scene {
     this.addInventory();
     this.addRunWalkIndicator();
     this.drawPauseIndicator();
+    this.addFade();
   }
 
   drawPauseIndicator() {
@@ -119,6 +123,12 @@ export class HudScene extends Phaser.Scene {
 
   addRunWalkIndicator() {
     this.runWalkIndicator = new RunWalkIndicator({scene: this, x: RUN_WALK.X, y: RUN_WALK.Y});
+  }
+
+  addFade() {
+    this.fade = this.add.image(600, 600, 'fade');
+
+    // this.fade.setDepth(9999999);
   }
 
   addInventory(gameScene) {
