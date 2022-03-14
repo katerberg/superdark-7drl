@@ -148,11 +148,9 @@ export class GameScene extends Phaser.Scene {
       this.addSoundWave(x, y, projectile.weapon.soundRadiusOfUse, COLORS.ENEMY_GUN_FIRE);
       return this.removeProjectile(projectile);
     });
-    this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (wall, projectile) => {
-      const {x, y} = getMidpoint(wall.body, projectile.body);
-      this.addSoundWave(x, y, projectile.weapon.soundRadiusOfUse);
-      return this.removePlayerProjectile(projectile);
-    });
+    this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (wall, projectile) =>
+      this.removePlayerProjectile(projectile),
+    );
     this.physics.add.collider(this.player, this.boundaryWalls);
     this.physics.add.collider(this.player, this.enemies);
     this.physics.add.collider(this.enemies, this.boundaryWalls);
@@ -669,8 +667,8 @@ export class GameScene extends Phaser.Scene {
       GAME.width / 2,
       GAME.height / 2,
       75,
-      Phaser.Math.DegToRad(this.player.angle - 100),
-      Phaser.Math.DegToRad(this.player.angle + 100),
+      Phaser.Math.DegToRad(this.player.angle - PLAYER.VISION_ANGLE / 2),
+      Phaser.Math.DegToRad(this.player.angle + PLAYER.VISION_ANGLE / 2),
       true,
     );
 
@@ -678,8 +676,8 @@ export class GameScene extends Phaser.Scene {
       GAME.width / 2,
       GAME.height / 2,
       GAME.maxDistance,
-      Phaser.Math.DegToRad(this.player.angle + 100),
-      Phaser.Math.DegToRad(this.player.angle - 100),
+      Phaser.Math.DegToRad(this.player.angle + PLAYER.VISION_ANGLE / 2),
+      Phaser.Math.DegToRad(this.player.angle - PLAYER.VISION_ANGLE / 2),
       false,
     );
 

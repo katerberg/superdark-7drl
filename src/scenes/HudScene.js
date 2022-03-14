@@ -1,10 +1,12 @@
 import * as Phaser from 'phaser';
+import runwalkRunning from '../assets/runwalk-running.png';
+import runwalkWalking from '../assets/runwalk-walking.png';
 import knifeSilhouette from '../assets/weapons/knife-silhouette.png';
 import revolverSilhouette from '../assets/weapons/revolver-silhouette.png';
 import {RunWalkIndicator} from '../classes/RunWalkIndicator';
 import {Text} from '../classes/Text';
 import {WeaponSelection} from '../classes/WeaponSelection';
-import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, SCENES} from '../constants';
+import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, RUN_WALK, SCENES} from '../constants';
 import {isDebug} from '../utils/environments';
 import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
 
@@ -33,6 +35,8 @@ export class HudScene extends Phaser.Scene {
   preload() {
     this.load.image('weapon-revolver', revolverSilhouette);
     this.load.image('weapon-knife', knifeSilhouette);
+    this.load.image('runwalk-running', runwalkRunning);
+    this.load.image('runwalk-walking', runwalkWalking);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.restartKey = this.input.keyboard.addKey(KeyCodes.ENTER);
     this.playerKeys = this.input.keyboard.addKeys({
@@ -114,7 +118,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   addRunWalkIndicator() {
-    this.runWalkIndicator = new RunWalkIndicator({scene: this});
+    this.runWalkIndicator = new RunWalkIndicator({scene: this, x: RUN_WALK.X, y: RUN_WALK.Y});
   }
 
   addInventory(gameScene) {
@@ -142,6 +146,7 @@ export class HudScene extends Phaser.Scene {
     this.game.events.on(EVENTS.SWAPPING_START, this.handleSwapStart, this);
     this.game.events.on(EVENTS.SWAPPING_FINISH, this.handleSwapFinish, this);
     this.game.events.on(EVENTS.RUN_WALK_CHANGE, this.handleRunWalkToggle, this);
+    this.game.events.on(EVENTS.HP_CHANGE, this.handleHpChange, this);
   }
 
   handleLevelChange() {
@@ -154,6 +159,10 @@ export class HudScene extends Phaser.Scene {
 
   handleSwapFinish(newSlot) {
     this.weaponSelection.select(newSlot, true);
+  }
+
+  handleHpChange(hp) {
+    this.runWalkIndicator.updateHp(hp);
   }
 
   handleRunWalkToggle(newState) {

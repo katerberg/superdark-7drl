@@ -26,3 +26,4 @@ npm build
 - Pixabay for [Revolver](https://pixabay.com/vectors/gun-handgun-pistol-revolver-1297414/)
 - CC0 for [Knife](https://www.maxpixel.net/Army-Isolated-Knife-Hunting-Background-Military-1710292)
 - Knik1985 for [Medkit](https://opengameart.org/content/medkit-0)
+- Pixabay for [Stick](https://cdn.pixabay.com/photo/2014/03/25/16/31/stick-man-297255_1280.png) [Figures](https://pixabay.com/vectors/stick-man-runner-silhouette-figure-295293/)

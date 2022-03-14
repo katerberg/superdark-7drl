@@ -4,12 +4,7 @@ export {DEPTH} from './depth';
 export {RUN_WALK} from './run-walk';
 export {ENEMY, ENEMY_STAB, ENEMY_SHOOT} from './enemy';
 export {PLAYER} from './player';
-
-export const GAME = {
-  width: 1200,
-  height: 800,
-  maxDistance: 722,
-};
+export {GAME} from './game';
 
 export const PLAY_AREA = {
   width: 2500,
