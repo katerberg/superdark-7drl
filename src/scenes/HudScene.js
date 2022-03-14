@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
+import fade from '../assets/fade.png';
 import runwalkRunning from '../assets/runwalk-running.png';
 import runwalkWalking from '../assets/runwalk-walking.png';
-import fade from '../assets/fade.png';
 import knifeSilhouette from '../assets/weapons/knife-silhouette.png';
 import revolverSilhouette from '../assets/weapons/revolver-silhouette.png';
 import {RunWalkIndicator} from '../classes/RunWalkIndicator';
@@ -126,7 +126,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   addFade() {
-    this.fade = this.add.image(GAME.width/2, GAME.height/2, 'fade');
+    this.fade = this.add.image(GAME.width / 2, GAME.height / 2, 'fade');
 
     this.fade.setDepth(DEPTH.FADE);
   }
@@ -137,6 +137,7 @@ export class HudScene extends Phaser.Scene {
         const x = 250 + i * INVENTORY.ITEM_WIDTH;
         const image = this.add
           .image(x, GAME.height - 20, slot.image)
+          .setDepth(DEPTH.HUD)
           .setOrigin(0, 1)
           .setScale(0.1333333);
         if (slot.active) {
