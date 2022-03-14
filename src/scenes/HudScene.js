@@ -9,7 +9,7 @@ import smgSilhouette from '../assets/weapons/smg-silhouette.png';
 import {RunWalkIndicator} from '../classes/RunWalkIndicator';
 import {Text} from '../classes/Text';
 import {WeaponSelection} from '../classes/WeaponSelection';
-import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, RUN_WALK, SCENES} from '../constants';
+import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, RUN_WALK, SCENES, TIME} from '../constants';
 import {PLAYER} from '../constants/player';
 import {isDebug} from '../utils/environments';
 import {offsetDegToRad} from '../utils/math';
@@ -88,7 +88,7 @@ export class HudScene extends Phaser.Scene {
       .setColor(COLORS.TIMER_NORMAL)
       .setOrigin(0, 1)
       .setDepth(DEPTH.HUD);
-    this.timeCop = window.gameState.startTime;
+    this.timeCop = null;
     this.lastPause = 0;
     this.drawTimer(window.gameState.startTime);
     this.addInventory();
@@ -102,7 +102,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   drawPauseIndicator() {
-    if (window.gameState.paused) {
+    if (this.game.scene.isPaused(SCENES.GAME)) {
       const glowOptions = {glowColor: 0xff3030, innerStrength: 1, outerStrength: 4};
       if (!this.plugins.get('rexGlowFilterPipeline').get(this.timerText).length) {
         this.timerGlow = [
@@ -236,7 +236,6 @@ export class HudScene extends Phaser.Scene {
 
   handleGameEnd(status) {
     this.game.scene.pause(SCENES.GAME);
-    window.gameState.paused = true;
     window.gameState.gameEnded = status;
 
     const restartMessage = 'ENTER TO RESTART';
@@ -267,14 +266,16 @@ export class HudScene extends Phaser.Scene {
     }
     const timeEvents = Object.keys(window.gameState.runUntil);
     if (Object.values(this.playerKeys).some((v) => v.isDown) || timeEvents.length) {
-      if (window.gameState.paused) {
+      if (this.game.scene.isPaused(SCENES.GAME)) {
         window.gameState.pauseTime += time - this.timeCop;
-        window.gameState.paused = false;
+        this.timeCop = null;
         this.game.scene.resume(SCENES.GAME);
       }
-    } else if (!window.gameState.paused) {
-      this.timeCop = time;
-      window.gameState.paused = true;
+    } else if (!this.game.scene.isPaused(SCENES.GAME)) {
+      if (!this.timeCop) {
+        this.timeCop = time + TIME.DELAY;
+        window.gameState.paused = time + TIME.DELAY;
+      }
     }
     timeEvents.forEach((timeEvent) => {
       if (timeEvent < time) {
@@ -299,7 +300,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   updateTimer(currentTime) {
-    if (!window.gameState.paused) {
+    if (!this.game.scene.isPaused(SCENES.GAME)) {
       this.drawTimer(currentTime);
     }
   }

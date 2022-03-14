@@ -580,7 +580,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time) {
-    if (window.gameState.paused) {
+    if (window.gameState.paused < time) {
+      window.gameState.paused = Number.MAX_SAFE_INTEGER;
       this.enemies.children.iterate((e) => e.setAlpha(1));
       this.scene.pause();
     }

@@ -32,6 +32,7 @@ export const ROOMS = {
 };
 
 export const TIME = {
+  DELAY: 200,
   TOTAL: 900_000,
 };
 
