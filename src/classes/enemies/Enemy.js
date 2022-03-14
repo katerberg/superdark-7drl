@@ -6,7 +6,7 @@ import {createSpinningExpandingText} from '../../utils/visuals';
 import {EnemyFieldOfVision} from '../EnemyFieldOfVision';
 import {Legs} from '../Legs';
 import {Projectile} from '../Projectile';
-import {EnemyGun} from '../Weapon';
+import {EnemyGun, Knife} from '../Weapon';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
   hp;
@@ -24,7 +24,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   investigatePosition;
   fieldOfVision;
 
-  constructor({scene, x, y, key, hp, path, width, height, xCenter, yCenter}) {
+  constructor({scene, x, y, key, hp, path, width, height, xCenter, yCenter, moveSpeed}) {
     super(scene, x, y, key);
     this.hp = hp;
     this.lastCheckedHp = hp;
@@ -34,6 +34,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.state = ENEMY.STATE.PATROL;
     this.patrolPath = path;
     this.path = path;
+    this.moveSpeed = moveSpeed;
     this.nextNodeIndex = 1;
     this.fieldOfVision = new EnemyFieldOfVision({scene, x, y, enemy: this});
 
@@ -56,11 +57,17 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.play('walkEnemy');
   }
 
+  // eslint-disable-next-line no-unused-vars,class-methods-use-this
+  playUseSound() {
+    // Meant to be overwritten
+  }
+
   shoot(time) {
     this.lastShot = time;
     this.scene.addProjectile(
       new Projectile({scene: this.scene, x: this.x, y: this.y, angle: this.angle, weapon: this.weapon}),
     );
+    this.playUseSound();
 
     this.scene.addSoundWave(this.x, this.y, this.weapon.soundRadiusOfUse, COLORS.ENEMY_GUN_FIRE);
   }
@@ -82,6 +89,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     createSpinningExpandingText(this.scene, this.x, this.y, '🩸');
     this.hp -= projectile.getDamage();
     this.scene.removePlayerProjectile(projectile);
+    if (projectile.weapon instanceof Knife) {
+      this.scene.sound.play('knife', {rate: 1.5, seek: 0.2});
+    }
     if (this.hp <= 0) {
       this.handleDeath();
     }
@@ -136,8 +146,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   moveTowards(position) {
     const moveAngle = this.getGoalAngle(position);
     this.body.setVelocity(
-      ENEMY.MOVE_SPEED * Math.cos(Phaser.Math.DegToRad(moveAngle)),
-      ENEMY.MOVE_SPEED * Math.sin(Phaser.Math.DegToRad(moveAngle)),
+      this.moveSpeed * Math.cos(Phaser.Math.DegToRad(moveAngle)),
+      this.moveSpeed * Math.sin(Phaser.Math.DegToRad(moveAngle)),
     );
   }
 

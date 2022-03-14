@@ -9,10 +9,10 @@ import smgSilhouette from '../assets/weapons/smg-silhouette.png';
 import {RunWalkIndicator} from '../classes/RunWalkIndicator';
 import {Text} from '../classes/Text';
 import {WeaponSelection} from '../classes/WeaponSelection';
-import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, RUN_WALK, SCENES} from '../constants';
-import {PLAYER} from '../constants/player'
+import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, RUN_WALK, SCENES, TIME} from '../constants';
+import {PLAYER} from '../constants/player';
 import {isDebug} from '../utils/environments';
-import { offsetDegToRad } from '../utils/math';
+import {offsetDegToRad} from '../utils/math';
 import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
 
 export class HudScene extends Phaser.Scene {
@@ -88,22 +88,21 @@ export class HudScene extends Phaser.Scene {
       .setColor(COLORS.TIMER_NORMAL)
       .setOrigin(0, 1)
       .setDepth(DEPTH.HUD);
-    this.timeCop = window.gameState.startTime;
+    this.timeCop = null;
     this.lastPause = 0;
     this.drawTimer(window.gameState.startTime);
     this.addInventory();
     this.addRunWalkIndicator();
     this.drawPauseIndicator();
     this.addReticle();
-    if(!isDebug()) {
+    if (!isDebug()) {
       this.addFade();
       this.addPeripheralShadows();
     }
-    
   }
 
   drawPauseIndicator() {
-    if (window.gameState.paused) {
+    if (this.game.scene.isPaused(SCENES.GAME)) {
       const glowOptions = {glowColor: 0xff3030, innerStrength: 1, outerStrength: 4};
       if (!this.plugins.get('rexGlowFilterPipeline').get(this.timerText).length) {
         this.timerGlow = [
@@ -138,8 +137,12 @@ export class HudScene extends Phaser.Scene {
   }
 
   addReticle() {
-    this.reticle = this.add.image(GAME.width * GAME.cameraWidthRatio, GAME.height * GAME.cameraHeightRatio - 100, 'reticle');
-    this.reticle.setScale(0.5);
+    this.reticle = this.add.image(
+      GAME.width * GAME.cameraWidthRatio,
+      GAME.height * GAME.cameraHeightRatio - 100,
+      'reticle',
+    );
+    this.reticle.setScale(0.8);
     this.reticle.setDepth(DEPTH.FADE);
   }
 
@@ -150,12 +153,12 @@ export class HudScene extends Phaser.Scene {
   }
 
   addPeripheralShadows() {
-    let graphics = this.add.graphics();
+    const graphics = this.add.graphics();
     graphics.fillStyle(COLORS.SHADOW);
     graphics.setDepth(DEPTH.FADE);
     graphics.beginPath();
 
-    graphics.arc(       
+    graphics.arc(
       GAME.width * GAME.cameraWidthRatio,
       GAME.height * GAME.cameraHeightRatio,
       75,
@@ -175,6 +178,8 @@ export class HudScene extends Phaser.Scene {
 
     graphics.closePath();
     graphics.fillPath();
+    const glowOptions = {glowColor: 0x000, innerStrength: 1, outerStrength: 4, quality: 0.1};
+    this.plugins.get('rexGlowFilterPipeline').add(graphics, glowOptions);
   }
 
   addInventory(gameScene) {
@@ -186,13 +191,16 @@ export class HudScene extends Phaser.Scene {
           .setDepth(DEPTH.HUD)
           .setOrigin(0, 1)
           .setScale(0.1333333);
-        if (slot.active) {
+        if (slot.active && !this.weaponSelection?.active) {
           this.weaponSelection = new WeaponSelection({scene: this, slot: 1});
         }
         return image;
       });
       this.inventoryAmmoTexts = gameScene.player.inventory.weaponSlots.map((slot, i) =>
-        this.add.text(300 + i * INVENTORY.ITEM_WIDTH, GAME.height - 20, slot.getAmmoText()).setOrigin(0, 1),
+        this.add
+          .text(300 + i * INVENTORY.ITEM_WIDTH, GAME.height - 20, slot.getAmmoText())
+          .setOrigin(0, 1)
+          .setDepth(DEPTH.HUD),
       );
     }
   }
@@ -228,7 +236,6 @@ export class HudScene extends Phaser.Scene {
 
   handleGameEnd(status) {
     this.game.scene.pause(SCENES.GAME);
-    window.gameState.paused = true;
     window.gameState.gameEnded = status;
 
     const restartMessage = 'ENTER TO RESTART';
@@ -259,14 +266,16 @@ export class HudScene extends Phaser.Scene {
     }
     const timeEvents = Object.keys(window.gameState.runUntil);
     if (Object.values(this.playerKeys).some((v) => v.isDown) || timeEvents.length) {
-      if (window.gameState.paused) {
+      if (this.game.scene.isPaused(SCENES.GAME)) {
         window.gameState.pauseTime += time - this.timeCop;
-        window.gameState.paused = false;
+        this.timeCop = null;
         this.game.scene.resume(SCENES.GAME);
       }
-    } else if (!window.gameState.paused) {
-      this.timeCop = time;
-      window.gameState.paused = true;
+    } else if (!this.game.scene.isPaused(SCENES.GAME)) {
+      if (!this.timeCop) {
+        this.timeCop = time + TIME.DELAY;
+        window.gameState.paused = time + TIME.DELAY;
+      }
     }
     timeEvents.forEach((timeEvent) => {
       if (timeEvent < time) {
@@ -291,7 +300,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   updateTimer(currentTime) {
-    if (!window.gameState.paused) {
+    if (!this.game.scene.isPaused(SCENES.GAME)) {
       this.drawTimer(currentTime);
     }
   }
@@ -309,6 +318,9 @@ export class HudScene extends Phaser.Scene {
 
   updateInventory() {
     const gameScene = this.getGameScene();
+    if (gameScene?.player?.inventory?.weaponSlots?.length !== this.inventoryImages?.length) {
+      this.clearDrawnInventory();
+    }
     if (!this.inventoryImages?.some((i) => i.active)) {
       this.addInventory(gameScene);
     }

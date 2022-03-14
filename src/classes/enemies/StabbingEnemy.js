@@ -15,6 +15,7 @@ export class StabbingEnemy extends Enemy {
       height: ENEMY_STAB.HEIGHT,
       xCenter: ENEMY_STAB.X_CENTER,
       yCenter: ENEMY_STAB.Y_CENTER,
+      moveSpeed: ENEMY_STAB.MOVE_SPEED,
     });
     this.weapon = new EnemyKnife();
   }

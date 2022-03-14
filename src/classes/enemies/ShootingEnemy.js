@@ -15,7 +15,13 @@ export class ShootingEnemy extends Enemy {
       height: ENEMY_SHOOT.HEIGHT,
       xCenter: ENEMY_SHOOT.X_CENTER,
       yCenter: ENEMY_SHOOT.Y_CENTER,
+      moveSpeed: ENEMY_SHOOT.MOVE_SPEED,
     });
     this.weapon = new EnemyGun();
+  }
+
+  // eslint-disable-next-line no-unused-vars,class-methods-use-this
+  playUseSound() {
+    this.scene.sound.play('gunshot', {volume: 0.6, rate: 0.7});
   }
 }

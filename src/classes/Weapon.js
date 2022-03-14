@@ -73,6 +73,11 @@ class Weapon {
     // meant to be overriden
   }
 
+  // eslint-disable-next-line no-unused-vars,class-methods-use-this
+  playUseSound() {
+    // meant to be overriden
+  }
+
   use(time) {
     if (time < this.lastReload + this.reloadTime) {
       return WEAPON_EVENT.NOT_READY;
@@ -84,6 +89,7 @@ class Weapon {
       this.lastShot = time;
       if (this.currentAmmunition) {
         --this.currentAmmunition;
+        this.playUseSound();
         return WEAPON_EVENT.FIRED;
       }
       return WEAPON_EVENT.OUT_OF_AMMO;
@@ -156,6 +162,10 @@ export class Revolver extends Weapon {
     this.characterMoveAnimation = 'pistolMove';
   }
 
+  playUseSound() {
+    this.scene.sound.play('gunshot', {volume: 0.8});
+  }
+
   useAnimation(x, y, angle) {
     const lineLength = 1000;
     const animation = this.scene.add
@@ -191,6 +201,10 @@ export class Smg extends Weapon {
   // eslint-disable-next-line no-unused-vars,class-methods-use-this
   getAngleModifier() {
     return Math.random() * 10 - 5;
+  }
+
+  playUseSound() {
+    this.scene.sound.play('gunshot', {volume: 0.6, rate: 0.5});
   }
 
   useAnimation(x, y, angle) {

@@ -7,7 +7,12 @@ import enemyKnifeMove from '../assets/enemy-knife-move.png';
 import enemyRifleMove from '../assets/enemy-rifle-move.png';
 import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
+import floorSmg from '../assets/floor-weapons/smg.png';
 import medKitImage from '../assets/medkit.png';
+import gunshotSound from '../assets/sounds/gunshot.mp3';
+import heartbeatSound from '../assets/sounds/heartbeat.wav';
+import footstepsSound from '../assets/sounds/heavy_footsteps.wav';
+import knifeSound from '../assets/sounds/knife.wav';
 import steelTileset from '../assets/steel-tileset.jpg';
 import winSwitchImage from '../assets/winSwitch.png';
 import {BoundaryWall} from '../classes/BoundaryWall';
@@ -16,7 +21,7 @@ import {ShootingEnemy} from '../classes/enemies/ShootingEnemy';
 import {StabbingEnemy} from '../classes/enemies/StabbingEnemy';
 import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
-import {MedKit} from '../classes/Pickup';
+import {FloorSmg, MedKit} from '../classes/Pickup';
 import {Player} from '../classes/Player';
 import {SoundWave} from '../classes/SoundWave';
 import {WinSwitch} from '../classes/WinSwitch';
@@ -34,6 +39,7 @@ import {
   ROOMS,
   GAME,
   ENEMY_SHOOT,
+  SOUND,
 } from '../constants';
 import {isDebug} from '../utils/environments';
 import {generateRooms} from '../utils/maps';
@@ -74,6 +80,7 @@ export class GameScene extends Phaser.Scene {
   gameEndText;
   rooms;
   nodes;
+  backgroundSound;
 
   constructor() {
     super({
@@ -82,6 +89,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.audio('heartbeat', heartbeatSound);
+    this.load.audio('footsteps', footstepsSound);
+    this.load.audio('gunshot', gunshotSound);
+    this.load.audio('knife', knifeSound);
+
     this.load.image('steel-tileset', steelTileset);
     this.load.spritesheet('characterPistolMove', characterPistolMove, {
       frameWidth: PLAYER.WIDTH,
@@ -107,6 +119,7 @@ export class GameScene extends Phaser.Scene {
     this.load.image('exit-up', exitUpImage);
     this.load.image('exit-down', exitDownImage);
     this.load.image('winSwitch', winSwitchImage);
+    this.load.image('pickup-smg', floorSmg);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.levelDownKey = this.input.keyboard.addKey(KeyCodes.L);
     this.levelUpKey = this.input.keyboard.addKey(KeyCodes.O);
@@ -157,6 +170,14 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.boundaryWalls);
     this.physics.add.collider(this.enemies, this.exits);
     this.cameras.main.startFollow(this.player).setOrigin(GAME.cameraWidthRatio, GAME.cameraHeightRatio);
+    if (!this.backgroundSound) {
+      this.backgroundSound = this.sound.play('heartbeat', {
+        loop: true,
+        volume: SOUND.VOLUME_WALKING,
+        rate: SOUND.RATE_WALKING,
+        detune: SOUND.DETUNE_WALKING,
+      });
+    }
   }
 
   handleInput() {
@@ -497,6 +518,7 @@ export class GameScene extends Phaser.Scene {
     if (isDebug()) {
       this.pickups.add(new MedKit({scene: this, x: 1350, y: 150}));
     }
+    this.pickups.add(new FloorSmg({scene: this, x: 1350, y: 150}));
 
     // Add medkit to a random room that isn't the startin two or ending two
     this.pickups.add(
@@ -577,7 +599,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time) {
-    if (window.gameState.paused) {
+    if (window.gameState.paused < time) {
+      window.gameState.paused = Number.MAX_SAFE_INTEGER;
       this.enemies.children.iterate((e) => e.setAlpha(1));
       this.scene.pause();
     }
@@ -589,7 +612,6 @@ export class GameScene extends Phaser.Scene {
       enemy.update(timeAwareOfPauses);
     });
     this.handleInput();
-    // this.clearShadows();
     this.drawShadows();
     this.removeExtraProjectiles(timeAwareOfPauses);
   }
@@ -604,20 +626,9 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.winSwitch, () => this.handlePlayerWinSwitch());
   }
 
-  clearShadows() {
-    this.shadows.forEach((shadow) => {
-      // if (shadow.alpha === 0) {
-      //   shadow.destroy();
-      // }
-      shadow.destroy();
-    });
-    this.shadows = [];
-  }
-
   drawShadows() {
     if (!isDebug()) {
       this.drawObstacleShadows();
-      // this.drawPeripheralShadows();
     }
   }
 
@@ -657,42 +668,6 @@ export class GameScene extends Phaser.Scene {
       graphics.closePath();
       graphics.fillPath();
     });
-  }
-
-  drawPeripheralShadows() {
-    let graphics = this.shadows[this.shadows.length - 1];
-    if (this.shadows.length === this.shadowWalls.length) {
-      graphics = this.add.graphics();
-      this.shadows.push(graphics);
-      graphics.setScrollFactor(0);
-      const glowOptions = {glowColor: 0x000, innerStrength: 1, outerStrength: 4, quality: 0.1};
-      this.plugins.get('rexGlowFilterPipeline').add(graphics, glowOptions);
-    }
-    graphics.clear();
-    graphics.fillStyle(COLORS.SHADOW);
-    graphics.setDepth(DEPTH.SHADOWS);
-    graphics.beginPath();
-
-    graphics.arc(
-      GAME.width / 2,
-      GAME.height / 2,
-      75,
-      Phaser.Math.DegToRad(this.player.angle - PLAYER.VISION_ANGLE / 2),
-      Phaser.Math.DegToRad(this.player.angle + PLAYER.VISION_ANGLE / 2),
-      true,
-    );
-
-    graphics.arc(
-      GAME.width / 2,
-      GAME.height / 2,
-      GAME.maxDistance,
-      Phaser.Math.DegToRad(this.player.angle + PLAYER.VISION_ANGLE / 2),
-      Phaser.Math.DegToRad(this.player.angle - PLAYER.VISION_ANGLE / 2),
-      false,
-    );
-
-    graphics.closePath();
-    graphics.fillPath();
   }
 
   addRooms() {

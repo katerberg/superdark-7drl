@@ -32,6 +32,7 @@ export const ROOMS = {
 };
 
 export const TIME = {
+  DELAY: 200,
   TOTAL: 900_000,
 };
 
@@ -63,4 +64,13 @@ export const WEAPON_EVENT = {
   OUT_OF_AMMO: 'click',
   FIRED: 'boom',
   NOT_READY: 'still warm',
+};
+
+export const SOUND = {
+  VOLUME_WALKING: 0.3,
+  VOLUME_RUNNING: 0.7,
+  RATE_WALKING: 1,
+  RATE_RUNNING: 4,
+  DETUNE_WALKING: 0,
+  DETUNE_RUNNING: -1200,
 };

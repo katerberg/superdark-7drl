@@ -18,6 +18,9 @@ const config = {
       enableBody: true,
     },
   },
+  audio: {
+    disableWebAudio: false,
+  },
   plugins: {
     global: [
       {

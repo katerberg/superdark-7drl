@@ -1,4 +1,4 @@
-import {ENEMY_SHOOT} from '../../constants';
+import {ENEMY_CHAMELEON} from '../../constants/enemy';
 import {EnemyKnife} from '../Weapon';
 import {Enemy} from './Enemy';
 
@@ -9,12 +9,13 @@ export class Chameleon extends Enemy {
       x,
       y,
       key: 'enemy-knife-move',
-      hp: ENEMY_SHOOT.HP,
+      hp: ENEMY_CHAMELEON.HP,
       path,
-      width: ENEMY_SHOOT.WIDTH,
-      height: ENEMY_SHOOT.HEIGHT,
-      xCenter: ENEMY_SHOOT.X_CENTER,
-      yCenter: ENEMY_SHOOT.Y_CENTER,
+      width: ENEMY_CHAMELEON.WIDTH,
+      height: ENEMY_CHAMELEON.HEIGHT,
+      xCenter: ENEMY_CHAMELEON.X_CENTER,
+      yCenter: ENEMY_CHAMELEON.Y_CENTER,
+      moveSpeed: ENEMY_CHAMELEON.MOVE_SPEED,
     });
     this.setTint(0xff4444);
     this.weapon = new EnemyKnife();
