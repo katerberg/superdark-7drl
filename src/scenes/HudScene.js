@@ -10,9 +10,9 @@ import {RunWalkIndicator} from '../classes/RunWalkIndicator';
 import {Text} from '../classes/Text';
 import {WeaponSelection} from '../classes/WeaponSelection';
 import {COLORS, DEPTH, EVENTS, GAME, GAME_STATUS, INVENTORY, RUN_WALK, SCENES} from '../constants';
-import {PLAYER} from '../constants/player'
+import {PLAYER} from '../constants/player';
 import {isDebug} from '../utils/environments';
-import { offsetDegToRad } from '../utils/math';
+import {offsetDegToRad} from '../utils/math';
 import {getMsRemaining, getTimeDisplayCs, getTimeDisplayMain} from '../utils/time';
 
 export class HudScene extends Phaser.Scene {
@@ -95,11 +95,10 @@ export class HudScene extends Phaser.Scene {
     this.addRunWalkIndicator();
     this.drawPauseIndicator();
     this.addReticle();
-    if(!isDebug()) {
+    if (!isDebug()) {
       this.addFade();
       this.addPeripheralShadows();
     }
-    
   }
 
   drawPauseIndicator() {
@@ -138,8 +137,12 @@ export class HudScene extends Phaser.Scene {
   }
 
   addReticle() {
-    this.reticle = this.add.image(GAME.width * GAME.cameraWidthRatio, GAME.height * GAME.cameraHeightRatio - 100, 'reticle');
-    this.reticle.setScale(0.5);
+    this.reticle = this.add.image(
+      GAME.width * GAME.cameraWidthRatio,
+      GAME.height * GAME.cameraHeightRatio - 100,
+      'reticle',
+    );
+    this.reticle.setScale(0.8);
     this.reticle.setDepth(DEPTH.FADE);
   }
 
@@ -150,12 +153,12 @@ export class HudScene extends Phaser.Scene {
   }
 
   addPeripheralShadows() {
-    let graphics = this.add.graphics();
+    const graphics = this.add.graphics();
     graphics.fillStyle(COLORS.SHADOW);
     graphics.setDepth(DEPTH.FADE);
     graphics.beginPath();
 
-    graphics.arc(       
+    graphics.arc(
       GAME.width * GAME.cameraWidthRatio,
       GAME.height * GAME.cameraHeightRatio,
       75,
