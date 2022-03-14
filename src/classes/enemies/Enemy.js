@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import {COLORS, DEPTH, ENEMY, WALLS} from '../../constants';
-import {isDebug} from '../../utils/environments';
 import {distance} from '../../utils/math';
 import {createSpinningExpandingText} from '../../utils/visuals';
 import {EnemyFieldOfVision} from '../EnemyFieldOfVision';
@@ -186,9 +185,6 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   }
 
   setState(newState) {
-    if (isDebug() && newState !== this.state) {
-      console.log(newState);
-    }
     this.state = newState;
   }
 

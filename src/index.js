@@ -3,7 +3,6 @@ import * as Phaser from 'phaser';
 import GlowFilterPipelinePlugin from 'phaser3-rex-plugins/plugins/glowfilter2pipeline-plugin.js';
 import {GAME, LEVELS} from './constants';
 import {HudScene, GameScene, LoadingScene, MenuScene} from './scenes';
-import {isDebug} from './utils/environments';
 
 const config = {
   type: Phaser.AUTO,
@@ -13,7 +12,7 @@ const config = {
   physics: {
     default: 'arcade',
     arcade: {
-      debug: isDebug(),
+      debug: false,
       gravity: {y: 0},
       enableBody: true,
     },
