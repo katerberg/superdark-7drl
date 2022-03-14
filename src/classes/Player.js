@@ -13,6 +13,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   legs;
   cursors;
   hp;
+  invisibile = false;
   lastStep = -2000;
   lastRunChange = -2000;
   runWalk = RUN_WALK.STATE.WALKING;
@@ -77,6 +78,10 @@ export class Player extends Phaser.GameObjects.Sprite {
         createFloatingText(this.scene, this.x, this.y, 'click');
       }
     }
+  }
+
+  setInvisible(value) {
+    this.invisible = value;
   }
 
   heal(amount) {

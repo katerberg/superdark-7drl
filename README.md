@@ -30,3 +30,4 @@ npm build
 - Septianbkp for [SMG](https://freesvg.org/1549921445)
 - SpriteAttack for  [Ground guns](https://opengameart.org/content/gun-construction-kit)
 - [Sounds](https://gamesounds.xyz)
+- Soluna Software for [Shield](https://opengameart.org/content/explosion-effects-and-more)

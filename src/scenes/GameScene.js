@@ -12,6 +12,7 @@ import floorRevolver from '../assets/floor-weapons/revolver.png';
 import floorSmg from '../assets/floor-weapons/smg.png';
 import medKitImage from '../assets/medkit.png';
 import neemImage from '../assets/neem.png';
+import shieldImage from '../assets/shield.png';
 import gunshotSound from '../assets/sounds/gunshot.mp3';
 import heartbeatSound from '../assets/sounds/heartbeat.wav';
 import footstepsSound from '../assets/sounds/heavy_footsteps.wav';
@@ -25,7 +26,7 @@ import {ShootingEnemy} from '../classes/enemies/ShootingEnemy';
 import {StabbingEnemy} from '../classes/enemies/StabbingEnemy';
 import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
-import {FloorRevolver, MedKit} from '../classes/Pickup';
+import {InvisibilityShield, MedKit} from '../classes/Pickup';
 import {Player} from '../classes/Player';
 import {SoundWave} from '../classes/SoundWave';
 import {WinSwitch} from '../classes/WinSwitch';
@@ -126,6 +127,7 @@ export class GameScene extends Phaser.Scene {
       frameHeight: ENEMY_SHIELD.HEIGHT,
     });
     this.load.image('pickup-medkit', medKitImage);
+    this.load.image('pickup-shield', shieldImage);
     this.load.image('neem', neemImage);
     this.load.image('exit-up', exitUpImage);
     this.load.image('exit-down', exitDownImage);
@@ -533,7 +535,7 @@ export class GameScene extends Phaser.Scene {
     if (isDebug()) {
       this.pickups.add(new MedKit({scene: this, x: 1350, y: 150}));
     }
-    this.pickups.add(new FloorRevolver({scene: this, x: 1350, y: 150}));
+    this.pickups.add(new InvisibilityShield({scene: this, x: 1350, y: 150}));
 
     // Add medkit to a random room that isn't the startin two or ending two
     this.pickups.add(new MedKit({scene: this, ...getRandomRoom(this.rooms, 2).getCenterish()}));

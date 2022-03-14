@@ -17,6 +17,44 @@ export class Pickup extends Phaser.GameObjects.Sprite {
   }
 }
 
+export class InvisibilityShield extends Pickup {
+  duration = 10000;
+
+  constructor({scene, x, y}) {
+    super(scene, x, y, 'pickup-shield');
+    this.scale = 0.5;
+    this.scene.add.tween({
+      targets: this,
+      duration: 1000,
+      angle: 360,
+      loop: true,
+      yoyo: true,
+    });
+  }
+
+  pickup(player) {
+    this.scene.add.tween({
+      targets: [player, player.legs],
+      duration: 500,
+      ease: 'Exponential.Out',
+      alpha: 0.2,
+      onComplete: () => {
+        player.setInvisible(true);
+      },
+    });
+    this.scene.add.tween({
+      delay: this.duration,
+      targets: [player, player.legs],
+      duration: 500,
+      ease: 'Exponential.Out',
+      alpha: 1,
+      onComplete: () => {
+        player.setInvisible(false);
+      },
+    });
+    this.destroy();
+  }
+}
 export class MedKit extends Pickup {
   amount = 5;
 
