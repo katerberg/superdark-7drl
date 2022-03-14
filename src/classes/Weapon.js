@@ -93,7 +93,12 @@ class Weapon {
 
   reload(currentTime) {
     if (currentTime > this.lastReload + this.reloadTime) {
+      this.storedAmmunition -= this.maxAmmunition - this.currentAmmunition;
       this.currentAmmunition = this.maxAmmunition;
+      if (this.storedAmmunition < 0) {
+        this.currentAmmunition += this.storedAmmunition;
+        this.storedAmmunition = 0;
+      }
       window.gameState.runUntil[getRealTime(this.reloadTime + currentTime)] = 'reload';
       this.lastReload = currentTime;
     }
@@ -179,7 +184,7 @@ export class Revolver extends Weapon {
 
 export class Smg extends Weapon {
   constructor(scene, active) {
-    super(scene, 'weapon-revolver', active, 10_000, 10, 1, 100, 100, 100, 10, undefined, 600);
+    super(scene, 'weapon-smg', active, 10_000, 10, 1, 36, 36, 100, 10, undefined, 600);
     this.characterMoveAnimation = 'pistolMove';
   }
 
