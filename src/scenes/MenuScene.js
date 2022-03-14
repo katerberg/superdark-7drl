@@ -1,10 +1,16 @@
 import * as Phaser from 'phaser';
 import logoImage from '../assets/logo.png';
+import splash1 from '../assets/splash1.png';
+import splash2 from '../assets/splash2.png';
+
 import {COLORS, GAME, SCENES} from '../constants';
 import {isDebug, skipMenu} from '../utils/environments';
 
 export class MenuScene extends Phaser.Scene {
   restartKey;
+  enterPressed = 0;
+  screen = 1;
+
   constructor() {
     super({
       key: SCENES.MENU,
@@ -12,48 +18,16 @@ export class MenuScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet('logo-splash', logoImage, {
-      frameWidth: 498,
-      frameHeight: 280,
-    });
+    this.load.image('splash1',splash1);
+    this.load.image('splash2',splash2);
+
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.restartKey = this.input.keyboard.addKey(KeyCodes.ENTER);
   }
 
   create() {
-    const color = '#cfcfcf';
-    this.add.text(GAME.width / 2, 24, 'SUPER ', {fontSize: '96px', color}).setOrigin(1, 0);
-    const title2 = this.add
-      .text(GAME.width / 2, 24, 'DARK', {fontSize: '96px', color})
-      .setOrigin(0, 0)
-      .setAlpha(0);
-    this.add.tween({
-      loop: -1,
-      yoyo: true,
-      targets: title2,
-      duration: 5000,
-      ease: 'Exponential.In',
-      alpha: 1,
-    });
-    const startText = this.add
-      .text(GAME.width / 2, GAME.height - 96, 'Press enter to begin', {fontSize: '48px', color: 'red'})
-      .setOrigin(0.5)
-      .setAlpha(0);
-    this.add.tween({
-      delay: 3000,
-      targets: startText,
-      duration: 2000,
-      ease: 'Exponential.In',
-      alpha: 1,
-    });
-    const logo = this.add.sprite(GAME.width / 2, GAME.height / 2, 'logo-splash');
-    logo.anims.create({
-      key: 'logo-anim',
-      frameRate: 15,
-      frames: this.anims.generateFrameNumbers('logo-splash', {start: 0, end: 15}),
-      repeat: -1,
-    });
-    logo.play('logo-anim');
+    this.splash = this.add.image(0, 0, 'splash1').setScale(0.5).setOrigin(0,0);
+    
   }
 
   startGame(time) {
@@ -65,7 +39,16 @@ export class MenuScene extends Phaser.Scene {
 
   handleInput(time) {
     if (this.restartKey.isDown) {
-      this.startGame(time);
+      this.enterPressed =true;
+    }
+
+    if(this.restartKey.isUp && this.enterPressed) {
+      this.enterPressed = false;
+      if (this.splash.texture.key == 'splash1') {
+        this.splash.setTexture('splash2');
+      } else {
+        this.startGame(time);
+      }
     }
   }
 
