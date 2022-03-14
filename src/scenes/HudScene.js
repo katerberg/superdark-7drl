@@ -126,7 +126,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   addFade() {
-    this.fade = this.add.image(GAME.width / 2, GAME.height / 2, 'fade');
+    this.fade = this.add.image(GAME.width * GAME.cameraWidthRatio, GAME.height * GAME.cameraHeightRatio, 'fade');
 
     this.fade.setDepth(DEPTH.FADE);
   }
