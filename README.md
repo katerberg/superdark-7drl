@@ -27,3 +27,4 @@ npm build
 - CC0 for [Knife](https://www.maxpixel.net/Army-Isolated-Knife-Hunting-Background-Military-1710292)
 - Knik1985 for [Medkit](https://opengameart.org/content/medkit-0)
 - Pixabay for [Stick](https://cdn.pixabay.com/photo/2014/03/25/16/31/stick-man-297255_1280.png) [Figures](https://pixabay.com/vectors/stick-man-runner-silhouette-figure-295293/)
+- Septianbkp for [SMG](https://freesvg.org/1549921445)

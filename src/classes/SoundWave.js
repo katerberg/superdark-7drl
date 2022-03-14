@@ -6,7 +6,8 @@ export class SoundWave extends Phaser.GameObjects.Arc {
     super(scene, x, y, 0, undefined, undefined, undefined, 0xff0000, 0.001);
     this.depth = DEPTH.SOUND;
     this.setClosePath(false);
-    this.setStrokeStyle(radius < 50 ? 2 : 4, color, radius < 50 ? 0.2 : 0.4);
+    const lineWidth = radius < 50 ? 2 : 4;
+    this.setStrokeStyle(radius < 50 ? 2 : 40, color, radius < 50 ? 0.2 : 0.2);
     scene.physics.world.enable(this);
     scene.add.existing(this);
 
@@ -15,6 +16,7 @@ export class SoundWave extends Phaser.GameObjects.Arc {
       duration,
       ease: 'Exponential.Out',
       radius,
+      lineWidth: lineWidth * 10,
       onComplete: () => {
         if (this.strokeColor === COLORS.PLAYER_SOUND) {
           const hearingEnemies = this.scene.enemies
