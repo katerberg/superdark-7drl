@@ -3,6 +3,8 @@ import fade from '../assets/fade.png';
 import reticle from '../assets/reticle.png';
 import runwalkRunning from '../assets/runwalk-running.png';
 import runwalkWalking from '../assets/runwalk-walking.png';
+import splashLose from '../assets/splash-lose.png';
+import splashWin from '../assets/splash-win.png';
 import knifeSilhouette from '../assets/weapons/knife-silhouette.png';
 import revolverSilhouette from '../assets/weapons/revolver-silhouette.png';
 import smgSilhouette from '../assets/weapons/smg-silhouette.png';
@@ -32,6 +34,7 @@ export class HudScene extends Phaser.Scene {
   runWalkIndicator;
   fade;
   reticle;
+  splash;
 
   constructor() {
     super({
@@ -47,6 +50,8 @@ export class HudScene extends Phaser.Scene {
     this.load.image('runwalk-walking', runwalkWalking);
     this.load.image('fade', fade);
     this.load.image('reticle', reticle);
+    this.load.image('splashLose', splashLose);
+    this.load.image('splashWin', splashWin);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.restartKey = this.input.keyboard.addKey(KeyCodes.ENTER);
     this.playerKeys = this.input.keyboard.addKeys({
@@ -148,7 +153,6 @@ export class HudScene extends Phaser.Scene {
 
   addFade() {
     this.fade = this.add.image(GAME.width * GAME.cameraWidthRatio, GAME.height * GAME.cameraHeightRatio, 'fade');
-
     this.fade.setDepth(DEPTH.FADE);
   }
 
@@ -237,19 +241,8 @@ export class HudScene extends Phaser.Scene {
   handleGameEnd(status) {
     this.game.scene.pause(SCENES.GAME);
     window.gameState.gameEnded = status;
-
-    const restartMessage = 'ENTER TO RESTART';
-    this.gameEndText = new Text({
-      scene: this,
-      x: this.game.scale.width / 2,
-      y: this.game.scale.height * 0.4,
-      text: status === GAME_STATUS.WIN ? `CRISIS AVERTED\n${restartMessage}` : `WASTED\n${restartMessage}`,
-    })
-      .setAlign('center')
-      .setColor(status === GAME_STATUS.WIN ? COLORS.MESSAGE_WIN : COLORS.MESSAGE_LOSE)
-      .setDepth(DEPTH.HUD);
-
-    this.gameEndText.setPosition(this.game.scale.width / 2 - this.gameEndText.width / 2, this.game.scale.height * 0.4);
+    const imageSource = status === GAME_STATUS.WIN ? 'splashWin' : 'splashLose';
+    this.splash = this.add.image(0, 0, imageSource).setScale(0.5).setOrigin(0, 0).setDepth(DEPTH.ENDSCREEN);
   }
 
   handleInput(time) {
