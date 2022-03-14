@@ -73,7 +73,6 @@ export class MenuScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(COLORS.SHADOW);
     this.handleInput(time);
 
-    console.log(skipMenu());
     if (isDebug() || skipMenu()) {
       this.startGame(time);
     }
