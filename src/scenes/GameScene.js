@@ -148,11 +148,9 @@ export class GameScene extends Phaser.Scene {
       this.addSoundWave(x, y, projectile.weapon.soundRadiusOfUse, COLORS.ENEMY_GUN_FIRE);
       return this.removeProjectile(projectile);
     });
-    this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (wall, projectile) => {
-      const {x, y} = getMidpoint(wall.body, projectile.body);
-      this.addSoundWave(x, y, projectile.weapon.soundRadiusOfUse);
-      return this.removePlayerProjectile(projectile);
-    });
+    this.physics.add.overlap(this.boundaryWalls, this.playerProjectiles, (wall, projectile) =>
+      this.removePlayerProjectile(projectile),
+    );
     this.physics.add.collider(this.player, this.boundaryWalls);
     this.physics.add.collider(this.player, this.enemies);
     this.physics.add.collider(this.enemies, this.boundaryWalls);
