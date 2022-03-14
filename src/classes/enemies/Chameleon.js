@@ -16,14 +16,17 @@ export class Chameleon extends Enemy {
       xCenter: ENEMY_SHOOT.X_CENTER,
       yCenter: ENEMY_SHOOT.Y_CENTER,
     });
+    this.setTint(0xff4444);
     this.weapon = new EnemyKnife();
-    this.goInvisible();
   }
 
   goInvisible() {
-    this.alpha = 0;
-    this.fieldOfVision.alpha = 0;
-    this.legs.alpha = 0;
+    this.scene.add.tween({
+      targets: [this, this.fieldOfVision, this.legs],
+      duration: 100,
+      ease: 'Exponential.Out',
+      alpha: 0,
+    });
   }
 
   enemySpecificUpdate() {

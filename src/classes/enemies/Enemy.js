@@ -66,6 +66,12 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   }
 
   handleDeath() {
+    this.scene.add.tween({
+      targets: [this, this.fieldOfVision, this.legs],
+      duration: 100,
+      ease: 'Exponential.In',
+      alpha: 1,
+    });
     this.legs.stop();
     this.fieldOfVision.destroy();
     this.destroy();
