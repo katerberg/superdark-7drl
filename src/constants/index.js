@@ -74,3 +74,11 @@ export const SOUND = {
   DETUNE_WALKING: 0,
   DETUNE_RUNNING: -1200,
 };
+
+export const LEVEL_COLOR = {
+  1: 0xcccccc,
+  2: 0x000000,
+  3: 0x000000,
+  4: 0x000000,
+  5: 0xff0000,
+};

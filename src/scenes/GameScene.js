@@ -43,6 +43,7 @@ import {
   GAME,
   ENEMY_SHOOT,
   SOUND,
+  LEVEL_COLOR,
 } from '../constants';
 import {ENEMY_SHIELD} from '../constants/enemy';
 import {isDebug} from '../utils/environments';
@@ -140,7 +141,7 @@ export class GameScene extends Phaser.Scene {
 
     this.add
       .tileSprite(PLAY_AREA.width / 2, PLAY_AREA.height / 2, PLAY_AREA.width, PLAY_AREA.height, 'steel-tileset')
-      .setTint(0xff0000);
+      .setTint(LEVEL_COLOR[`${window.gameState.currentLevel}`]);
 
     this.boundaryWalls = this.physics.add.group(immovableOptions);
     this.shadowWalls = [];
