@@ -72,6 +72,11 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.scene.addSoundWave(this.x, this.y, this.weapon.soundRadiusOfUse, COLORS.ENEMY_GUN_FIRE);
   }
 
+  // eslint-disable-next-line no-unused-vars,class-methods-use-this
+  enemySpecificDeath() {
+    // Meant to be overwritten
+  }
+
   handleDeath() {
     this.scene.add.tween({
       targets: [this, this.fieldOfVision, this.legs],
@@ -79,6 +84,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       ease: 'Exponential.In',
       alpha: 1,
     });
+    this.enemySpecificDeath();
     this.legs.stop();
     this.fieldOfVision.destroy();
     this.destroy();

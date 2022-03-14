@@ -158,7 +158,7 @@ export class Knife extends Weapon {
 
 export class Revolver extends Weapon {
   constructor(scene, active) {
-    super(scene, 'weapon-revolver', active, 10_000, 10, 1, 5, 6, undefined, undefined, undefined, 600);
+    super(scene, 'weapon-revolver', active, 10_000, 10, 1, 6, 6, 6, undefined, undefined, 600);
     this.characterMoveAnimation = 'pistolMove';
   }
 

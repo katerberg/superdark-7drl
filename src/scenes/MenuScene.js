@@ -1,9 +1,8 @@
 import * as Phaser from 'phaser';
-import logoImage from '../assets/logo.png';
 import splash1 from '../assets/splash1.png';
 import splash2 from '../assets/splash2.png';
 
-import {COLORS, GAME, SCENES} from '../constants';
+import {COLORS, SCENES} from '../constants';
 import {isDebug, skipMenu} from '../utils/environments';
 
 export class MenuScene extends Phaser.Scene {
@@ -18,16 +17,15 @@ export class MenuScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('splash1',splash1);
-    this.load.image('splash2',splash2);
+    this.load.image('splash1', splash1);
+    this.load.image('splash2', splash2);
 
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.restartKey = this.input.keyboard.addKey(KeyCodes.ENTER);
   }
 
   create() {
-    this.splash = this.add.image(0, 0, 'splash1').setScale(0.5).setOrigin(0,0);
-    
+    this.splash = this.add.image(0, 0, 'splash1').setScale(0.5).setOrigin(0, 0);
   }
 
   startGame(time) {
@@ -39,12 +37,12 @@ export class MenuScene extends Phaser.Scene {
 
   handleInput(time) {
     if (this.restartKey.isDown) {
-      this.enterPressed =true;
+      this.enterPressed = true;
     }
 
-    if(this.restartKey.isUp && this.enterPressed) {
+    if (this.restartKey.isUp && this.enterPressed) {
       this.enterPressed = false;
-      if (this.splash.texture.key == 'splash1') {
+      if (this.splash.texture.key === 'splash1') {
         this.splash.setTexture('splash2');
       } else {
         this.startGame(time);

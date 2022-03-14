@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import {COLORS, SCENES} from '../constants';
-// import {isDebug} from '../utils/environments';
 
 export class LoadingScene extends Phaser.Scene {
   constructor() {
@@ -9,20 +8,9 @@ export class LoadingScene extends Phaser.Scene {
     });
   }
 
-  update(time) {
+  update() {
     this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
 
-    window.resetGame(time);
-    const isFirstTime = !window.gameState.gameEnded;
-    this.scene.start(SCENES.GAME, {isFirstTime});
-    this.scene.start(SCENES.HUD, {isFirstTime});
-
-    //
-    // if (isDebug()) {
-    //   // this.scene.start(SCENES.GAME);
-    //   // this.scene.bringToTop(SCENES.HUD);
-    // } else {
     this.scene.start(SCENES.MENU);
-    // }
   }
 }

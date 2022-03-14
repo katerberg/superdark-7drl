@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import {DEPTH} from '../constants';
 import {createFloatingText} from '../utils/visuals';
-import {Smg} from './Weapon';
+import {Revolver, Smg} from './Weapon';
 
 export class Pickup extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, key) {
@@ -47,6 +47,18 @@ export class FloorSmg extends Pickup {
 
   pickup(player) {
     player.inventory.pickupWeapon(new Smg(this.scene), Smg);
+    this.destroy();
+  }
+}
+
+export class FloorRevolver extends Pickup {
+  constructor({scene, x, y}) {
+    super(scene, x, y, 'pickup-revolver');
+    this.scale = 0.1;
+  }
+
+  pickup(player) {
+    player.inventory.pickupWeapon(new Revolver(this.scene), Revolver);
     this.destroy();
   }
 }

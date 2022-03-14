@@ -7,6 +7,7 @@ import enemyKnifeMove from '../assets/enemy-knife-move.png';
 import enemyRifleMove from '../assets/enemy-rifle-move.png';
 import exitDownImage from '../assets/exit-down.png';
 import exitUpImage from '../assets/exit-up.png';
+import floorRevolver from '../assets/floor-weapons/revolver.png';
 import floorSmg from '../assets/floor-weapons/smg.png';
 import medKitImage from '../assets/medkit.png';
 import gunshotSound from '../assets/sounds/gunshot.mp3';
@@ -21,7 +22,7 @@ import {ShootingEnemy} from '../classes/enemies/ShootingEnemy';
 import {StabbingEnemy} from '../classes/enemies/StabbingEnemy';
 import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
-import {FloorSmg, MedKit} from '../classes/Pickup';
+import {FloorRevolver, MedKit} from '../classes/Pickup';
 import {Player} from '../classes/Player';
 import {SoundWave} from '../classes/SoundWave';
 import {WinSwitch} from '../classes/WinSwitch';
@@ -120,6 +121,7 @@ export class GameScene extends Phaser.Scene {
     this.load.image('exit-down', exitDownImage);
     this.load.image('winSwitch', winSwitchImage);
     this.load.image('pickup-smg', floorSmg);
+    this.load.image('pickup-revolver', floorRevolver);
     const {KeyCodes} = Phaser.Input.Keyboard;
     this.levelDownKey = this.input.keyboard.addKey(KeyCodes.L);
     this.levelUpKey = this.input.keyboard.addKey(KeyCodes.O);
@@ -518,7 +520,7 @@ export class GameScene extends Phaser.Scene {
     if (isDebug()) {
       this.pickups.add(new MedKit({scene: this, x: 1350, y: 150}));
     }
-    this.pickups.add(new FloorSmg({scene: this, x: 1350, y: 150}));
+    this.pickups.add(new FloorRevolver({scene: this, x: 1350, y: 150}));
 
     // Add medkit to a random room that isn't the startin two or ending two
     this.pickups.add(
@@ -536,15 +538,15 @@ export class GameScene extends Phaser.Scene {
 
   addChameleon() {
     // Disallow first 4 rooms, and ensure that there is some space to walk
-    const path = this.basePath.slice(1, 4);
+    const firstNode = this.basePath.length - 8;
+    const path = this.basePath.slice(firstNode, firstNode + 4);
     const [{x, y}] = path;
     this.enemies.add(new Chameleon({scene: this, x, y, path}));
   }
 
   addShootingEnemy() {
     // Disallow first 4 rooms, and ensure that there is some space to walk
-    const firstNode = this.basePath.length - 8;
-    const path = this.basePath.slice(firstNode, firstNode + 4);
+    const path = this.basePath.slice(1, 4);
     const [{x, y}] = path;
     this.enemies.add(new ShootingEnemy({scene: this, x, y, path}));
   }
