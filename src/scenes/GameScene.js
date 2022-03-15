@@ -222,6 +222,7 @@ export class GameScene extends Phaser.Scene {
   changeLevel(level, isGoingUp, holdPosition) {
     window.gameState.currentLevel = level;
     const {x, y} = getBottomOfStairs(level, isGoingUp);
+    this.sound.stopByKey('footsteps');
     this.scene.start(SCENES.GAME, {
       startingPosition: {
         x: holdPosition ? this.player.body.x : x,
