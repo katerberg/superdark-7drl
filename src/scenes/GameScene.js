@@ -228,7 +228,7 @@ export class GameScene extends Phaser.Scene {
         x: holdPosition ? this.player.body.x : x,
         y: holdPosition ? this.player.body.y : y,
       },
-      hp: this.hp,
+      hp: this.player.hp,
       inventory: this.player.inventory,
       angle: 90,
     });
