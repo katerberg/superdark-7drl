@@ -19,10 +19,10 @@ export class Player extends Phaser.GameObjects.Sprite {
   lastRunChange = -2000;
   runWalk = RUN_WALK.STATE.WALKING;
 
-  constructor({scene, x, y, angle, hp}) {
+  constructor({scene, x, y, angle, hp, inventory}) {
     super(scene, x, y, 'characterPistolMove');
 
-    this.inventory = new Inventory(scene);
+    this.inventory = new Inventory(scene, inventory);
     this.hp = hp;
     this.angle = angle || 0;
     this.depth = DEPTH.PLAYER;

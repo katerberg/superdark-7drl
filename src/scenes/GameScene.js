@@ -228,6 +228,7 @@ export class GameScene extends Phaser.Scene {
         y: holdPosition ? this.player.body.y : y,
       },
       hp: this.hp,
+      inventory: this.player.inventory,
       angle: 90,
     });
   }
@@ -650,6 +651,7 @@ export class GameScene extends Phaser.Scene {
       hp: getCurrentHp(startingInfo),
       key: 'characterPistolMove',
       angle: startingInfo?.angle || 60,
+      inventory: startingInfo?.inventory,
     });
     this.player.play('knifeMove');
   }

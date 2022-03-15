@@ -52,6 +52,7 @@ const getInitialGameState = (startTime) => {
       //   enemies: [{x, y, type, hp}]
       //   items: [{x, y, type}]
       //   exits: [{x, y, start, end}]
+      //   inventory: []
       // },
     },
   };

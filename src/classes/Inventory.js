@@ -5,15 +5,17 @@ import {Knife, Revolver} from './Weapon';
 export class Inventory {
   scene;
   weaponSlots;
-  gear;
   swapFinish;
 
-  constructor(scene) {
+  constructor(scene, existingInventory) {
     this.scene = scene;
-    const gun = new Revolver(scene);
-    gun.storedAmmunition = 0;
-    this.weaponSlots = [new Knife(scene, true), gun]; //Weapon[]
-    this.gear = []; //Gear[]
+    if (!existingInventory) {
+      const gun = new Revolver(scene);
+      gun.storedAmmunition = 0;
+      this.weaponSlots = [new Knife(scene, true), gun]; //Weapon[]
+    } else {
+      this.weaponSlots = existingInventory.weaponSlots;
+    }
   }
 
   getActiveWeapon() {
