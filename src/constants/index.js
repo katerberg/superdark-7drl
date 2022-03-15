@@ -2,6 +2,7 @@ export {COLORS} from './colors';
 export {EVENTS} from './events';
 export {DEPTH} from './depth';
 export {RUN_WALK} from './run-walk';
+export {LEVEL_LAYOUT} from './level-layout';
 export {ENEMY, ENEMY_STAB, ENEMY_SHOOT} from './enemy';
 export {PLAYER} from './player';
 export {GAME} from './game';

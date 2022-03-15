@@ -18,6 +18,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   nextNodeIndex;
   lastCheckedHp;
   nodeIncrement = 1;
+  hangoutDelay = 0;
   initialSweepAngle = null;
   state;
   investigatePosition;
@@ -131,17 +132,20 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       );
   }
 
-  moveAlongPath() {
+  moveAlongPath(timeAwareOfPauses) {
     let nextNode = this.path[this.nextNodeIndex];
     if (this.distanceTo(nextNode) < 10) {
       this.nextNodeIndex += this.nodeIncrement;
       nextNode = this.path[this.nextNodeIndex];
       if (this.nextNodeIndex === 0 || this.nextNodeIndex === this.path.length - 1) {
+        this.hangoutDelay = timeAwareOfPauses + ENEMY.HANGOUT_DELAY;
         this.nodeIncrement *= -1;
       }
     }
 
-    this.aimTowards(nextNode);
+    if (timeAwareOfPauses > this.hangoutDelay) {
+      this.aimTowards(nextNode);
+    }
     const moveAngle = this.getGoalAngle(nextNode);
     if (Math.abs(this.angle - moveAngle) < 40) {
       this.moveTowards(nextNode);
@@ -250,7 +254,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       if (this.distanceTo(this.investigatePosition) < 10) {
         this.setState(ENEMY.STATE.SWEEP);
       } else {
-        this.moveAlongPath();
+        this.moveAlongPath(time);
       }
     } else if (this.state === ENEMY.STATE.SWEEP) {
       // cuteRotatingMilitarySeal.gif
@@ -273,11 +277,11 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         this.setState(ENEMY.STATE.PATROL);
         this.setPath(this.patrolPath);
       } else {
-        this.moveAlongPath();
+        this.moveAlongPath(time);
       }
     } else if (this.state === ENEMY.STATE.PATROL) {
       // "i'm walkin here"
-      this.moveAlongPath();
+      this.moveAlongPath(time);
     }
 
     this.fieldOfVision.update();

@@ -26,7 +26,7 @@ import {ShootingEnemy} from '../classes/enemies/ShootingEnemy';
 import {StabbingEnemy} from '../classes/enemies/StabbingEnemy';
 import {Exit} from '../classes/Exit';
 import {Node} from '../classes/Node';
-import {InvisibilityShield, MedKit} from '../classes/Pickup';
+import {FloorSmg, InvisibilityShield, MedKit} from '../classes/Pickup';
 import {Player} from '../classes/Player';
 import {SoundWave} from '../classes/SoundWave';
 import {WinSwitch} from '../classes/WinSwitch';
@@ -46,6 +46,7 @@ import {
   ENEMY_SHOOT,
   SOUND,
   LEVEL_COLOR,
+  LEVEL_LAYOUT,
 } from '../constants';
 import {ENEMY_SHIELD} from '../constants/enemy';
 import {isDebug} from '../utils/environments';
@@ -535,50 +536,81 @@ export class GameScene extends Phaser.Scene {
     if (isDebug()) {
       this.pickups.add(new MedKit({scene: this, x: 1350, y: 150}));
     }
-    this.pickups.add(new InvisibilityShield({scene: this, x: 1350, y: 150}));
-
-    // Add medkit to a random room that isn't the startin two or ending two
-    this.pickups.add(new MedKit({scene: this, ...getRandomRoom(this.rooms, 2).getCenterish()}));
+    this.addPickupsOfType(window.gameState.currentLevel, 'medkit');
+    this.addPickupsOfType(window.gameState.currentLevel, 'invisibility');
+    this.addPickupsOfType(window.gameState.currentLevel, 'smg');
   }
 
   addEnemies() {
-    this.addShieldEnemy();
-    this.addShootingEnemy();
-    this.addChameleon();
-    for (let i = 0; i <= Math.floor(this.rooms.length / 4); i++) {
-      this.addStabbingEnemy();
+    this.addEnemiesOfType(window.gameState.currentLevel, ShieldEnemy);
+    this.addEnemiesOfType(window.gameState.currentLevel, Chameleon);
+    this.addEnemiesOfType(window.gameState.currentLevel, ShootingEnemy);
+    this.addEnemiesOfType(window.gameState.currentLevel, StabbingEnemy);
+  }
+
+  // eslint-disable-next-line
+  getTypeFromType(Type) {
+    switch (Type) {
+      case StabbingEnemy:
+        return 'stab';
+      case ShieldEnemy:
+        return 'shield';
+      case ShootingEnemy:
+        return 'shoot';
+      case Chameleon:
+        return 'sneak';
+      default:
+        throw 'BAD TYPE nerd';
     }
   }
 
-  addChameleon() {
-    // Disallow first 4 rooms, and ensure that there is some space to walk
-    const firstNode = this.basePath.length - 8;
-    const path = this.basePath.slice(firstNode, firstNode + 4);
-    const [{x, y}] = path;
-    this.enemies.add(new Chameleon({scene: this, x, y, path}));
+  addEnemiesOfType(level, Type) {
+    const layout = LEVEL_LAYOUT[`${level}`];
+    for (let i = 0; i < layout[this.getTypeFromType(Type)]; i++) {
+      this.addEnemyOfType(Type);
+    }
   }
 
-  addShootingEnemy() {
-    // Disallow first 4 rooms, and ensure that there is some space to walk
-    const firstNode = this.basePath.length - 8;
-    const path = this.basePath.slice(firstNode, firstNode + 4);
-    const [{x, y}] = path;
-    this.enemies.add(new ShootingEnemy({scene: this, x, y, path}));
+  addEnemyOfType(Type) {
+    const firstPathRoom = getRandomRoom(this.rooms, 0, false);
+    let endPathRoom;
+    do {
+      endPathRoom = getRandomRoom(this.rooms, 0, false);
+    } while (endPathRoom?.id === firstPathRoom.id);
+    const path = this.findPath(firstPathRoom.getCenterish(), endPathRoom.getCenterish());
+    this.enemies.add(
+      new Type({
+        scene: this,
+        path,
+        ...firstPathRoom.getCenterish(),
+      }),
+    );
   }
 
-  addShieldEnemy() {
-    //Only first room
-    const path = this.basePath.slice(1, 4);
-    const [{x, y}] = path;
-    this.enemies.add(new ShieldEnemy({scene: this, x, y, path}));
+  addPickupsOfType(level, typeString) {
+    let Type;
+    if (typeString === 'invisibility') {
+      Type = InvisibilityShield;
+    } else if (typeString === 'medkit') {
+      Type = MedKit;
+    } else if (typeString === 'smg') {
+      Type = FloorSmg;
+    }
+
+    const layout = LEVEL_LAYOUT[`${level}`];
+    for (let i = 0; i < layout[typeString]; i++) {
+      this.addPickupOfType(Type);
+    }
   }
 
-  addStabbingEnemy() {
-    // Disallow first 4 rooms, and ensure that there is some space to walk
-    const firstNode = Math.floor(Math.random() * (this.basePath.length - 8)) + 4;
-    const path = this.basePath.slice(firstNode, firstNode + 4);
-    const [{x, y}] = path;
-    this.enemies.add(new StabbingEnemy({scene: this, x, y, path}));
+  addPickupOfType(Type) {
+    const firstPathRoom = getRandomRoom(this.rooms, 0, false);
+    this.pickups.add(
+      new Type({
+        scene: this,
+        ...firstPathRoom.getCenterish(),
+      }),
+    );
   }
 
   addProjectile(projectile) {

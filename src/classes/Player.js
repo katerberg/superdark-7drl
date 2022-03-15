@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import {DEPTH, EVENTS, GAME_STATUS, PLAYER, RUN_WALK, SCENES, SOUND, WEAPON_EVENT} from '../constants';
+import {isDebug} from '../utils/environments';
 import {getNormalized} from '../utils/math';
 import {getRealTime} from '../utils/time';
 import {createFloatingText, createSpinningExpandingText} from '../utils/visuals';
@@ -168,7 +169,10 @@ export class Player extends Phaser.GameObjects.Sprite {
       moveVector.x * Math.sin(this.rotation) + moveVector.y * Math.cos(this.rotation),
     );
 
-    this.scene.cameras.main.setRotation(Phaser.Math.DegToRad(this.angle + 90) * -1);
+    const camera = this.scene.cameras.main.setRotation(Phaser.Math.DegToRad(this.angle + 90) * -1);
+    if (isDebug()) {
+      camera.setZoom(0.5);
+    }
     this.body.setAngularVelocity(angularMultiplier * PLAYER.ANGLE_SPEED * runWalkMultiplier);
 
     this.legs.setAngle(this.angle); //Where we're going, we don't need legs (⌐■_■)
