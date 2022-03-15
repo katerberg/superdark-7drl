@@ -103,6 +103,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.scene.game.events.emit(EVENTS.HP_CHANGE, this.hp);
     this.scene.removeProjectile(projectile);
     if (this.hp <= 0) {
+      this.scene.backgroundSound = null;
       this.scene.sound.stopByKey('footsteps');
       this.scene.sound.stopByKey('heartbeat');
       this.scene.game.events.emit(EVENTS.GAME_END, GAME_STATUS.LOSE);
