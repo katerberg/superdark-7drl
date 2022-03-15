@@ -113,7 +113,7 @@ class Weapon {
 
 export class Knife extends Weapon {
   constructor(scene, active) {
-    super(scene, 'weapon-knife', active, 30, 30, 3, undefined, undefined, undefined, undefined, 0, 30);
+    super(scene, 'weapon-knife', active, 20, 30, 3, undefined, undefined, undefined, undefined, 0, 30);
     this.characterMoveAnimation = 'knifeMove';
   }
 

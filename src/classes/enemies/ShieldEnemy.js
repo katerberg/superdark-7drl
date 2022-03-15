@@ -42,4 +42,9 @@ export class ShieldEnemy extends Enemy {
   enemySpecificDeath() {
     this.scene.pickups.add(new FloorRevolver({scene: this.scene, x: this.x, y: this.y}));
   }
+
+  // eslint-disable-next-line no-unused-vars,class-methods-use-this
+  playUseSound() {
+    this.scene.sound.play('gunshot', {volume: 0.6, rate: 0.7});
+  }
 }
