@@ -13,7 +13,7 @@ module.exports = () => ({
   ],
   output: {
     path: `${__dirname}/public`,
-    publicPath: '/superdark-7drl/public/',
+    publicPath: 'auto',
     filename: 'bundle.js',
   },
   module: {
