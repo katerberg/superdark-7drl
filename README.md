@@ -1,6 +1,11 @@
 # Superdark
 
-Game using Phaser
+An incident at a nearby nuclear missile silo has resulted in high levels of radiation and cryptic messages from its personnel. Attempts at further communication met with only silence.
+
+After a failed face-to-face negotiation resulting in the deaths of all involved, we have just detected a nuclear launch signal. You are tasked with penetrating to the bottom level of the silo and aborting the launch. You have fifteen minutes.
+
+https://katerberg.github.io/superdark-7drl/
+
 
 ## Setup
 
