@@ -242,6 +242,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   handlePlayerWinSwitch() {
+    this.sound.stopByKey('heartbeat');
+    this.sound.stopByKey('footsteps');
     this.game.events.emit(EVENTS.GAME_END, GAME_STATUS.WIN);
   }
 
