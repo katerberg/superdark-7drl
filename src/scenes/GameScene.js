@@ -577,7 +577,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   addEnemyOfType(Type) {
-    const firstPathRoom = getRandomRoom(this.rooms, 0, false);
+    let firstPathRoom;
+    do {
+      firstPathRoom = getRandomRoom(this.rooms, 0, false);
+    } while (!firstPathRoom.isPointInRoom(this.player.x, this.player.y));
+
     let endPathRoom;
     do {
       endPathRoom = getRandomRoom(this.rooms, 0, false);
