@@ -1,8 +1,10 @@
 import {ENEMY_CHAMELEON} from '../../constants/enemy';
+import {InvisibilityShield} from '../Pickup';
 import {EnemyKnife} from '../Weapon';
 import {Enemy} from './Enemy';
 
 export class Chameleon extends Enemy {
+  dropChance = 0.3;
   constructor({scene, x, y, path}) {
     super({
       scene,
@@ -34,6 +36,12 @@ export class Chameleon extends Enemy {
     const canSeePlayer = this.isSeeing(this.scene.player);
     if (canSeePlayer) {
       this.goInvisible();
+    }
+  }
+
+  enemySpecificDeath() {
+    if (Math.random() > this.dropChance) {
+      this.scene.pickups.add(new InvisibilityShield({scene: this.scene, x: this.x, y: this.y}));
     }
   }
 }

@@ -1,5 +1,6 @@
 import {ENEMY_SHIELD} from '../../constants/enemy';
 import {createSpinningExpandingText} from '../../utils/visuals';
+import {FloorRevolver} from '../Pickup';
 import {EnemyGun, Knife} from '../Weapon';
 import {Enemy} from './Enemy';
 
@@ -36,5 +37,9 @@ export class ShieldEnemy extends Enemy {
     if (this.hp <= 0) {
       this.handleDeath();
     }
+  }
+
+  enemySpecificDeath() {
+    this.scene.pickups.add(new FloorRevolver({scene: this.scene, x: this.x, y: this.y}));
   }
 }
